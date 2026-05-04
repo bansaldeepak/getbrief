@@ -1,6 +1,6 @@
 ---
-name: analytics
-description: Analytics and feature flag conventions. Default provider is PostHog. Auto-applies when working with analytics, feature flags, custom events, or user tracking. Projects may override with a local analytics skill for a different provider.
+name: product-analytics
+description: Product analytics and feature flag conventions. Default provider is PostHog. Auto-applies when working with analytics, feature flags, custom events, or user tracking. Projects may override with a local product-analytics skill for a different provider.
 ---
 
 # Analytics Conventions

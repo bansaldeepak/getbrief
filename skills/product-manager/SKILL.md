@@ -1,6 +1,6 @@
 ---
-name: pm
-description: "/pm -- Product Manager skill. First-principles problem identification and product thinking before planning or coding. Think like Lenny Rachitsky."
+name: product-manager
+description: "/product-manager -- Product Manager skill. First-principles problem identification and product thinking before planning or coding. Think like Lenny Rachitsky."
 user_invocable: true
 ---
 

@@ -10,7 +10,7 @@ gstack turns Claude Code into a virtual engineering team. Auto-upgrades enabled 
 | Phase | Custom Skill | gstack Skill | How They Stack |
 |-------|-------------|--------------|----------------|
 | **Discovery** | `/discover` | `/gstack-office-hours` | Structured analysis vs provocative reframing |
-| **Product** | `/pm`, `/prd` | `/gstack-plan-ceo-review` | Requirements first, then strategic scope review |
+| **Product** | `/product-manager`, `/prd` | `/gstack-plan-ceo-review` | Requirements first, then strategic scope review |
 | **Architecture** | `/trd` | `/gstack-plan-eng-review` | Design doc, then stress-test it |
 | **Planning** | `/project-plan` | `/gstack-autoplan` | Decompose tasks, then auto-review (CEO→design→eng) |
 | **Design** | — | `/gstack-plan-design-review`, `/gstack-design-consultation`, `/gstack-design-shotgun` | Frontend work only |
@@ -30,7 +30,7 @@ gstack turns Claude Code into a virtual engineering team. Auto-upgrades enabled 
 
 ```
 /discover → /gstack-office-hours (optional)
-    → /pm → /prd (🔒) → /gstack-plan-ceo-review
+    → /product-manager → /prd (🔒) → /gstack-plan-ceo-review
     → /trd (🔒) → /gstack-plan-eng-review
     → /project-plan → /gstack-autoplan (optional)
     → implement → qa agent → /gstack-qa (if frontend)
