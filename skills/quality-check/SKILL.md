@@ -80,15 +80,15 @@ Any commit that introduces or changes:
 
 ### How to Sync
 
-1. **Search for all references** — Grep project CLAUDE.md, documentation directories, skill files (`.claude/skills/`), and memory files
+1. **Search for all references** — Grep project AGENTS.md, documentation directories, skill files (`.agents/skills/`), and memory files
 2. **Update every reference** — Don't just update the primary doc. Update skills, rules docs, README tables, project structure descriptions — everything that mentions the affected area
 3. **Include doc updates in the same commit** (or immediately following)
 
 ### Checklist
 
-- [ ] **Project CLAUDE.md** — Commands table, architecture section, conventions
+- [ ] **Project AGENTS.md** — Commands table, architecture section, conventions
 - [ ] **Documentation directories** — Any doc referencing the changed area
-- [ ] **Skills** (`.claude/skills/`) — Any skill referencing the changed pattern
+- [ ] **Skills** (`.agents/skills/`) — Any skill referencing the changed pattern
 - [ ] **Module/Provider READMEs** — If the module was modified
 - [ ] **Memory files** — If persistent memories reference the changed area
 

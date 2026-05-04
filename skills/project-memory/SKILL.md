@@ -77,9 +77,9 @@ Used by the self-improving agent to prioritize what stays and what gets pruned:
 
 During pruning, importance 1-2 memories past their `valid_until` are auto-candidates for removal. Importance 4-5 memories are always re-validated before removal.
 
-### 3. Claude Project Config: Pointer Only
+### 3. Provider Config: Pointer Only
 
-The Claude project-level memory file (`~/.claude/projects/<project>/memory/MEMORY.md`) should contain ONLY a pointer:
+Provider-level memory files (e.g., `~/.claude/projects/<project>/memory/MEMORY.md`) should contain ONLY a pointer:
 
 ```markdown
 # Memory Pointer
@@ -94,12 +94,12 @@ Read those files for full context. Do not duplicate memory content here.
 
 ## Migration for Existing Projects
 
-When entering a project that has memory in Claude's config but NOT in the repo:
+When entering a project that has memory in a provider config but NOT in the repo:
 
-1. Read the existing memory from `~/.claude/projects/<project>/memory/MEMORY.md`
+1. Read the existing memory from the provider's project memory location
 2. Create `MEMORY.md` at the project root with the content
 3. Split individual memories into `memory/<type>_<topic>.md` files
-4. Replace Claude config memory with the pointer (as above)
+4. Replace provider config memory with the pointer (as above)
 5. Commit the new files: `chore: migrate project memory to version control`
 
 **Never lose context during migration.** Read everything first, write the new structure, then replace the pointer.
@@ -112,7 +112,7 @@ When entering a project that has memory in Claude's config but NOT in the repo:
 4. **Keep MEMORY.md under 200 lines** — if it's growing, split content into individual files
 5. **Update timestamps** — when modifying a memory file, update the `updated:` frontmatter field
 6. **Prune actively** — remove memories that are no longer relevant. Stale memory is worse than no memory.
-7. **Don't duplicate what's in code** — if it's in CLAUDE.md, git history, or docs, don't also put it in memory
+7. **Don't duplicate what's in code** — if it's in AGENTS.md, git history, or docs, don't also put it in memory
 
 ## When This Skill Applies
 

@@ -58,7 +58,7 @@ The tracker file must follow this exact structure:
 | **Status** | `planned` / `in_progress` / `blocked` / `completed` |
 | **Started** | Date work began (YYYY-MM-DD) |
 | **Completed** | Date story completed, or `—` if in progress |
-| **Tokens** | Token usage by model with IN/OUT split: `O:40Min/1Mout S:5Min/0.5Mout` (O=Opus, S=Sonnet, H=Haiku). High input = optimization opportunity (reduce context). Filled at retro via `~/.claude/scripts/token-usage.sh`. `—` while in progress. |
+| **Tokens** | Token usage by model with IN/OUT split: `O:40Min/1Mout S:5Min/0.5Mout` (O=Opus, S=Sonnet, H=Haiku). High input = optimization opportunity (reduce context). Filled at retro via token-usage script. `—` while in progress. |
 | **Summary** | One-line description of what was delivered |
 | **Priority** | `P0` (critical) / `P1` (important) / `P2` (nice-to-have) |
 | **Notes** | Brief context for backlog items |
@@ -78,7 +78,7 @@ The tracker file must follow this exact structure:
 1. Move the story row from **Active Work** to **Completed**
 2. Set status to `completed`
 3. Fill in `Completed` date
-4. Fill in `Tokens` column — run `~/.claude/scripts/token-usage.sh <project-claude-dir> --after <story-start-date>` and use the compact format: `O:1.2M S:0.5M H:0.2M`
+4. Fill in `Tokens` column — run token-usage script with project dir and story start date, use compact format: `O:1.2M S:0.5M H:0.2M`
 5. Write a one-line summary of what was delivered
 6. Update "Last updated" timestamp
 7. Commit the tracker update

@@ -54,7 +54,7 @@ Before planning, check `documentation/stories/<feature-name>/`:
 
 Read relevant files to understand the current state:
 - **PRD.md and TRD.md** (always present — created in Phase 0)
-- Project CLAUDE.md and documentation/rules/
+- Project AGENTS.md (or CLAUDE.md/GEMINI.md) and documentation/rules/
 - Database schema (prisma/schema.prisma if it exists)
 - Existing modules/components related to the feature
 - Any referenced docs, decision docs, or requirements
@@ -221,7 +221,7 @@ What makes a good "How" section:
 <How to verify the feature works>
 
 ## Token Usage
-<Filled at retro — run: ~/.claude/scripts/token-usage.sh <project-claude-dir> --after <story-start-date>>
+<Filled at retro — run token-usage script with project dir and story start date>
 
 | Model | Input | Cache Create | Cache Read | Output | Total |
 |-------|------:|-------------:|-----------:|-------:|------:|
