@@ -54,7 +54,7 @@ Before planning, check `documentation/stories/<feature-name>/`:
 
 Read relevant files to understand the current state:
 - **PRD.md and TRD.md** (always present — created in Phase 0)
-- Project AGENTS.md and documentation/rules/
+- Project CLAUDE.md and documentation/rules/
 - Database schema (prisma/schema.prisma if it exists)
 - Existing modules/components related to the feature
 - Any referenced docs, decision docs, or requirements
@@ -138,7 +138,7 @@ Lightweight roster — only status overview. This is what gets loaded for quick 
 
 #### `documentation/stories/<feature-name>/S-NNN/tasks/T-001.md` (one per task)
 
-Each task gets its own file with full detail:
+Each task gets its own file with full detail. **Each task spec must be self-contained.** Assume the executing agent (Sonnet, Codex, Gemini, or a fresh Claude session) has ZERO context from the planning conversation. The task spec is the only brief they receive.
 
 ```markdown
 # S-NNN-T1: <Title>
@@ -146,35 +146,61 @@ Each task gets its own file with full detail:
 **Priority:** P0/P1/P2 | **Status:** pending | **Blocked By:** --
 
 ## What
-One-paragraph description of the deliverable.
+One-paragraph description of the deliverable. Be specific: name the function, the file, the behavior.
 
 ## Why
-Why this task exists -- what breaks or is missing without it.
+Why this task exists -- what breaks or is missing without it. Include the user-facing impact.
+
+## Context
+Background a fresh agent needs to understand this task. Include:
+- Current state of the code (what exists today, what's broken)
+- Relevant schema/type definitions (inline the key fields, don't just reference)
+- Key decisions from review (e.g., "CEO review decided X because Y")
+- How this task connects to adjacent tasks (what came before, what comes after)
 
 ## How
 
 **Step 1 -- <action>:**
-<code block or file content showing exactly what to create/change>
+- File: `exact/path/to/file.ts`
+- What to change: <specific description with line references if modifying existing code>
+- Code: <code block showing the implementation or pattern to follow>
 
 **Step 2 -- <action>:**
-<next step with code>
+- File: `exact/path/to/file.ts`
+- What to change: <specific>
+- Code: <code block>
 
 **Step N -- Verify:**
 ```bash
-<verification commands>
+<exact verification commands — not "run tests" but the specific test command>
 ```
+
+## Files to Read First
+List of files the executing agent should read before starting (gives them the context they need):
+- `path/to/file.ts` -- <why: "contains the function you're modifying">
+- `path/to/schema.prisma` -- <why: "StudentObjectState model definition">
 
 ## Acceptance Criteria
 - [ ] Specific, testable criteria (not vague like "works correctly")
 - [ ] Concrete: "typecheck passes", "returns 201 with body matching schema"
+- [ ] Include the verification command for each criterion
 ```
+
+**Self-containment checklist (verify before finalizing each task):**
+1. Can a fresh agent execute this task by reading ONLY this file + the files listed in "Files to Read First"?
+2. Are all architectural decisions explained inline (not "as discussed" or "per the review")?
+3. Are exact file paths provided for every create/modify operation?
+4. Are code snippets complete enough to implement from (not just "follow the pattern")?
+5. Is the verification step a concrete command, not a vague instruction?
+6. If this task depends on a prior task's output, is that output described (not assumed)?
 
 What makes a good "How" section:
 - **File paths** -- Exact paths for files to create or modify
-- **Code snippets** -- Enough to show the pattern (not necessarily full file)
-- **Reference existing patterns** -- "Follow the pattern in `app/server/modules/course/routes.ts`"
-- **Verification commands** -- `npm run typecheck`, `npm run build`, specific curl commands
+- **Code snippets** -- Complete enough to implement from, not just hints. Include function signatures, key logic, types.
+- **Inline context** -- Don't say "follow the pattern in X." Show the relevant 10-20 lines from X right here.
+- **Verification commands** -- `npm run typecheck`, `npx vitest run --config vitest.unit.config.ts test/unit/tutor-engine/post-session.test.ts`, specific curl commands
 - **Edge cases** -- Note error handling, constraint violations, auth checks
+- **Schema/type info** -- Inline the relevant Prisma model fields or TypeScript types. Don't make the agent hunt for them.
 
 **File naming:** `T-001.md`, `T-002.md`, etc. (zero-padded for sort order)
 
@@ -195,7 +221,7 @@ What makes a good "How" section:
 <How to verify the feature works>
 
 ## Token Usage
-<Filled at retro — run: ~/.Codex/scripts/token-usage.sh <project-Codex-dir> --after <story-start-date>>
+<Filled at retro — run: ~/.claude/scripts/token-usage.sh <project-claude-dir> --after <story-start-date>>
 
 | Model | Input | Cache Create | Cache Read | Output | Total |
 |-------|------:|-------------:|-----------:|-------:|------:|
@@ -220,7 +246,7 @@ Report back:
 - Suggested branch name: `feature/<story-slug>`
 - Ask: "Ready to start S-NNN-T1?"
 
-Also create Codex tasks (TaskCreate) mirroring the story tasks for session visibility.
+Also create Claude Code tasks (TaskCreate) mirroring the story tasks for session visibility.
 
 ## Status Values
 
@@ -248,3 +274,6 @@ Existing stories may use a single `tasks.md` file instead of the `tasks/` direct
 - Each task should be completable in a single commit
 - If a task feels too large, split it further
 - Every story must account for documentation sync
+- **Self-contained tasks are non-negotiable.** Each task spec will be executed by a fresh agent (Sonnet, Codex, Gemini) with no prior context. The task file IS the entire brief. If executing the task requires knowledge not written in the task file, the task spec is incomplete. Never assume shared context from the planning session.
+- **Inline over reference.** Don't write "see the TRD for architecture decisions." Copy the relevant decision into the task spec. Don't write "follow the pattern in X." Show the pattern. The executing agent may not have access to the planning conversation or review documents.
+- **Review decisions must be in task specs.** If a CEO/eng review made a decision that affects implementation (e.g., "use separate queues, not shared queue"), that decision and its rationale must appear in the task spec that implements it.

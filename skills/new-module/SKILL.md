@@ -162,7 +162,7 @@ export { default as {camelCase}Routes } from "./routes.js";
 
 ### 7. Create Module README (`README.md`)
 
-Every module must have a README. See the [`hono-react-router-prisma-stack`](~/.Codex/skills/hono-react-router-prisma-stack/SKILL.md) skill for required README contents.
+Every module must have a README. See the [`hono-react-router-prisma-stack`](~/.claude/skills/hono-react-router-prisma-stack/SKILL.md) skill for required README contents.
 
 ### 8. Register in Route Aggregator
 
@@ -256,7 +256,7 @@ npm run build
 
 Update all docs that reference module structure:
 - [ ] `documentation/rules/tech-stack.md` — add module to project structure tree
-- [ ] `AGENTS.md` — update architecture section if new module changes the module list
+- [ ] `CLAUDE.md` — update architecture section if new module changes the module list
 
 ### 12. Checklist
 
@@ -288,7 +288,7 @@ Update all docs that reference module structure:
 
 **Documentation sync:**
 - [ ] `documentation/rules/tech-stack.md` project structure updated
-- [ ] `AGENTS.md` architecture section updated if module list changed
+- [ ] `CLAUDE.md` architecture section updated if module list changed
 
 **Standards:**
 - [ ] REST conventions: plural nouns, correct HTTP methods, kebab-case paths

@@ -1,11 +1,11 @@
 ---
 name: project-memory
-description: Version-controlled project memory. Auto-applies on any project. Moves memory from Codex's ephemeral project config into the repo itself so it persists across sessions, is git-tracked, and visible to collaborators.
+description: Version-controlled project memory. Auto-applies on any project. Moves memory from Claude's ephemeral project config into the repo itself so it persists across sessions, is git-tracked, and visible to collaborators.
 ---
 
 # Project Memory — Version-Controlled
 
-Every project should have its memory **in the repo, not in Codex's config directory.** This makes memory git-tracked, diff-able, portable, and visible.
+Every project should have its memory **in the repo, not in Claude's config directory.** This makes memory git-tracked, diff-able, portable, and visible.
 
 ## Setup
 
@@ -20,7 +20,7 @@ The main memory index at the project root. Contains:
 - Active feedback, rules, and references
 - Working relationship notes (if applicable)
 
-**This is the file Codex loads on every session.** Keep it under 200 lines — it's a map, not a dump.
+**This is the file Claude loads on every session.** Keep it under 200 lines — it's a map, not a dump.
 
 ### 2. Memory Directory: `memory/`
 
@@ -77,9 +77,9 @@ Used by the self-improving agent to prioritize what stays and what gets pruned:
 
 During pruning, importance 1-2 memories past their `valid_until` are auto-candidates for removal. Importance 4-5 memories are always re-validated before removal.
 
-### 3. Codex Project Config: Pointer Only
+### 3. Claude Project Config: Pointer Only
 
-The Codex project-level memory file (`~/.Codex/projects/<project>/memory/MEMORY.md`) should contain ONLY a pointer:
+The Claude project-level memory file (`~/.claude/projects/<project>/memory/MEMORY.md`) should contain ONLY a pointer:
 
 ```markdown
 # Memory Pointer
@@ -94,25 +94,25 @@ Read those files for full context. Do not duplicate memory content here.
 
 ## Migration for Existing Projects
 
-When entering a project that has memory in Codex's config but NOT in the repo:
+When entering a project that has memory in Claude's config but NOT in the repo:
 
-1. Read the existing memory from `~/.Codex/projects/<project>/memory/MEMORY.md`
+1. Read the existing memory from `~/.claude/projects/<project>/memory/MEMORY.md`
 2. Create `MEMORY.md` at the project root with the content
 3. Split individual memories into `memory/<type>_<topic>.md` files
-4. Replace Codex config memory with the pointer (as above)
+4. Replace Claude config memory with the pointer (as above)
 5. Commit the new files: `chore: migrate project memory to version control`
 
 **Never lose context during migration.** Read everything first, write the new structure, then replace the pointer.
 
 ## Rules
 
-1. **All memory writes go to the repo**, not to Codex's config directory
+1. **All memory writes go to the repo**, not to Claude's config directory
 2. **Commit memory changes** alongside related work or as a separate `chore:` commit
 3. **MEMORY.md is the index** — individual memories are files it links to. Don't dump everything into MEMORY.md.
 4. **Keep MEMORY.md under 200 lines** — if it's growing, split content into individual files
 5. **Update timestamps** — when modifying a memory file, update the `updated:` frontmatter field
 6. **Prune actively** — remove memories that are no longer relevant. Stale memory is worse than no memory.
-7. **Don't duplicate what's in code** — if it's in AGENTS.md, git history, or docs, don't also put it in memory
+7. **Don't duplicate what's in code** — if it's in CLAUDE.md, git history, or docs, don't also put it in memory
 
 ## When This Skill Applies
 
