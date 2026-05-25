@@ -17,7 +17,7 @@ Evaluation Run (evaluation_agent_batch_eval_create)
 Comparison (evaluation_comparison_create)
     │ insightId, baselineRunId, treatmentRunIds
     ▼
-Deployment Decision (agent_update + agent_container_control)
+Deployment Decision (agent_update)
     │ agentVersion
     ▼
 Production Trace (cycle repeats)
@@ -31,9 +31,9 @@ Track lineage in `.foundry/datasets/manifest.json`:
 {
   "datasets": [
     {
-      "name": "support-bot-prod-traces-v3",
+      "name": "support-bot-prod-traces",
       "file": "support-bot-prod-traces-v3.jsonl",
-      "version": "3",
+      "version": "v3",
       "tag": "prod",
       "source": "trace-harvest",
       "harvestRule": "error+latency",
