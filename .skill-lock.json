@@ -168,9 +168,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/microsoft/azure-skills.git",
       "skillPath": ".github/plugins/azure-skills/skills/microsoft-foundry/SKILL.md",
-      "skillFolderHash": "5d2158c657c8c38b458a3b2231b270ea29e95135",
+      "skillFolderHash": "a93f0861bad65f68b1eb68e407c9e4cd6aa6f0af",
       "installedAt": "2026-02-23T18:36:18.117Z",
-      "updatedAt": "2026-05-25T04:59:32.588Z"
+      "updatedAt": "2026-07-18T00:12:00.910Z"
     },
     "design-md": {
       "source": "google-labs-code/stitch-skills",
