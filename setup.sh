@@ -22,22 +22,18 @@ for provider in .claude .codex; do
   fi
 done
 
-# Symlink rules
-for provider in .claude .codex; do
-  target="$HOME/$provider/rules"
-  if [ -L "$target" ]; then
-    echo "  ✓ $target (already linked)"
-  elif [ -d "$target" ]; then
-    echo "  ⚠ $target exists as directory — back up and replace manually"
-  else
-    ln -sf "$AGENTS_DIR/rules" "$target"
-    echo "  ✓ $target → $AGENTS_DIR/rules"
-  fi
-done
+# Rules are distributed per-file by build.sh (below), NOT symlinked as a whole
+# directory here. A directory symlink would bury each host's own policy files —
+# e.g. ~/.codex/rules/default.rules (Codex's command allowlist). build.sh links
+# each *.md individually and leaves everything else in place.
 
-# Build provider configs
+# Build provider configs + distribute rules
 echo ""
 "$AGENTS_DIR/build.sh"
+
+# Final gate: verify every provider dir matches the ~/.agents/ source.
+echo ""
+"$AGENTS_DIR/check.sh"
 
 # Check gstack env vars
 echo ""

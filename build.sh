@@ -25,5 +25,25 @@ echo "✓ ~/.codex/AGENTS.md"
 cat "$WORKFLOW" "$AGENTS_DIR/providers/gemini.md" > "$HOME/.gemini/GEMINI.md"
 echo "✓ ~/.gemini/GEMINI.md"
 
+# --- Distribute rules ------------------------------------------------------
+# Per-file symlinks, never a directory symlink: each agent keeps its own
+# policy files alongside (e.g. ~/.codex/rules/default.rules is Codex's command
+# allowlist, not a shared rule). Symlink (not copy) so an edited rule is live
+# everywhere immediately. Only *.md is touched — nothing else is added or removed.
+# Rules are a Claude Code / Codex concept; Gemini has no rules dir, so it is
+# excluded rather than given links it will not read.
+RULE_HOSTS=(claude codex)
+for host in "${RULE_HOSTS[@]}"; do
+  dest="$HOME/.$host/rules"
+  mkdir -p "$dest"
+  count=0
+  for rule in "$AGENTS_DIR"/rules/*.md; do
+    [ -e "$rule" ] || continue
+    ln -sfn "$rule" "$dest/$(basename "$rule")"
+    count=$((count + 1))
+  done
+  echo "✓ ~/.$host/rules — $count rule(s) linked"
+done
+
 echo ""
-echo "All provider configs synced from ~/.agents/"
+echo "All provider configs + rules synced from ~/.agents/"
