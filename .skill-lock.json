@@ -6,9 +6,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/microsoft/azure-skills.git",
       "skillPath": ".github/plugins/azure-skills/skills/microsoft-foundry/SKILL.md",
-      "skillFolderHash": "a93f0861bad65f68b1eb68e407c9e4cd6aa6f0af",
+      "skillFolderHash": "a9bc641ebd8a5352673382200ad7e130baab70a1",
       "installedAt": "2026-02-23T18:36:18.117Z",
-      "updatedAt": "2026-07-18T00:12:00.910Z"
+      "updatedAt": "2026-07-21T02:58:21.107Z"
     },
     "design-md": {
       "source": "google-labs-code/stitch-skills",
@@ -135,6 +135,15 @@
       "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
       "installedAt": "2026-05-25T04:57:27.782Z",
       "updatedAt": "2026-05-25T04:57:27.782Z"
+    },
+    "gstack": {
+      "source": "garrytan/gstack",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/garrytan/gstack.git",
+      "skillPath": "SKILL.md",
+      "skillFolderHash": "a3259400a366593e0c909dd9ac3e59752efd2488",
+      "installedAt": "2026-07-21T02:42:50.490Z",
+      "updatedAt": "2026-07-21T02:42:50.490Z"
     }
   },
   "dismissed": {
@@ -143,16 +152,17 @@
   "lastSelectedAgents": [
     "amp",
     "antigravity",
+    "antigravity-cli",
     "cline",
     "codex",
     "cursor",
     "deepagents",
-    "dexto",
-    "firebender",
     "gemini-cli",
     "github-copilot",
-    "kimi-cli",
+    "kimi-code-cli",
     "opencode",
-    "warp"
+    "warp",
+    "zed",
+    "claude-code"
   ]
 }

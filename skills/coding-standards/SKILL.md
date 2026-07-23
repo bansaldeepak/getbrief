@@ -54,6 +54,8 @@ Format on save and on commit (pre-commit hook). Never override project formattin
 - **Mock at boundaries** — mock external dependencies, not internal logic
 - **Test success AND error paths**
 - **Deterministic** — no reliance on timing, ordering, or external state
+- **A cast to make a test compile means the test asserts nothing** — `as never`/`as any`/`@ts-expect-error`, or the language's equivalent, is the tell. Once the type system has forgotten a thing, a runtime test cannot meaningfully remember it: it asserts a property of *unrecognised input in general*, wearing a specific name.
+- **Delete a feature's tests with the feature.** A test named after a removed symbol guards nothing, keeps the name alive in live code, and defeats the `grep` meant to prove the removal is complete. The general case that replaces it is usually already covered.
 
 | Language | Framework |
 |----------|-----------|
