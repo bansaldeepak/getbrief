@@ -1,15 +1,15 @@
 ---
-name: project-retro
-description: "/project-retro -- Retrospective after story completion and merge. Captures learnings, updates skills/memory, and feeds improvements back into the workflow. Auto-invoked after story merge."
+name: retro
+description: "/retro -- Retrospective after story completion and merge. Captures learnings, updates skills/memory, and feeds improvements back into the workflow. Auto-invoked after story merge."
 user_invocable: true
 model: opus
 ---
 
-# /project-retro -- Story Retrospective
+# /retro -- Story Retrospective
 
 Captures learnings after story completion and feeds improvements back into the system. Runs after merge, before starting new work.
 
-**Usage**: `/project-retro` (reviews the most recently completed story) or `/project-retro S-NNN`
+**Usage**: `/retro` (reviews the most recently completed story) or `/retro S-NNN`
 
 **Source**: Adapted from phuryn/pm-skills retro facilitation + custom auto-improvement loop.
 

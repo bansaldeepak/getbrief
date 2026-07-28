@@ -1,15 +1,15 @@
 ---
-name: project-discover
-description: "/project-discover -- Structured problem discovery and validation. Runs BEFORE /product-requirements to ensure we're solving the right problem. Brainstorm → Assumptions → Experiments → Discovery Plan."
+name: discover
+description: "/discover -- Structured problem discovery and validation. Runs BEFORE /prd to ensure we're solving the right problem. Brainstorm → Assumptions → Experiments → Discovery Plan."
 user_invocable: true
 model: opus
 ---
 
-# /project-discover -- Problem Discovery Skill
+# /discover -- Problem Discovery Skill
 
 Structured problem validation before writing requirements. Ensures we understand the problem space deeply before committing to a solution direction.
 
-**Usage**: `/project-discover <problem area, feature idea, or user pain point>`
+**Usage**: `/discover <problem area, feature idea, or user pain point>`
 
 **Source**: Adapted from phuryn/pm-skills discovery workflow (Teresa Torres' Opportunity Solution Tree).
 
@@ -18,7 +18,7 @@ Structured problem validation before writing requirements. Ensures we understand
 - User describes a vague feature idea without clear problem definition
 - Scope is ambiguous and multiple interpretations exist
 - The request could affect multiple user segments differently
-- Ask user: "This seems like it needs discovery first. Want me to run `/project-discover`?"
+- Ask user: "This seems like it needs discovery first. Want me to run `/discover`?"
 
 ## Instructions
 
@@ -102,12 +102,12 @@ Compile into a structured output:
 <Things we can't answer without research or user input>
 
 ### Next Step
-- If assumptions need validation: "Run experiments, then `/product-requirements <focused-scope>`"
-- If problem is clear enough: "Ready for `/product-requirements <specific-feature>`"
+- If assumptions need validation: "Run experiments, then `/prd <focused-scope>`"
+- If problem is clear enough: "Ready for `/prd <specific-feature>`"
 - If trivial: "This is small enough to skip to `/project-plan`"
 ```
 
-**Wait for user input before proceeding to /product-requirements.**
+**Wait for user input before proceeding to /prd.**
 
 ## Rules
 

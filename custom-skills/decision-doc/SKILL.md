@@ -1,20 +1,20 @@
 ---
-name: project-decision-doc
-description: "/project-decision-doc -- Record a technical or product decision with trade-offs, reversibility assessment, and what we're giving up. Use anytime a non-obvious choice is made."
+name: decision-doc
+description: "/decision-doc -- Record a technical or product decision with trade-offs, reversibility assessment, and what we're giving up. Use anytime a non-obvious choice is made."
 user_invocable: true
 ---
 
-# /project-decision-doc -- Decision Document
+# /decision-doc -- Decision Document
 
 Records non-obvious decisions with full context so future-you (or teammates) understand why a choice was made.
 
-**Usage**: `/project-decision-doc <decision topic>`
+**Usage**: `/decision-doc <decision topic>`
 
 **Source**: Adapted from Mehdibargach/claude-code-pm-skills decision-doc (reversibility + trade-off framework).
 
 ## When Claude Should Auto-Invoke
 
-- During `/technical-requirements` when a design decision has significant trade-offs
+- During `/trd` when a design decision has significant trade-offs
 - During implementation when an unexpected fork-in-the-road appears
 - When the user asks "should we do A or B?"
 - When choosing between competing libraries, patterns, or approaches
@@ -39,7 +39,7 @@ Save to `documentation/decisions/DEC-NNN-<slug>.md` (sequential numbering):
 **Date**: <today>
 **Status**: Proposed | 🔒 Decided | Revisited | Superseded by DEC-XXX
 **Deciders**: <who made this decision>
-**Context**: <PRD/technical-requirements/Story reference if applicable>
+**Context**: <PRD/TRD/Story reference if applicable>
 
 ## Decision
 

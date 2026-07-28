@@ -18,7 +18,7 @@ Skills auto-load from `~/.agents/skills/` (native support). Use `@./file.md` imp
 | Workflow step | Gemini equivalent |
 |---------------|-----------------|
 | `qa` agent | Run: `npm run typecheck && npm run lint && npm test` |
-| `/review` | Analyze diff against conventions, report issues |
+| `/pr-review` | Analyze diff against conventions, report issues |
 | `self-improving` | Update project `MEMORY.md` after retro |
 
 NOTE: Your code will be reviewed by CLAUDE && OPENAI CODEX.

@@ -18,7 +18,7 @@ Skills in `~/.codex/skills/` (symlinked from `~/.agents/skills/`). Rules in `~/.
 | Workflow step | Codex equivalent |
 |---------------|-----------------|
 | `qa` agent | Run: `npm run typecheck && npm run lint && npm test` |
-| `/review` | Analyze diff against conventions, report issues |
+| `/pr-review` | Analyze diff against conventions, report issues |
 | `self-improving` | Update project `MEMORY.md` after retro |
 
 NOTE: Your code will be reviewed by CLAUDE && GOOGLE GEMINI.

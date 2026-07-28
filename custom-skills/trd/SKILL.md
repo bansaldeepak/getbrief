@@ -1,15 +1,15 @@
 ---
-name: technical-requirements
-description: "/technical-requirements -- Technical Requirements Document. Architecture design, system design, data model changes, API contracts, technical constraints. Runs AFTER /product-requirements approval, BEFORE /plan. Human approval gate when architecture changes are involved."
+name: trd
+description: "/trd -- Technical Requirements Document. Architecture design, system design, data model changes, API contracts, technical constraints. Runs AFTER /prd approval, BEFORE /plan. Human approval gate when architecture changes are involved."
 user_invocable: true
 model: opus
 ---
 
-# /technical-requirements -- Technical Requirements Document
+# /trd -- Technical Requirements Document
 
 Translates approved PRD requirements into technical architecture and design decisions. Ensures architecture is reviewed before implementation begins.
 
-**Usage**: `/technical-requirements <feature name>` (references the approved PRD)
+**Usage**: `/trd <feature name>` (references the approved PRD)
 
 ## When Claude Should Auto-Invoke
 
@@ -31,7 +31,7 @@ Translates approved PRD requirements into technical architecture and design deci
 
 ### Phase 1: Read the PRD
 
-Read `documentation/stories/<feature-name>/PRD.md`. If it doesn't exist or isn't approved, stop and redirect to `/product-requirements`.
+Read `documentation/stories/<feature-name>/PRD.md`. If it doesn't exist or isn't approved, stop and redirect to `/prd`.
 
 ### Phase 2: Assess Current Architecture
 
@@ -192,7 +192,7 @@ After approval: "Architecture approved. Running `/project-plan` to break this in
 
 ## Rules
 
-- TRD must reference an approved PRD — redirect to `/product-requirements` if missing
+- TRD must reference an approved PRD — redirect to `/prd` if missing
 - Every design decision must list alternatives considered
 - Use Mermaid diagrams for architecture, data model, and sequence flows
 - Schema changes must include rollback plan

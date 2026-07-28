@@ -1,11 +1,11 @@
 ---
-name: product-requirements
-description: "/product-requirements -- Product Requirements Document. Tight 1-2 page PRD with problem, users, goals, scope, requirements. Runs AFTER /discover (if needed), BEFORE /trd and /plan. Human approval gate."
+name: prd
+description: "/prd -- Product Requirements Document. Tight 1-2 page PRD with problem, users, goals, scope, requirements. Runs AFTER /discover (if needed), BEFORE /trd and /plan. Human approval gate."
 user_invocable: true
 model: opus
 ---
 
-# /product-requirements -- Product Requirements Document
+# /prd -- Product Requirements Document
 
 Produces a tight, actionable PRD that becomes the single source of truth for what we're building and why. Max 2 pages.
 

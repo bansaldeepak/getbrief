@@ -1,14 +1,14 @@
 ---
-name: project-memory-review
-description: "/project-memory-review -- Manually trigger memory curation. Reviews MEMORY.md for staleness, promotes valuable entries to rules, extracts recurring patterns into skills, prunes outdated entries."
+name: memory-review
+description: "/memory-review -- Manually trigger memory curation. Reviews MEMORY.md for staleness, promotes valuable entries to rules, extracts recurring patterns into skills, prunes outdated entries."
 user_invocable: true
 ---
 
-# /project-memory-review -- Memory Curation
+# /memory-review -- Memory Curation
 
 Manually triggers the self-improving agent's memory curation cycle. Reviews, promotes, extracts, and prunes memory entries.
 
-**Usage**: `/project-memory-review`
+**Usage**: `/memory-review`
 
 **Source**: Adapted from alirezarezvani/claude-skills self-improving agent pattern.
 

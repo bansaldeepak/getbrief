@@ -14,9 +14,9 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → review
 
 🔒 = **Human approval gate** — pause for explicit user approval.
 
-**Plan-review gates:** run `/gstack-plan-ceo-review` on the PRD (after `/prd`, before `/trd`) and `/gstack-plan-eng-review` on the TRD (after `/trd`, before `/project-plan`). Full path: `/discover` → `/prd` → `/gstack-plan-ceo-review` → `/trd` → `/gstack-plan-eng-review` → `/project-plan` → implement → `/review` → merge → `/retro`.
+**Plan-review gates:** run `/gstack-plan-ceo-review` on the PRD (after `/prd`, before `/trd`) and `/gstack-plan-eng-review` on the TRD (after `/trd`, before `/project-plan`). Full path: `/discover` → `/prd` → `/gstack-plan-ceo-review` → `/trd` → `/gstack-plan-eng-review` → `/project-plan` → implement → `/pr-review` → merge → `/retro`.
 
-**Entry point by scope:** bug / < 30 min → skip PRD/TRD, just fix → `qa` → `/review` → merge. Clear-scope feature → start at `/prd`. Ambiguous → start at `/discover` (or ask: "needs discovery — run `/discover`?"). TRD only when architecture changes.
+**Entry point by scope:** bug / < 30 min → skip PRD/TRD, just fix → `qa` → `/pr-review` → merge. Clear-scope feature → start at `/prd`. Ambiguous → start at `/discover` (or ask: "needs discovery — run `/discover`?"). TRD only when architecture changes.
 
 ## Story-Based Execution
 
@@ -27,7 +27,7 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → review
 - **Story-first rule**: `story.md`, `tasks/index.md`, `tasks/T-NNN.md`, `summary.md` must exist BEFORE implementation
 - **After each task**: `qa` agent → commit → update `tasks/index.md` + `summary.md` → commit story updates separately
 - **Legacy compat**: If story has `tasks.md` (single file), continue that format. New stories use `tasks/`.
-- **Before PR**: `/review` → wait for human approval
+- **Before PR**: `/pr-review` → wait for human approval
 - **After merge**: `/retro` → `self-improving` agent
 - **Story completion**: All tasks done, `summary.md` finalized, status `completed`, tracker updated
 
