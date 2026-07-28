@@ -9,17 +9,25 @@ echo "Setting up unified agent configuration..."
 # Create provider directories if needed
 mkdir -p "$HOME/.claude" "$HOME/.codex" "$HOME/.gemini"
 
-# Symlink skills
+# Symlink our own skills, one per skill — NOT the whole directory. Same reason
+# rules are distributed per-file (see below): a directory symlink would bury each
+# host's own entries, e.g. ~/.codex/skills/codex-primary-runtime and .system.
+# Only custom-skills/ is ours; skills/ is owned by the `skills` CLI via
+# .skill-lock.json and is linked selectively by hand, so it is left alone here.
+echo "Linking custom skills..."
 for provider in .claude .codex; do
   target="$HOME/$provider/skills"
-  if [ -L "$target" ]; then
-    echo "  ✓ $target (already linked)"
-  elif [ -d "$target" ]; then
-    echo "  ⚠ $target exists as directory — back up and replace manually"
-  else
-    ln -sf "$AGENTS_DIR/skills" "$target"
-    echo "  ✓ $target → $AGENTS_DIR/skills"
-  fi
+  mkdir -p "$target"
+  for skill in "$AGENTS_DIR"/custom-skills/*/; do
+    name="$(basename "$skill")"
+    link="$target/$name"
+    if [ -e "$link" ] && [ ! -L "$link" ]; then
+      echo "  ⚠ $provider/skills/$name is a real directory — not overwriting"
+      continue
+    fi
+    ln -sfn "$AGENTS_DIR/custom-skills/$name" "$link"
+  done
+  echo "  ✓ $target ← custom-skills/ ($(ls -1 "$AGENTS_DIR"/custom-skills | wc -l | tr -d ' ') skills)"
 done
 
 # Rules are distributed per-file by build.sh (below), NOT symlinked as a whole

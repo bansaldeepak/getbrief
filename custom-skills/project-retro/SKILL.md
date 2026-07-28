@@ -99,8 +99,9 @@ Flush feature-specific context to the permanent `context.md` file (see CLAUDE.md
 Run the token usage extraction script to capture cost data for this story:
 
 ```bash
-# Determine the project's Claude config directory
-# e.g., ~/.claude/projects/-Users-db-Work-Arcitae-astro-astro-app
+# Determine the project's Claude config directory.
+# Claude encodes the project's absolute path with '/' replaced by '-',
+# e.g. /home/you/dev/my-app -> ~/.claude/projects/-home-you-dev-my-app
 ~/.claude/scripts/token-usage.sh <project-claude-dir> --after <story-start-date>
 ```
 

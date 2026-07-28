@@ -13,14 +13,16 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   ├── claude.md       # Claude-specific additions → ~/.claude/CLAUDE.md
 │   ├── codex.md        # Codex-specific additions → ~/.codex/AGENTS.md
 │   └── gemini.md       # Gemini-specific additions → ~/.gemini/GEMINI.md
-├── skills/             # Shared skills (symlinked into each provider)
-│   ├── gstack*/        # gstack plugin skills (39 skills)
+├── custom-skills/      # Skills we wrote — the publishable set (19)
 │   ├── coding-standards/
 │   ├── db-safety/
 │   ├── first-principles/
-│   └── ...             # ~78 total skills
+│   └── ...
+├── skills/             # Third-party skills, owned by the `skills` CLI
+│   ├── gstack/         # via garrytan/gstack
+│   ├── stitch-*/       # via google-labs-code/stitch-skills
+│   └── ...             # provenance tracked in .skill-lock.json
 └── rules/              # Auto-apply rules (glob-matched)
-    ├── clerk-user-resolution.md
     └── codegraph.md
 ```
 
@@ -42,13 +44,20 @@ Each provider gets identical workflow rules + its own tool mappings and memory c
 
 ### Skills Distribution
 
-Skills live in `~/.agents/skills/`. Each provider symlinks to them:
+Our own skills live in `~/.agents/custom-skills/`; third-party skills stay in
+`~/.agents/skills/` under the `skills` CLI and its `.skill-lock.json`.
 
-| Provider | Symlink |
-|----------|---------|
-| Claude Code | `~/.claude/skills/ → ~/.agents/skills/` |
-| Codex | `~/.codex/skills/ → ~/.agents/skills/` |
-| Gemini | Native `~/.agents/skills/` support |
+`setup.sh` links **one symlink per skill**, never the whole directory — a
+directory symlink would bury each host's own entries (for example
+`~/.codex/skills/codex-primary-runtime`). Links point at the real directory, so
+editing a skill takes effect immediately with no re-install step.
+
+| Provider | Link |
+|----------|------|
+| Claude Code | `~/.claude/skills/<skill> → ~/.agents/custom-skills/<skill>` |
+| Codex | `~/.codex/skills/<skill> → ~/.agents/custom-skills/<skill>` |
+
+Third-party skills are linked in selectively, by hand.
 
 ### Rules Distribution
 
@@ -67,14 +76,8 @@ Rules in `~/.agents/rules/` auto-apply based on `globs` frontmatter:
 # Clone or init
 git init ~/.agents
 
-# Create provider symlinks
-ln -sf ~/.agents/skills ~/.claude/skills
-ln -sf ~/.agents/skills ~/.codex/skills
-ln -sf ~/.agents/rules ~/.claude/rules
-ln -sf ~/.agents/rules ~/.codex/rules
-
-# Build provider configs
-~/.agents/build.sh
+# Link skills + rules and build provider configs, then verify
+~/.agents/setup.sh
 
 # gstack (optional) — set env vars in ~/.zshrc:
 export GSTACK_INSTALL_DIR="$HOME/.agents/skills/gstack"
@@ -94,9 +97,9 @@ vim ~/.agents/WORKFLOW.md
 ### Adding a New Skill
 
 ```bash
-# Create skill directory with SKILL.md
-mkdir ~/.agents/skills/my-skill
-cat > ~/.agents/skills/my-skill/SKILL.md << 'EOF'
+# Create skill directory with SKILL.md, then re-run setup.sh to link it
+mkdir ~/.agents/custom-skills/my-skill
+cat > ~/.agents/custom-skills/my-skill/SKILL.md << 'EOF'
 ---
 name: my-skill
 description: What it does and when to trigger
