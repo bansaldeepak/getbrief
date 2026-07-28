@@ -9,20 +9,14 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → review
     │         │          │                    │           │
     │    (recommended)   (when arch changes)  │      (auto after merge)
     │                                    qa agent
-    └── /decision-doc (anytime a non-obvious choice arises)
-    └── /pre-mortem (auto for high-risk features)
+    └── /decision-doc (non-obvious choice)   └── /pre-mortem (high-risk feature)
 ```
 
-🔒 = **Human approval gate** — pause and wait for explicit user approval.
+🔒 = **Human approval gate** — pause for explicit user approval.
 
-| Scenario | Workflow |
-|----------|----------|
-| **Bug fix or < 30 min task** | Skip PRD/TRD → just fix → `qa` → `/review` → merge |
-| **Feature (clear scope)** | `/prd` → `/trd` (if arch changes) → `/project-plan` → implement → `/review` → merge → `/retro` |
-| **Feature (ambiguous scope)** | `/discover` → `/prd` → `/trd` → `/project-plan` → implement → `/review` → merge → `/retro` |
-| **Architecture decision** | Auto-invoke `/decision-doc` |
-| **High-risk feature** | Auto-invoke `pre-mortem` before implementation |
-| **Ambiguous** | Ask user: "This seems like it needs discovery. Want me to run `/discover`?" |
+**Plan-review gates:** run `/gstack-plan-ceo-review` on the PRD (after `/prd`, before `/trd`) and `/gstack-plan-eng-review` on the TRD (after `/trd`, before `/project-plan`). Full path: `/discover` → `/prd` → `/gstack-plan-ceo-review` → `/trd` → `/gstack-plan-eng-review` → `/project-plan` → implement → `/review` → merge → `/retro`.
+
+**Entry point by scope:** bug / < 30 min → skip PRD/TRD, just fix → `qa` → `/review` → merge. Clear-scope feature → start at `/prd`. Ambiguous → start at `/discover` (or ask: "needs discovery — run `/discover`?"). TRD only when architecture changes.
 
 ## Story-Based Execution
 
@@ -43,14 +37,7 @@ Every project has `documentation/PROJECT-TRACKER.md`. One row per story. Updated
 
 ## Git Branch & Push Safety
 
-**Never commit directly to `main`.** Non-negotiable.
-
-**Before every commit**: Run `git branch --show-current` — verify NOT on `main`. If on `main` → STOP, create branch first.
-
-- Never push to `main` — all changes through PRs
-- Never force-push without explicit user consent in that moment
-- New branches: `git push -u origin <branch>`
-- Naming: `feature/<name>`, `fix/<name>`, `chore/<name>`, `hotfix/<name>`
+Never commit or push to `main` — all changes via PR. Check `git branch --show-current` before every commit; if on `main`, STOP and branch first. Branch names: `feature|fix|chore|hotfix/<name>`, pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
 
 ## Commit Convention
 
@@ -80,10 +67,10 @@ Every file referenced in project documentation must exist inside the repo. Never
 
 ## Safe Code Modifications
 
-- Only change what was asked — if scope ambiguous, ask first
-- Never bulk auto-fix (eslint --fix, prettier --write) on entire codebase
+- Change only what was asked — ambiguous scope → ask first
+- Never repo-wide auto-fix (`eslint --fix`, `prettier --write`)
 - Preserve over delete — comment out with `// TODO: remove after verification` if unsure
-- Propose before executing for broad blast radius changes
+- Propose before broad-blast-radius changes
 
 ## Plan Mode
 
@@ -96,19 +83,11 @@ When in planning mode, **follow the lifecycle workflow above**. Planning is stru
 
 ## Memory Checkpoints (Mandatory)
 
-All memory goes to the project repo: root `MEMORY.md` + `memory/` directory. Never to provider-specific global config.
+Memory lives in the project repo only — root `MEMORY.md` index + `memory/` files, never in provider global config. Capture at three gates; if nothing's notable, say "No new memory at this checkpoint" so a skipped gate stays visible:
 
-Memory must be captured at these gates — not optional:
-
-| Gate | When | What to capture |
-|------|------|-----------------|
-| **Post-planning** | After PRD + TRD finalized (🔒 approved) | Key decisions, scope boundaries, rejected alternatives, constraints discovered |
-| **Post-implementation** | After all tasks done, qa passes | Implementation gotchas, patterns that emerged, things that surprised you |
-| **Post-ship** | After merge/deploy/ship | What worked, what didn't, performance observations, user feedback context |
-
-**How**: Write to project `memory/` dir → update root `MEMORY.md` index.
-
-If nothing notable at a gate — explicitly state "No new memory at this checkpoint" so it's clear the gate was hit, not skipped.
+- **Post-planning** (PRD + TRD 🔒 approved) — decisions, scope boundaries, rejected alternatives, constraints
+- **Post-implementation** (tasks done, qa green) — gotchas, patterns that emerged, surprises
+- **Post-ship** (merged / deployed) — what worked, what didn't, perf, user-feedback context
 
 ## Critical Thinking
 

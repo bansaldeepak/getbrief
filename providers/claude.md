@@ -13,15 +13,6 @@ Read and follow the project-level `AGENTS.md` if it exists in the repository roo
 
 Skills in `~/.claude/skills/` (symlinked from `~/.agents/skills/`). Rules in `~/.claude/rules/` (symlinked from `~/.agents/rules/`). Both auto-apply based on description/globs.
 
-### Agents
-
-| Agent | Model | Purpose |
-|-------|-------|---------|
-| `researcher` | Haiku | Read-only codebase exploration, impact analysis |
-| `reviewer` | Sonnet | Read-only code review, standards compliance |
-| `qa` | Haiku | Run quality gates: typecheck, lint, test, build |
-| `self-improving` | Haiku | Memory curation: review, promote, extract, prune |
-
 ### Model Strategy
 
 Default: **opusplan** — Opus during plan mode, Sonnet during execution. Skills/commands with `model:` frontmatter override.
