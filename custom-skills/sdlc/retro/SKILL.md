@@ -91,21 +91,26 @@ Commit the flush separately: `docs(context): flush <feature> implementation cont
 
 ### Phase 5: Collect Token Usage
 
-Run the token usage extraction script to capture cost data for this story:
+Capture cost data for this story. Both Claude and Codex record the git branch in
+their session logs, so the branch is the accurate scope — not a date window:
 
 ```bash
-# Determine the project's Claude config directory.
-# Claude encodes the project's absolute path with '/' replaced by '-',
-# e.g. /home/you/dev/my-app -> ~/.claude/projects/-home-you-dev-my-app
-~/.claude/scripts/token-usage.sh <project-claude-dir> --after <story-start-date>
+~/.agents/scripts/token-usage.py --branch <story-branch> --project <repo-path>
 ```
 
-1. Get the story start date from `story.md` (Created field)
-2. Run the script with `--after` filter to scope to this story's timeframe
-3. Paste the output into `summary.md` under the Token Usage section
+1. Get the branch from `story.md` (Branch field)
+2. Run `--list` first to sanity-check which sessions matched, then run the totals
+3. Paste the table into `summary.md` under Token Usage
 4. Add the compact line to `PROJECT-TRACKER.md` in the story's row
 
-**Note:** If multiple stories overlapped in the same time window, usage is approximate — attribute based on branch activity from `git log`.
+**Covers both hosts.** If work was done in Codex as well as Claude, both appear —
+a Claude-only number on a story worked in both silently under-reports.
+
+**When branch isn't enough:** several stories sharing one branch, or work done off
+it. If the repo has `documentation/.sessions.jsonl` (written by the optional
+`record-session.sh` SessionStart hook), use `--sessions-file` for exact
+attribution. Falling back to `--after <date>` is approximate whenever stories
+overlap in time — say so in the summary rather than presenting it as exact.
 
 ### Phase 6: Retro Summary
 

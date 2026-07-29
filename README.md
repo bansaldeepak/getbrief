@@ -24,7 +24,9 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 ├── agents/             # Subagent definitions — one source, two formats
 │   ├── qa.md  reviewer.md  researcher.md  self-improving.md
 ├── scripts/
-│   └── gen-codex-agent.py  # agents/*.md → Codex TOML
+│   ├── gen-codex-agent.py  # agents/*.md → Codex TOML
+│   ├── token-usage.py      # per-story cost, Claude + Codex, scoped by branch
+│   └── record-session.sh   # optional SessionStart hook → .sessions.jsonl
 ├── templates/          # Copied into repos on purpose — never linked
 │   └── project-skills/ # Stack-specific skills (see its README)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
@@ -84,6 +86,25 @@ per-tool allowlist — an agent without `Write`/`Edit` becomes `sandbox_mode = "
 coarser than Claude's `tools` list. `maxTurns` and `memory` have no equivalent and are dropped. The
 generator prints every approximation it makes; `check.sh` re-generates and diffs to catch a
 hand-edited or stale TOML.
+
+### Token Accounting
+
+`scripts/token-usage.py` reports a story's real cost across **both** hosts. Claude and Codex each
+record the git branch in their session logs, so the branch is the scope — exact, retroactive, and
+needing no setup:
+
+```bash
+~/.agents/scripts/token-usage.py --branch feature/thing --project ~/Work/app
+~/.agents/scripts/token-usage.py --branch feature/thing --list   # which sessions matched
+```
+
+Date windows (`--after`) remain available but are approximate when stories overlap. For repos where
+one branch carries several stories, wire `scripts/record-session.sh` as a SessionStart hook and use
+`--sessions-file` — see the header of that script for the config snippets.
+
+Accounting differs per host and the script accounts for it: Claude reports cache-create and
+cache-read separately, both billable input; Codex reports `cached_input_tokens` as a subset of
+`input_tokens`, so its total is input + output only.
 
 ### Rules Distribution
 
