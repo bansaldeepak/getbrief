@@ -6,9 +6,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
       "skillPath": "plugins/stitch-build/skills/shadcn-ui/SKILL.md",
-      "skillFolderHash": "def8b780a6f3857ca964d1a02c144ef6f86fb21c",
+      "skillFolderHash": "0fee40b691811cc4d3a252fc399c4dee2994cd66",
       "installedAt": "2026-05-25T04:57:08.981Z",
-      "updatedAt": "2026-05-25T04:57:08.981Z"
+      "updatedAt": "2026-07-29T12:50:26.499Z"
     },
     "gstack": {
       "source": "garrytan/gstack",

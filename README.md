@@ -187,15 +187,22 @@ EOF
 
 ### Adding a Third-Party Skill
 
-Use the `skills` CLI, and install **globally to every agent** — otherwise it lands as a "project"
-skill of whatever directory you happened to run it in:
+Use the `skills` CLI — it handles linking, so don't hand-roll symlinks. Run it from `$HOME`, not
+from inside a project, or it installs as a "project" skill of whatever directory you were in:
 
 ```bash
-npx skills add <owner>/<repo> -g -a '*' -s <skill-name>
+cd ~ && npx skills add <owner>/<repo> -g -a claude-code -a codex -s <skill-name> -y
 ```
 
-`-g` = user-level, `-a '*'` = every detected agent, `-s` = one skill from a multi-skill repo. Add
-`-l` first to list what a repo offers without installing. `npx skills update -g` keeps them current.
+- `-g` = user-level. The canonical copy lands in `~/.agents/skills/`, so it stays git-tracked here.
+- **`-a` must be repeated, not comma-separated** — `-a claude-code,codex` is rejected as an invalid
+  agent even though both names are valid on their own.
+- `-s` picks one skill out of a multi-skill repo; `-l` lists them without installing.
+- `npx skills update -g` keeps them current. Re-running `add` also updates in place.
+
+The two hosts are handled differently and both are correct: Claude Code gets a **symlink** at
+`~/.claude/skills/<name>`, while Codex is marked **universal** and gets nothing — it reads
+`$HOME/.agents/skills` natively, so a `~/.codex/skills/` link would be redundant.
 
 Two things the CLI does **not** do on `remove`: it leaves the entry in `.skill-lock.json`, and it
 only unlinks agents it registered itself — a symlink you created by hand is left dangling. Check
