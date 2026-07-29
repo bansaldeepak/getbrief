@@ -37,6 +37,10 @@ Every project has `documentation/PROJECT-TRACKER.md`. One row per story. Updated
 
 ## Git Branch & Push Safety
 
+**Never commit, push, or open a PR on your own — a human approves each one, every time.** Silence is
+not approval; approval for the last commit is not approval for this one; approval to commit is not
+approval to push. What to report at each gate: `/sdlc implement`.
+
 Never commit or push to `main` — all changes via PR. Check `git branch --show-current` before every commit; if on `main`, STOP and branch first. Branch names: `feature|fix|chore|hotfix/<name>`, pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
 
 ## Commit Convention

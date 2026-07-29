@@ -28,7 +28,8 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   ├── token-usage.py      # per-story cost, Claude + Codex, scoped by branch
 │   └── record-session.sh   # optional SessionStart hook → .sessions.jsonl
 ├── templates/          # Copied into repos on purpose — never linked
-│   └── project-skills/ # Stack-specific skills (see its README)
+│   ├── project-skills/ # Stack-specific skills (see its README)
+│   └── project-docs/   # Per-repo docs (CODE-AGENT-INSTRUCTIONS)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
 │   ├── gstack/         # via garrytan/gstack
 │   ├── stitch-*/       # via google-labs-code/stitch-skills
