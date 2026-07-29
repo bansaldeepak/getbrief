@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 EXTERNAL_SKILLS = {
     "gstack", "plan-ceo-review", "plan-eng-review",
     # installed by the `skills` CLI into skills/, linked by hand
-    "microsoft-foundry", "shadcn-ui", "find-skills",
+    "shadcn-ui",
     # names a *project* skill is expected to provide, by design
     "hono-react-router-prisma", "new-module", "product-analytics",
 }
