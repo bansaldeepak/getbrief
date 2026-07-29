@@ -24,9 +24,12 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 ├── agents/             # Subagent definitions — one source, two formats
 │   ├── qa.md  reviewer.md  researcher.md  self-improving.md
 ├── scripts/
-│   ├── gen-codex-agent.py  # agents/*.md → Codex TOML
-│   ├── token-usage.py      # per-story cost, Claude + Codex, scoped by branch
-│   └── record-session.sh   # optional SessionStart hook → .sessions.jsonl
+│   ├── gen-codex-agent.py     # agents/*.md → Codex TOML
+│   ├── check-references.py    # every skill name and path must resolve
+│   ├── token-usage.py         # per-story cost, Claude + Codex, by branch
+│   ├── memory-checkpoint.sh   # UserPromptSubmit nudge (hook)
+│   ├── memory-reset-counter.sh# SessionStart counter reset (hook)
+│   └── record-session.sh      # optional SessionStart hook → .sessions.jsonl
 ├── templates/          # Copied into repos on purpose — never linked
 │   └── project-skills/ # Stack-specific skills (see its README)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
@@ -86,6 +89,33 @@ per-tool allowlist — an agent without `Write`/`Edit` becomes `sandbox_mode = "
 coarser than Claude's `tools` list. `maxTurns` and `memory` have no equivalent and are dropped. The
 generator prints every approximation it makes; `check.sh` re-generates and diffs to catch a
 hand-edited or stale TOML.
+
+### Reference Checking
+
+`check.sh` verifies that provider configs *match* the source. `scripts/check-references.py` verifies
+they *point at things that exist* — a different failure, and the one that actually bites:
+
+```
+`name` skill  /  skill `name`   → the skill must exist (externals allowlisted in the script)
+~/.agents/<path>                → the path must resolve
+[text](relative/path)           → the link target must exist
+```
+
+Fenced blocks are skipped, and paths containing `<` are treated as placeholders, so templates and
+how-to snippets don't trip it.
+
+A rename or deletion orphans every mention of the old name, and nothing else here would notice. This
+check found a live one the first time it ran.
+
+### Hooks
+
+`memory-checkpoint.sh` (UserPromptSubmit) nudges a long session to capture memory every 15 messages;
+`memory-reset-counter.sh` (SessionStart) resets the count. They are wired in `~/.claude/settings.json`
+by absolute path — **not** distributed by `build.sh`, since Claude and Codex use different hook
+formats. Codex wiring is still manual.
+
+The nudge names the target on purpose. "Save to memory" without a destination is how a session ends
+up writing to the provider config directory, which the global `CLAUDE.md` forbids.
 
 ### Token Accounting
 

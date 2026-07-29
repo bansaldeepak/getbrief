@@ -120,6 +120,18 @@ done
 
 [ "$agents_ok" -eq 1 ] && note "✓ ~/.claude/agents + ~/.codex/agents"
 
+# --- Content references -----------------------------------------------------
+# Sync checks prove the files match; this proves they point at things that
+# exist. A renamed or deleted skill orphans every mention of its old name, and
+# nothing else in this repo would notice.
+echo ""
+echo "Content references:"
+if python3 "$AGENTS_DIR/scripts/check-references.py" | sed 's/^/  /'; then
+  :
+else
+  fail=1
+fi
+
 echo ""
 if [ "$fail" -ne 0 ]; then
   echo "OUT OF SYNC — run ~/.agents/build.sh, then re-run this check."

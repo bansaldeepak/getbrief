@@ -7,7 +7,7 @@ Read and follow the project-level `AGENTS.md` if it exists in the repository roo
 
 ### Memory Location
 
-**NEVER write memory to `~/.claude/projects/*/memory/`.** Project repo `MEMORY.md` + `memory/` only. Global claude config gets a pointer only. Use `feature-context` skill for feature-specific context. Use `project-memory` skill for format.
+**NEVER write memory to `~/.claude/projects/*/memory/`.** Project repo `MEMORY.md` + `memory/` only. Global claude config gets a pointer only. Format, and where completed feature context is flushed to: the `project-memory` skill.
 
 ### Skills & Rules
 
