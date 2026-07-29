@@ -1,11 +1,11 @@
 ---
 name: product-analytics
-description: Product analytics and feature flag conventions. Default provider is PostHog. Auto-applies when working with analytics, feature flags, custom events, or user tracking. Projects may override with a local product-analytics skill for a different provider.
+description: Provider-agnostic product analytics and feature flag conventions. Auto-applies when working with analytics, feature flags, custom events, or user tracking. Provider wiring (PostHog, Amplitude, Mixpanel) lives in a project skill, not here.
 ---
 
 # Analytics Conventions
 
-Universal analytics rules. Default provider: **PostHog**. Override this skill at the project level if using a different analytics provider.
+Universal, provider-agnostic analytics rules. Whichever provider a repo uses, its wiring lives in that repo's own `product-analytics` project skill.
 
 ## General Rules (Provider-Agnostic)
 
@@ -33,40 +33,11 @@ Universal analytics rules. Default provider: **PostHog**. Override this skill at
 - **Be careful changing existing names** — this may break reporting and distort historical data.
 - Similarly, be careful about changes to existing event and property names, as this may break reporting and distort data for the project.
 
-## PostHog (Default Provider)
+## Provider Setup
 
-### Frontend Setup
-
-- SDK: `posthog-js` + framework-specific wrapper (e.g., `@posthog/react`)
-- Initialize in the app root with env vars: `VITE_POSTHOG_KEY` / `VITE_PUBLIC_POSTHOG_KEY`, `VITE_POSTHOG_HOST` / `VITE_PUBLIC_POSTHOG_HOST`
-
-### Feature Flags (PostHog)
-
-```typescript
-// Use an enum for flag names
-export enum FeatureFlag {
-  NEW_ONBOARDING = "NEW_ONBOARDING",
-  PREMIUM_FEATURES = "PREMIUM_FEATURES",
-}
-
-// Gate code on flag value
-if (posthog.isFeatureEnabled(FeatureFlag.NEW_ONBOARDING)) {
-  // feature code
-}
-```
-
-### Custom Events
-
-```typescript
-posthog.capture("event_name", {
-  property_key: value,
-});
-```
-
-### Session Recordings
-
-- Enable in PostHog dashboard, not in code
-- Respect user privacy settings
+Provider-specific setup — SDK, env vars, flag helpers, event helpers, session recording — belongs in
+a **project** skill, because it is only correct in a repo that uses that provider. Keep the rules
+above here; keep the wiring there.
 
 ## Overriding This Skill
 
@@ -74,7 +45,7 @@ If your project uses a different analytics provider (e.g., Amplitude, Mixpanel, 
 create a project skill at `<repo>/.claude/skills/product-analytics/SKILL.md` that:
 
 1. References this skill for the provider-agnostic "General Rules" — don't copy them
-2. Replaces the "PostHog" section with that provider's setup, event tracking, and flag patterns
+2. Holds that provider's setup, event tracking, and flag patterns — the wiring this skill deliberately does not carry
 
 A project skill of the same name takes precedence over this one. See
 `~/.agents/templates/project-skills/README.md` for the copy-in procedure.

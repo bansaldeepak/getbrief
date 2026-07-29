@@ -102,6 +102,21 @@ outside the task's scope. Two more that belong to this loop:
 - **`git commit --no-verify`** — unless the human asked for it and you say why in the same message
 - **Committing while a gate is open** — an unanswered gate is a no, not a timeout
 
+## What Your Repo's AGENTS.md Must Add
+
+This skill defines the gates; it cannot know what your checks mean. Each repo's `AGENTS.md` carries
+that — **as a section in `AGENTS.md`, not a separate file.** `AGENTS.md` is already loaded in every
+session, and these gates are global, so a second always-imported file is one more thing to drift.
+
+Four things a gate report cannot be honest about without them:
+
+- **The exact check commands** — what CI actually runs, which is often not what the README says
+- **What each check does and doesn't prove** — a tool that reads committed state is meaningless from
+  a dirty tree; a tool that stamps its own "verified" date is a rubber stamp. Say so, or the ✅ lies.
+- **What push triggers** — which workflows fire, and whether any of them deploy. This is the whole
+  reason gate 2 exists in that repo.
+- **Verification surfaces** — the URL and click path per area, or the file to read where there's no UI
+
 ## If a Check Fails
 
 Report the failure with its **actual output**. Do not commit, do not fix it "quickly" outside the
