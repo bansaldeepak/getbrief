@@ -1,140 +1,14 @@
 {
   "version": 3,
   "skills": {
-    "microsoft-foundry": {
-      "source": "microsoft/azure-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/microsoft/azure-skills.git",
-      "skillPath": ".github/plugins/azure-skills/skills/microsoft-foundry/SKILL.md",
-      "skillFolderHash": "a9bc641ebd8a5352673382200ad7e130baab70a1",
-      "installedAt": "2026-02-23T18:36:18.117Z",
-      "updatedAt": "2026-07-21T02:58:21.107Z"
-    },
-    "design-md": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-utilities/skills/design-md/SKILL.md",
-      "skillFolderHash": "0a84781f35accede7cf373a4129d93bfb7651930",
-      "installedAt": "2026-05-25T04:57:08.977Z",
-      "updatedAt": "2026-05-25T04:57:08.977Z"
-    },
-    "enhance-prompt": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-utilities/skills/enhance-prompt/SKILL.md",
-      "skillFolderHash": "ee608061b9209907f5f296670483884c5eb20827",
-      "installedAt": "2026-05-25T04:57:08.979Z",
-      "updatedAt": "2026-05-25T04:57:08.979Z"
-    },
-    "react:components": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-build/skills/react-components/SKILL.md",
-      "skillFolderHash": "20f3c474e2aefc24a615293b800be7b734adb72d",
-      "installedAt": "2026-05-25T04:57:08.980Z",
-      "updatedAt": "2026-05-25T04:57:08.980Z"
-    },
-    "remotion": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-build/skills/remotion/SKILL.md",
-      "skillFolderHash": "7699ad3c3e9d80f741b7e46e173f2237957517b0",
-      "installedAt": "2026-05-25T04:57:08.980Z",
-      "updatedAt": "2026-05-25T04:57:08.980Z"
-    },
     "shadcn-ui": {
       "source": "google-labs-code/stitch-skills",
       "sourceType": "github",
       "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
       "skillPath": "plugins/stitch-build/skills/shadcn-ui/SKILL.md",
-      "skillFolderHash": "def8b780a6f3857ca964d1a02c144ef6f86fb21c",
+      "skillFolderHash": "0fee40b691811cc4d3a252fc399c4dee2994cd66",
       "installedAt": "2026-05-25T04:57:08.981Z",
-      "updatedAt": "2026-05-25T04:57:08.981Z"
-    },
-    "stitch-loop": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-utilities/skills/stitch-loop/SKILL.md",
-      "skillFolderHash": "439a760b3c37eaa925fa994728f05b7618d99f8c",
-      "installedAt": "2026-05-25T04:57:08.981Z",
-      "updatedAt": "2026-05-25T04:57:08.981Z"
-    },
-    "stitch::code-to-design": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-design/skills/code-to-design/SKILL.md",
-      "skillFolderHash": "784b67091821eabdda554a5d9fd33963299e55d3",
-      "installedAt": "2026-05-25T04:57:08.982Z",
-      "updatedAt": "2026-05-25T04:57:08.982Z"
-    },
-    "stitch::extract-design-md": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-design/skills/extract-design-md/SKILL.md",
-      "skillFolderHash": "35e72eb853c63ed6a364b2ff6fce63bb508dbfac",
-      "installedAt": "2026-05-25T04:57:08.982Z",
-      "updatedAt": "2026-05-25T04:57:08.982Z"
-    },
-    "stitch::extract-static-html": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-design/skills/extract-static-html/SKILL.md",
-      "skillFolderHash": "ff0b66b19e32c485ccb4e472ec1d1df74e826a94",
-      "installedAt": "2026-05-25T04:57:08.983Z",
-      "updatedAt": "2026-05-25T04:57:08.983Z"
-    },
-    "stitch::generate-design": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-design/skills/generate-design/SKILL.md",
-      "skillFolderHash": "3662e9fef29629d44a42bc176b8e762cb20966ad",
-      "installedAt": "2026-05-25T04:57:08.984Z",
-      "updatedAt": "2026-05-25T04:57:08.984Z"
-    },
-    "stitch::manage-design-system": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-design/skills/manage-design-system/SKILL.md",
-      "skillFolderHash": "be31fe3ab771d4bbf0d99243e1ade27ca7efe07c",
-      "installedAt": "2026-05-25T04:57:08.984Z",
-      "updatedAt": "2026-05-25T04:57:08.984Z"
-    },
-    "stitch::upload-to-stitch": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-design/skills/upload-to-stitch/SKILL.md",
-      "skillFolderHash": "16f30f19e46fa075bd1f5bbe5a1af5cefc1c54fd",
-      "installedAt": "2026-05-25T04:57:08.985Z",
-      "updatedAt": "2026-05-25T04:57:08.985Z"
-    },
-    "taste-design": {
-      "source": "google-labs-code/stitch-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/google-labs-code/stitch-skills.git",
-      "skillPath": "plugins/stitch-utilities/skills/taste-design/SKILL.md",
-      "skillFolderHash": "9b0d4827e32e8688348fa131a4aedcb9ac34ff0d",
-      "installedAt": "2026-05-25T04:57:08.986Z",
-      "updatedAt": "2026-05-25T04:57:08.986Z"
-    },
-    "find-skills": {
-      "source": "vercel-labs/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/skills.git",
-      "skillPath": "skills/find-skills/SKILL.md",
-      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
-      "installedAt": "2026-05-25T04:57:27.782Z",
-      "updatedAt": "2026-05-25T04:57:27.782Z"
+      "updatedAt": "2026-07-29T12:50:26.499Z"
     },
     "gstack": {
       "source": "garrytan/gstack",

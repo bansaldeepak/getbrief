@@ -33,9 +33,9 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 ├── templates/          # Copied into repos on purpose — never linked
 │   └── project-skills/ # Stack-specific skills (see its README)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
-│   ├── gstack/         # via garrytan/gstack
-│   ├── stitch-*/       # via google-labs-code/stitch-skills
-│   └── ...             # provenance tracked in .skill-lock.json
+│   ├── gstack/         # via garrytan/gstack — routed, in use
+│   └── shadcn-ui/      # via google-labs-code/stitch-skills
+│                       # provenance tracked in .skill-lock.json
 └── rules/              # Auto-apply rules (glob-matched)
     └── codegraph.md
 ```
@@ -184,6 +184,33 @@ description: What it does and when to trigger
 Skill content here.
 EOF
 ```
+
+### Adding a Third-Party Skill
+
+Use the `skills` CLI — it handles linking, so don't hand-roll symlinks. Run it from `$HOME`, not
+from inside a project, or it installs as a "project" skill of whatever directory you were in:
+
+```bash
+cd ~ && npx skills add <owner>/<repo> -g -a claude-code -a codex -s <skill-name> -y
+```
+
+- `-g` = user-level. The canonical copy lands in `~/.agents/skills/`, so it stays git-tracked here.
+- **`-a` must be repeated, not comma-separated** — `-a claude-code,codex` is rejected as an invalid
+  agent even though both names are valid on their own.
+- `-s` picks one skill out of a multi-skill repo; `-l` lists them without installing.
+- `npx skills update -g` keeps them current. Re-running `add` also updates in place.
+
+The two hosts are handled differently and both are correct: Claude Code gets a **symlink** at
+`~/.claude/skills/<name>`, while Codex is marked **universal** and gets nothing — it reads
+`$HOME/.agents/skills` natively, so a `~/.codex/skills/` link would be redundant.
+
+Two things the CLI does **not** do on `remove`: it leaves the entry in `.skill-lock.json`, and it
+only unlinks agents it registered itself — a symlink you created by hand is left dangling. Check
+both after removing.
+
+**Before installing, ask what the skill needs.** Most third-party skills are wrappers around an MCP
+server or a CLI; without that dependency they cannot function, but their description still occupies
+a slot in every session's skill listing. 14 skills were removed in one pass for exactly this reason.
 
 ### Adding a New Rule
 
