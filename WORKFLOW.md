@@ -5,18 +5,18 @@ Universal rules for every project on this machine.
 ## Full Lifecycle Workflow
 
 ```
-discover → prd (🔒) → trd (🔒) → project-plan → implement → review (🔒) → merge (🔒) → retro
-    │         │          │                    │           │
-    │    (recommended)   (when arch changes)  │      (auto after merge)
-    │                                    qa agent
-    └── /decision-doc (non-obvious choice)   └── /pre-mortem (high-risk feature)
+discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-review (🔒) → merge (🔒) → retro
+                                                   │
+                                            qa agent per task
 ```
 
 🔒 = **Human approval gate** — pause for explicit user approval.
 
-**Plan-review gates:** run `/gstack-plan-ceo-review` on the PRD (after `/prd`, before `/trd`) and `/gstack-plan-eng-review` on the TRD (after `/trd`, before `/project-plan`). Full path: `/discover` → `/prd` → `/gstack-plan-ceo-review` → `/trd` → `/gstack-plan-eng-review` → `/project-plan` → implement → `/pr-review` → merge → `/retro`.
+**All phases run through the `sdlc` router**: `/sdlc <phase>`. The router owns the full graph —
+entry points by scope, the gstack plan-review gates, and what follows each phase. Don't restate it
+here or in a phase file; read it.
 
-**Entry point by scope:** bug / < 30 min → skip PRD/TRD, just fix → `qa` → `/pr-review` → merge. Clear-scope feature → start at `/prd`. Ambiguous → start at `/discover` (or ask: "needs discovery — run `/discover`?"). TRD only when architecture changes.
+Off-graph: `/sdlc decision-doc` for any non-obvious choice, `/pre-mortem` before high-risk work.
 
 ## Story-Based Execution
 
@@ -27,8 +27,8 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → review
 - **Story-first rule**: `story.md`, `tasks/index.md`, `tasks/T-NNN.md`, `summary.md` must exist BEFORE implementation
 - **After each task**: `qa` agent → commit → update `tasks/index.md` + `summary.md` → commit story updates separately
 - **Legacy compat**: If story has `tasks.md` (single file), continue that format. New stories use `tasks/`.
-- **Before PR**: `/pr-review` → wait for human approval
-- **After merge**: `/retro` → `self-improving` agent
+- **Before PR**: `/sdlc pr-review` → wait for human approval
+- **After merge**: `/sdlc retro` → `self-improving` agent
 - **Story completion**: All tasks done, `summary.md` finalized, status `completed`, tracker updated
 
 ## Project Tracker
@@ -36,6 +36,10 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → review
 Every project has `documentation/PROJECT-TRACKER.md`. One row per story. Updated on start/completion.
 
 ## Git Branch & Push Safety
+
+**Never commit, push, or open a PR on your own — a human approves each one, every time.** Silence is
+not approval; approval for the last commit is not approval for this one; approval to commit is not
+approval to push. What to report at each gate: `/sdlc implement`.
 
 Never commit or push to `main` — all changes via PR. Check `git branch --show-current` before every commit; if on `main`, STOP and branch first. Branch names: `feature|fix|chore|hotfix/<name>`, pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
 

@@ -1,15 +1,15 @@
 ---
 name: pr-review
-description: "/pr-review -- Code review before PR/merge. Structured review covering correctness, security, performance, tests, and docs. Human approval gate before merge."
+description: "Code review before PR/merge. Structured review covering correctness, security, performance, tests, and docs. Human approval gate before merge."
 user_invocable: true
 model: opus
 ---
 
-# /pr-review -- Code Review
+# /sdlc pr-review -- Code Review
 
 Structured code review that runs before creating a PR or merging. Catches issues across correctness, security, performance, and standards compliance.
 
-**Usage**: `/pr-review` (reviews current branch changes) or `/pr-review <branch-name>`
+**Usage**: `/sdlc pr-review` (reviews current branch changes) or `/sdlc pr-review <branch-name>`
 
 **Source**: Adapted from NeoLabHQ subagent-driven-development review pattern.
 

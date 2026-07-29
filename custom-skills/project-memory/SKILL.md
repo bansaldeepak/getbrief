@@ -1,85 +1,123 @@
 ---
 name: project-memory
-description: Version-controlled project memory. Auto-applies on any project. Moves memory from Claude's ephemeral project config into the repo itself so it persists across sessions, is git-tracked, and visible to collaborators.
+description: Version-controlled project memory format. Auto-applies on any project, and whenever something needs to be remembered, recalled, or written down for a future session. Defines where memory lives (repo MEMORY.md + memory/), the file format, temporal validity, importance scoring, and the feature context.md files that completed work is flushed into.
 ---
 
 # Project Memory — Version-Controlled
 
-Every project should have its memory **in the repo, not in Claude's config directory.** This makes memory git-tracked, diff-able, portable, and visible.
+Every project keeps its memory **in the repo, not in a provider's config directory**. That makes it
+git-tracked, diff-able, portable between agents, and visible to collaborators.
 
-## Setup
+This skill defines the **format**. The curation procedure — reviewing, promoting, pruning — belongs to
+`/memory-review` and the `self-improving` agent.
 
-When entering a project for the first time (or a project without this pattern), set up:
+## The Three Files
 
-### 1. Project Root: `MEMORY.md`
+| File | Role | Lifespan |
+|------|------|----------|
+| `MEMORY.md` (repo root) | Index + **active** context only | Continuously flushed |
+| `memory/*.md` | One durable fact per file | Until stale or promoted |
+| `documentation/**/context.md` | Per-feature implementation context | Permanent |
 
-The main memory index at the project root. Contains:
-- Project overview (what, who, purpose)
-- Key facts about the project and people involved
-- Links to individual memory files in `memory/`
-- Active feedback, rules, and references
-- Working relationship notes (if applicable)
+**`MEMORY.md` is a scratch pad, not an archive.** Keep it under **~40 lines**. When it grows past that,
+the excess is either a durable fact (→ `memory/`), finished feature context (→ `context.md`), or noise
+(→ delete). A long MEMORY.md is a symptom of a skipped flush, never of a rich project.
 
-**This is the file Claude loads on every session.** Keep it under 200 lines — it's a map, not a dump.
+## 1. `MEMORY.md` — the index
 
-### 2. Memory Directory: `memory/`
+Holds only: a one-line project orientation, pointers to `memory/` files, and context for the
+**currently active** feature. Nothing about completed work.
 
-Individual memory files, one per topic. Naming convention:
+## 2. `memory/` — durable facts
+
+One fact per file, named `<type>_<topic>.md`:
 
 ```
 memory/
-  feedback_<topic>.md        # User corrections and confirmed approaches
-  project_<topic>.md         # Ongoing work, initiatives, strategy context
-  reference_<topic>.md       # Pointers to external resources
-  user_<topic>.md            # User profile, preferences, working style
+  feedback_<topic>.md    # user corrections and confirmed approaches
+  project_<topic>.md     # ongoing work, initiatives, constraints
+  reference_<topic>.md   # pointers to external resources
+  user_<topic>.md        # profile, preferences, working style
 ```
-
-Each file has frontmatter:
 
 ```markdown
 ---
 name: <memory name>
-description: <one-line description>
+description: <one line — this is what recall matches on>
 type: feedback | project | reference | user
 created: <date>
 updated: <date>
-valid_until: <date or "permanent"> # When this memory expires or needs review
-importance: <1-5>                  # 5 = critical decision, 1 = nice-to-know
+valid_until: <date or "permanent">
+importance: <1-5>
 ---
 
-<content>
+<content — for feedback and project, follow with **Why:** and **How to apply:** lines>
 ```
 
-### Temporal Validity
+Convert relative dates to absolute when writing. Link related memories inline with `[[name]]`.
 
-Memories decay. Use `valid_until` to flag when a memory needs review:
+### Temporal validity
 
-| Type | Default validity | Examples |
-|------|-----------------|----------|
-| **feedback** | permanent | User corrections don't expire |
-| **project** | 30-90 days | Sprint goals, active initiatives |
-| **reference** | 6 months | External URLs may move or change |
+| Type | Default validity | Rationale |
+|------|-----------------|-----------|
+| **feedback** | permanent | Corrections don't expire |
+| **project** | 30–90 days | Sprint goals and active initiatives go stale |
+| **reference** | 6 months | External URLs move |
 | **user** | permanent | Role and preferences are durable |
 
-During `/memory-review`, expired memories (past `valid_until`) get flagged for re-validation or pruning.
-
-### Importance Scoring
-
-Used by the self-improving agent to prioritize what stays and what gets pruned:
+### Importance
 
 | Score | Meaning | Example |
 |-------|---------|---------|
-| **5** | Critical decision — wrong action causes damage | "Never drop tables in prod" |
-| **4** | Key context — significantly changes approach | "User prefers bundled PRs for refactors" |
-| **3** | Useful pattern — saves time if remembered | "Board ID for GitHub Projects: ..." |
-| **2** | Minor preference — nice but not critical | "User likes terse responses" |
-| **1** | Ephemeral — likely only useful short-term | "Currently debugging auth flow" |
+| **5** | Wrong action causes damage | "Never drop tables in prod" |
+| **4** | Significantly changes approach | "Prefers bundled PRs for refactors" |
+| **3** | Saves time if remembered | "Board ID for the GitHub project" |
+| **2** | Minor preference | "Likes terse responses" |
+| **1** | Ephemeral | "Currently debugging auth flow" |
 
-During pruning, importance 1-2 memories past their `valid_until` are auto-candidates for removal. Importance 4-5 memories are always re-validated before removal.
+Expired + importance 1–2 are automatic prune candidates. Importance 4–5 are always re-validated
+before removal, never dropped silently.
 
-### 3. Provider Config: Pointer Only
+## 3. `context.md` — feature implementation context
 
-Provider-level memory files (e.g., `~/.claude/projects/<project>/memory/MEMORY.md`) should contain ONLY a pointer:
+Where finished feature knowledge lands when it leaves `MEMORY.md`.
+
+| Feature has… | Location |
+|--------------|----------|
+| An architecture folder | `documentation/architecture/<feature>/context.md` |
+| Only story folders | `documentation/stories/<feature>/context.md` |
+
+**Belongs here:** implementation decisions not captured in a TRD or decision doc, gotchas (auth
+quirks, DB edge cases, API surprises), patterns that emerged during the work, and scope cuts with
+their rationale.
+
+**Does not belong:** architecture design, API contracts, schema definitions, task tracking, or
+decision trade-offs — all of those have their own homes.
+
+```markdown
+# <Feature> — Implementation Context
+
+## Key Decisions
+- **[Decision]**: [Why — one sentence, and what the alternative was]
+
+## Non-obvious Patterns
+- **[Pattern]**: [When it applies, code reference if helpful]
+
+## Gotchas
+- **[Gotcha]**: [What trips people up, how to avoid it]
+
+## What We'd Do Differently
+- [item]
+```
+
+**Flush at three moments:** during `/retro` (the feature just shipped), during `/memory-review`
+(feature is inactive), and at the start of `/project-plan` (check the previous feature left nothing
+behind). Commit separately: `docs(context): flush <feature> implementation context`.
+
+## Provider Config: Pointer Only
+
+Provider memory directories (`~/.claude/projects/<project>/memory/`, and equivalents) get a pointer
+and nothing else:
 
 ```markdown
 # Memory Pointer
@@ -87,38 +125,32 @@ Provider-level memory files (e.g., `~/.claude/projects/<project>/memory/MEMORY.m
 All memory for this project lives in the repo — version-controlled and committed.
 
 - **Index:** `MEMORY.md` at project root
-- **Individual memories:** `memory/` directory in the project repo
+- **Individual memories:** `memory/` in the project repo
 
-Read those files for full context. Do not duplicate memory content here.
+Read those for full context. Do not duplicate memory content here.
 ```
+
+If a host agent writes its own memory files there anyway, treat them as a **cache, not a source** —
+the repo is authoritative. Fold anything valuable back into `memory/` and leave the pointer in place.
 
 ## Migration for Existing Projects
 
-When entering a project that has memory in a provider config but NOT in the repo:
+When a project has memory in a provider config but not in the repo:
 
-1. Read the existing memory from the provider's project memory location
-2. Create `MEMORY.md` at the project root with the content
-3. Split individual memories into `memory/<type>_<topic>.md` files
-4. Replace provider config memory with the pointer (as above)
-5. Commit the new files: `chore: migrate project memory to version control`
+1. Read everything from the provider location first
+2. Create `MEMORY.md` at the project root
+3. Split durable facts into `memory/<type>_<topic>.md`
+4. Replace the provider content with the pointer above
+5. Commit: `chore: migrate project memory to version control`
 
-**Never lose context during migration.** Read everything first, write the new structure, then replace the pointer.
+**Read everything before writing anything** — never lose context to a migration.
 
 ## Rules
 
-1. **All memory writes go to the repo**, not to Claude's config directory
-2. **Commit memory changes** alongside related work or as a separate `chore:` commit
-3. **MEMORY.md is the index** — individual memories are files it links to. Don't dump everything into MEMORY.md.
-4. **Keep MEMORY.md under 200 lines** — if it's growing, split content into individual files
-5. **Update timestamps** — when modifying a memory file, update the `updated:` frontmatter field
-6. **Prune actively** — remove memories that are no longer relevant. Stale memory is worse than no memory.
-7. **Don't duplicate what's in code** — if it's in AGENTS.md, git history, or docs, don't also put it in memory
-
-## When This Skill Applies
-
-Auto-apply when:
-- Entering any project for the first time
-- The user asks to remember something
-- The user asks about prior context or previous sessions
-- Memory needs to be created, updated, or reviewed
-- Starting a `/memory-review` or `/retro`
+- All memory writes go to the repo, never to a provider's config directory
+- `MEMORY.md` stays under ~40 lines — it's a map of active work, not a dump
+- One fact per `memory/` file; `MEMORY.md` links, it does not contain
+- Update `updated:` whenever a memory file changes
+- Don't record what the repo already says — code structure, git history, AGENTS.md, existing docs
+- Stale memory is worse than no memory: prune actively, explain every deletion
+- Commit memory changes alongside the work, or as a separate `chore:` commit

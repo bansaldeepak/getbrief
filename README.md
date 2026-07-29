@@ -13,11 +13,22 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   ├── claude.md       # Claude-specific additions → ~/.claude/CLAUDE.md
 │   ├── codex.md        # Codex-specific additions → ~/.codex/AGENTS.md
 │   └── gemini.md       # Gemini-specific additions → ~/.gemini/GEMINI.md
-├── custom-skills/      # Skills we wrote — the publishable set (19)
-│   ├── coding-standards/
-│   ├── db-safety/
-│   ├── first-principles/
-│   └── ...
+├── custom-skills/      # Skills we wrote — the publishable set (12)
+│   ├── coding-standards/    # universal — file size, reuse, testing, types
+│   ├── backend-standards/   # layer contracts, API design, persistence
+│   ├── frontend-standards/  # component ladder, composition, data boundaries
+│   ├── sdlc/                # router — owns the lifecycle graph
+│   │   ├── prd/  trd/  discover/  project-plan/
+│   │   └── pr-review/  retro/  decision-doc/  memory-review/
+│   └── ...                  # db-safety, project-memory, documentation-standards, …
+├── agents/             # Subagent definitions — one source, two formats
+│   ├── qa.md  reviewer.md  researcher.md  self-improving.md
+├── scripts/
+│   ├── gen-codex-agent.py  # agents/*.md → Codex TOML
+│   ├── token-usage.py      # per-story cost, Claude + Codex, scoped by branch
+│   └── record-session.sh   # optional SessionStart hook → .sessions.jsonl
+├── templates/          # Copied into repos on purpose — never linked
+│   └── project-skills/ # Stack-specific skills (see its README)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
 │   ├── gstack/         # via garrytan/gstack
 │   ├── stitch-*/       # via google-labs-code/stitch-skills
@@ -58,6 +69,42 @@ editing a skill takes effect immediately with no re-install step.
 | Codex | `~/.codex/skills/<skill> → ~/.agents/custom-skills/<skill>` |
 
 Third-party skills are linked in selectively, by hand.
+
+### Agents Distribution
+
+One definition in `agents/<name>.md`, two outputs:
+
+| Provider | Output | How |
+|----------|--------|-----|
+| Claude Code | `~/.claude/agents/<name>.md` | Symlink — edits are live |
+| Codex | `~/.codex/agents/<name>.toml` | **Generated** by `build.sh` — never hand-edit |
+| Gemini | — | No subagent concept |
+
+The formats aren't isomorphic. `model` maps through an alias table (`haiku` →
+`gpt-5.6-terra`/`low`, `sonnet` → `gpt-5.6`/`medium`, `opus` → `gpt-5.6`/`high`), and Codex has no
+per-tool allowlist — an agent without `Write`/`Edit` becomes `sandbox_mode = "read-only"`, which is
+coarser than Claude's `tools` list. `maxTurns` and `memory` have no equivalent and are dropped. The
+generator prints every approximation it makes; `check.sh` re-generates and diffs to catch a
+hand-edited or stale TOML.
+
+### Token Accounting
+
+`scripts/token-usage.py` reports a story's real cost across **both** hosts. Claude and Codex each
+record the git branch in their session logs, so the branch is the scope — exact, retroactive, and
+needing no setup:
+
+```bash
+~/.agents/scripts/token-usage.py --branch feature/thing --project ~/Work/app
+~/.agents/scripts/token-usage.py --branch feature/thing --list   # which sessions matched
+```
+
+Date windows (`--after`) remain available but are approximate when stories overlap. For repos where
+one branch carries several stories, wire `scripts/record-session.sh` as a SessionStart hook and use
+`--sessions-file` — see the header of that script for the config snippets.
+
+Accounting differs per host and the script accounts for it: Claude reports cache-create and
+cache-read separately, both billable input; Codex reports `cached_input_tokens` as a subset of
+`input_tokens`, so its total is input + output only.
 
 ### Rules Distribution
 

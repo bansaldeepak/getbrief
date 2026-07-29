@@ -1,15 +1,15 @@
 ---
 name: discover
-description: "/discover -- Structured problem discovery and validation. Runs BEFORE /prd to ensure we're solving the right problem. Brainstorm → Assumptions → Experiments → Discovery Plan."
+description: "Structured problem discovery and validation. Runs BEFORE /sdlc prd to ensure we're solving the right problem. Brainstorm → Assumptions → Experiments → Discovery Plan."
 user_invocable: true
 model: opus
 ---
 
-# /discover -- Problem Discovery Skill
+# /sdlc discover -- Problem Discovery Skill
 
 Structured problem validation before writing requirements. Ensures we understand the problem space deeply before committing to a solution direction.
 
-**Usage**: `/discover <problem area, feature idea, or user pain point>`
+**Usage**: `/sdlc discover <problem area, feature idea, or user pain point>`
 
 **Source**: Adapted from phuryn/pm-skills discovery workflow (Teresa Torres' Opportunity Solution Tree).
 
@@ -18,7 +18,7 @@ Structured problem validation before writing requirements. Ensures we understand
 - User describes a vague feature idea without clear problem definition
 - Scope is ambiguous and multiple interpretations exist
 - The request could affect multiple user segments differently
-- Ask user: "This seems like it needs discovery first. Want me to run `/discover`?"
+- Ask user: "This seems like it needs discovery first. Want me to run `/sdlc discover`?"
 
 ## Instructions
 
@@ -102,12 +102,12 @@ Compile into a structured output:
 <Things we can't answer without research or user input>
 
 ### Next Step
-- If assumptions need validation: "Run experiments, then `/prd <focused-scope>`"
-- If problem is clear enough: "Ready for `/prd <specific-feature>`"
-- If trivial: "This is small enough to skip to `/project-plan`"
+- If assumptions need validation: "Run experiments, then `/sdlc prd <focused-scope>`"
+- If problem is clear enough: "Ready for `/sdlc prd <specific-feature>`"
+- If trivial: "This is small enough to skip to `/sdlc project-plan`"
 ```
 
-**Wait for user input before proceeding to /prd.**
+**Wait for user input before proceeding to /sdlc prd.**
 
 ## Rules
 
@@ -116,6 +116,6 @@ Compile into a structured output:
 - At least 2 experiments per high-risk assumption
 - Use Mermaid diagrams for any flow or relationship
 - Challenge the premise: "Do we even need to solve this?" is valid
-- If the problem is trivial (< 30 min), say so and redirect to `/project-plan`
+- If the problem is trivial (< 30 min), say so and redirect to `/sdlc project-plan`
 - Keep output under 400 lines
 - Invoke the `researcher` agent for deep codebase/data exploration if needed

@@ -1,15 +1,15 @@
 ---
 name: project-plan
-description: "/project-plan -- Story-Based Planning Skill. Interactive planning for breaking features into tracked stories and tasks."
+description: "Story-Based Planning Skill. Interactive planning for breaking features into tracked stories and tasks."
 user_invocable: true
 model: opus
 ---
 
-# /project-plan -- Story-Based Planning Skill
+# /sdlc project-plan -- Story-Based Planning Skill
 
 Interactive planning skill for breaking features into tracked stories and tasks.
 
-**Usage**: `/project-plan <feature description>`
+**Usage**: `/sdlc project-plan <feature description>`
 
 ## Instructions
 
@@ -23,8 +23,8 @@ Before planning, check `documentation/stories/<feature-name>/`:
 
 1. **PRD.md**:
    - If it exists and is approved (🔒) → reference it as the source of truth for scope
-   - If it exists but is not approved → stop and redirect: "PRD needs approval first. Run `/prd` to finalize."
-   - If it doesn't exist → create it. For non-trivial features, run the full `/prd` flow. For trivial work (bug fixes, config changes), create a minimal PRD with skip justification:
+   - If it exists but is not approved → stop and redirect: "PRD needs approval first. Run `/sdlc prd` to finalize."
+   - If it doesn't exist → create it. For non-trivial features, run the full `/sdlc prd` flow. For trivial work (bug fixes, config changes), create a minimal PRD with skip justification:
 
    ```markdown
    # PRD: <Feature Name>
@@ -38,7 +38,7 @@ Before planning, check `documentation/stories/<feature-name>/`:
 
 2. **TRD.md**:
    - If it exists → reference it for architecture decisions and implementation order
-   - If it doesn't exist → create it. For arch changes, run the full `/trd` flow. For work with no arch impact, create a minimal TRD with skip justification:
+   - If it doesn't exist → create it. For arch changes, run the full `/sdlc trd` flow. For work with no arch impact, create a minimal TRD with skip justification:
 
    ```markdown
    # TRD: <Feature Name>
