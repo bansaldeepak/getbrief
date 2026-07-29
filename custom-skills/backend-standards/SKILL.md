@@ -5,7 +5,7 @@ description: Framework-agnostic backend architecture standards. Auto-applies whe
 
 # Backend Standards
 
-Architecture rules for server code in any language or framework. File-size limits, reuse, error handling, logging, and type safety come from `coding-standards`; destructive database operations and migration safety come from `db-safety`. This skill covers only what is specific to building services and APIs.
+Architecture rules for server code in any language or framework. File-size limits, reuse, error handling, logging, and type safety come from `coding-standards`; destructive database operations and migration safety come from `db-safety`; instrumentation — error reporting, tracing, correlation IDs, analytics emission — comes from `observability`. This skill covers only what is specific to building services and APIs.
 
 ## 1. Layer Contracts
 

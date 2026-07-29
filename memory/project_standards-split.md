@@ -34,7 +34,19 @@ backend stayed modular and frontend files ballooned.
   to push. Promoted from one project's `CODE-AGENT-INSTRUCTIONS.md`, which turned out to be the
   `implement` phase — the only box in the lifecycle graph with no skill behind it.
 
-**Deliberately not done:** `observability.md` in taiboli-app (525 lines) should become a chaptered
-project skill rather than a path-scoped rule; it is its own story.
+**`observability` is one skill, not two** (added 2026-07-29). The backend/frontend split was earned
+by non-overlap — layer contracts and component ladders share nothing. Observability is not like
+that: the signal model, the abstraction rule, and context propagation are identical on both sides,
+and only transport and the privacy surface differ. Those are two headings, not two descriptions in
+every session's listing. **Split a standards skill only when the halves share nothing, never by
+topic.**
 
-Related: [[cross-reference-drift]], [[agent-config-loading]].
+Its §9 ("catalogs are documentation, not instruction") is the generalised cause of the 525-line
+file: event tables and per-feature signal inventories change every story, so kept in an
+always-loaded rule they guarantee staleness and charge context on every unrelated task.
+
+**Still open:** taiboli-app's `observability.md` (525 lines) → small path-rule + project skill +
+reference docs. Audited 2026-07-29 and it is worse than long — it teaches `reportError()` from a
+file DEC-002 deleted, and Cloudflare Workers reasoning DEC-001 killed.
+
+Related: [[cross-reference-drift]], [[agent-config-loading]], [[skills-cli-local-sources]].

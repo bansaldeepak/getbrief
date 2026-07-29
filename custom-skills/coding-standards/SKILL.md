@@ -163,6 +163,8 @@ Follow the project's existing convention above all else. Naming should reveal in
 - **No sensitive data in logs** — never log tokens, secrets, passwords, PII
 - **Console is OK in tests** — this rule applies to application code only
 
+Wiring a logger, error reporter, tracer, or analytics SDK — and what redaction, correlation, and flushing they require — is the `observability` skill.
+
 ## 11. Dependency & Package Versions
 
 **Always use pinned versions from the project's package manifest.** Never suggest or install newer versions unless the user asks or a security patch requires it.

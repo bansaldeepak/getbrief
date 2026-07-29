@@ -7,6 +7,8 @@ description: Provider-agnostic product analytics and feature flag conventions. A
 
 Universal, provider-agnostic analytics rules. Whichever provider a repo uses, its wiring lives in that repo's own `product-analytics` project skill.
 
+Naming, flags, and custom properties are this skill. *Emitting* an event — which signal it belongs to, the abstraction it goes through, per-request lifecycle, and flushing before the runtime exits — is `observability`.
+
 ## General Rules (Provider-Agnostic)
 
 ### API Keys & Secrets
