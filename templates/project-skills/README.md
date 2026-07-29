@@ -30,6 +30,7 @@ with the repo so every agent and teammate working there gets the same convention
 | `coding-standards` — universal | The framework and its routing idiom |
 | `backend-standards` — layer contracts, API design | The ORM and generated-type conventions |
 | `frontend-standards` — component ladder, composition | The design system and its tokens |
+| `observability` — signals, redaction, flush semantics | Which vendors, their env vars, sample rates |
 | `db-safety`, `documentation-standards` | Test runner config, mock factories |
 | | Build tooling, deploy target, background jobs |
 

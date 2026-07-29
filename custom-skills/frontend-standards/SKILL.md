@@ -5,7 +5,7 @@ description: Framework-agnostic frontend architecture standards. Auto-applies wh
 
 # Frontend Standards
 
-Architecture rules for UI code in any framework. Examples are React, but the rules hold for Vue, Svelte, and Solid. File-size limits, reuse, naming, and type safety come from `coding-standards` — this skill covers only what is specific to building interfaces.
+Architecture rules for UI code in any framework. Examples are React, but the rules hold for Vue, Svelte, and Solid. File-size limits, reuse, naming, and type safety come from `coding-standards`; error boundaries, session-replay masking, and client instrumentation come from `observability` — this skill covers only what is specific to building interfaces.
 
 **The rule that matters most:** a UI file grows without limit unless something tells it where to stop. That something is the ownership ladder below, not willpower.
 
