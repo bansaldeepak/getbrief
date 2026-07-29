@@ -193,6 +193,15 @@ List of files the executing agent should read before starting (gives them the co
 4. Are code snippets complete enough to implement from (not just "follow the pattern")?
 5. Is the verification step a concrete command, not a vague instruction?
 6. If this task depends on a prior task's output, is that output described (not assumed)?
+7. **Does this task claim anything about another story?** "Unblocks S-NNN", "S-NNN depends on
+   this", or any quote of another story's acceptance criteria — open that story's `tasks/` and
+   confirm it, then name the specific task (`S-NNN-T3`), never the story alone. Reviewers read what
+   a task *does*; almost nobody re-reads what it *claims about someone else's plan*, so these
+   survive review and then send someone to "fix" work that was already correct.
+8. **Does this task assert something is untested, missing or unhandled?** Grep before writing it.
+   "An untested N-line move" and "no coverage exists for X" are claims about the repo, and they are
+   the ones most often wrong. A task can be worth doing for a reason other than the one you gave —
+   but then the stated reason is fiction, and a reviewer may cut the task on it.
 
 What makes a good "How" section:
 - **File paths** -- Exact paths for files to create or modify
@@ -218,7 +227,9 @@ What makes a good "How" section:
 <Non-obvious choices and why>
 
 ## Testing
-<How to verify the feature works>
+<Automated coverage the story adds or relies on. Leave the manual-verification line as
+`<TBD at implementation>` — planning cannot know whether a browser check is needed, and pre-filling
+"no manual verification needed" on a story that touches a live path is how that check gets skipped.>
 
 ## Token Usage
 <Filled at retro — run token-usage script with project dir and story start date>
@@ -276,4 +287,9 @@ Existing stories may use a single `tasks.md` file instead of the `tasks/` direct
 - Every story must account for documentation sync
 - **Self-contained tasks are non-negotiable.** Each task spec will be executed by a fresh agent (Sonnet, Codex, Gemini) with no prior context. The task file IS the entire brief. If executing the task requires knowledge not written in the task file, the task spec is incomplete. Never assume shared context from the planning session.
 - **Inline over reference.** Don't write "see the TRD for architecture decisions." Copy the relevant decision into the task spec. Don't write "follow the pattern in X." Show the pattern. The executing agent may not have access to the planning conversation or review documents.
+- **Verify every claim about another story against that story's `tasks/`, including when correcting
+  one.** A cross-story claim is the one thing planning review reliably misses — it reads each task's
+  content, not its assertions about a neighbour. Cite the specific task ID. When you later find such
+  a claim wrong, re-check it the same way before writing the correction: a wrong correction sends
+  someone to edit a plan that was already right, which costs more than the original error.
 - **Review decisions must be in task specs.** If a CEO/eng review made a decision that affects implementation (e.g., "use separate queues, not shared queue"), that decision and its rationale must appear in the task spec that implements it.
