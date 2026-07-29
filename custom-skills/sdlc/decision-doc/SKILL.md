@@ -1,20 +1,20 @@
 ---
 name: decision-doc
-description: "/decision-doc -- Record a technical or product decision with trade-offs, reversibility assessment, and what we're giving up. Use anytime a non-obvious choice is made."
+description: "Record a technical or product decision with trade-offs, reversibility assessment, and what we're giving up. Use anytime a non-obvious choice is made."
 user_invocable: true
 ---
 
-# /decision-doc -- Decision Document
+# /sdlc decision-doc -- Decision Document
 
 Records non-obvious decisions with full context so future-you (or teammates) understand why a choice was made.
 
-**Usage**: `/decision-doc <decision topic>`
+**Usage**: `/sdlc decision-doc <decision topic>`
 
 **Source**: Adapted from Mehdibargach/claude-code-pm-skills decision-doc (reversibility + trade-off framework).
 
 ## When Claude Should Auto-Invoke
 
-- During `/trd` when a design decision has significant trade-offs
+- During `/sdlc trd` when a design decision has significant trade-offs
 - During implementation when an unexpected fork-in-the-road appears
 - When the user asks "should we do A or B?"
 - When choosing between competing libraries, patterns, or approaches

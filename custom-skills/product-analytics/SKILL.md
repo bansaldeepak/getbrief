@@ -70,7 +70,11 @@ posthog.capture("event_name", {
 
 ## Overriding This Skill
 
-If your project uses a different analytics provider (e.g., Amplitude, Mixpanel, Google Analytics), create a local `.agents/skills/analytics/SKILL.md` that:
+If your project uses a different analytics provider (e.g., Amplitude, Mixpanel, Google Analytics),
+create a project skill at `<repo>/.claude/skills/product-analytics/SKILL.md` that:
 
-1. Keeps the "General Rules" section (or references this global skill for provider-agnostic rules)
-2. Replaces the "PostHog" section with provider-specific setup, event tracking, and feature flag patterns
+1. References this skill for the provider-agnostic "General Rules" — don't copy them
+2. Replaces the "PostHog" section with that provider's setup, event tracking, and flag patterns
+
+A project skill of the same name takes precedence over this one. See
+`~/.agents/templates/project-skills/README.md` for the copy-in procedure.

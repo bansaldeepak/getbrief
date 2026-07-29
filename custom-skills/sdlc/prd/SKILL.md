@@ -1,35 +1,35 @@
 ---
 name: prd
-description: "/prd -- Product Requirements Document. Tight 1-2 page PRD with problem, users, goals, scope, requirements. Runs AFTER /discover (if needed), BEFORE /trd and /plan. Human approval gate."
+description: "Product Requirements Document. Tight 1-2 page PRD with problem, users, goals, scope, requirements. Runs AFTER /sdlc discover (if needed), BEFORE /sdlc trd and /sdlc project-plan. Human approval gate."
 user_invocable: true
 model: opus
 ---
 
-# /prd -- Product Requirements Document
+# /sdlc prd -- Product Requirements Document
 
 Produces a tight, actionable PRD that becomes the single source of truth for what we're building and why. Max 2 pages.
 
-**Usage**: `/prd <feature or problem statement>`
+**Usage**: `/sdlc prd <feature or problem statement>`
 
 **Source**: Adapted from Mehdibargach/claude-code-pm-skills PRD template.
 
 ## When Claude Should Auto-Invoke
 
-- After `/discover` produces a clear opportunity and recommended path
+- After `/sdlc discover` produces a clear opportunity and recommended path
 - User describes a feature with enough clarity to define requirements
 - Ask user: "Ready to write the PRD for this?"
 
 ## Human Approval Gate
 
-**The PRD MUST be approved by the user before proceeding to `/trd` or `/project-plan`.** Present the PRD and explicitly ask: "Does this PRD capture the requirements correctly? Any changes before I proceed?"
+**The PRD MUST be approved by the user before proceeding to `/sdlc trd` or `/sdlc project-plan`.** Present the PRD and explicitly ask: "Does this PRD capture the requirements correctly? Any changes before I proceed?"
 
 ## Instructions
 
 ### Phase 1: Gather Context
 
-If `/discover` was run, reference its output. Otherwise, read relevant code, docs, and existing features to understand the problem space.
+If `/sdlc discover` was run, reference its output. Otherwise, read relevant code, docs, and existing features to understand the problem space.
 
-If no discovery was done and the problem seems complex, suggest running `/discover` first.
+If no discovery was done and the problem seems complex, suggest running `/sdlc discover` first.
 
 ### Phase 2: Draft PRD
 
@@ -131,10 +131,7 @@ Present the PRD to the user. Highlight:
 
 ### Phase 4: Next Step
 
-After approval:
-- If architecture changes are needed: "This requires architecture changes. Running `/trd` next."
-- If architecture is straightforward: "Ready for `/project-plan <story-breakdown>`"
-- If both: "Running `/trd` for the architecture, then `/project-plan` for stories."
+Mark status `🔒 Approved`, then hand back to the `sdlc` router for the next phase — it owns the graph.
 
 ## Rules
 
@@ -143,6 +140,6 @@ After approval:
 - "What We Are NOT Building" section is mandatory and non-empty
 - Requirements use MoSCoW priority (Must/Should/Could/Won't)
 - Use Mermaid diagrams for all flows
-- Reference /discover output if it exists — don't repeat the analysis
+- Reference /sdlc discover output if it exists — don't repeat the analysis
 - PRD lives at `documentation/stories/<feature-name>/PRD.md`
-- Never proceed to /trd or /project-plan without explicit user approval
+- Never proceed to /sdlc trd or /sdlc project-plan without explicit user approval

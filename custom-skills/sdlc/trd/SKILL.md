@@ -1,15 +1,15 @@
 ---
 name: trd
-description: "/trd -- Technical Requirements Document. Architecture design, system design, data model changes, API contracts, technical constraints. Runs AFTER /prd approval, BEFORE /plan. Human approval gate when architecture changes are involved."
+description: "Technical Requirements Document. Architecture design, system design, data model changes, API contracts, technical constraints. Runs AFTER /sdlc prd approval, BEFORE /sdlc project-plan. Human approval gate when architecture changes are involved."
 user_invocable: true
 model: opus
 ---
 
-# /trd -- Technical Requirements Document
+# /sdlc trd -- Technical Requirements Document
 
 Translates approved PRD requirements into technical architecture and design decisions. Ensures architecture is reviewed before implementation begins.
 
-**Usage**: `/trd <feature name>` (references the approved PRD)
+**Usage**: `/sdlc trd <feature name>` (references the approved PRD)
 
 ## When Claude Should Auto-Invoke
 
@@ -20,18 +20,18 @@ Translates approved PRD requirements into technical architecture and design deci
   - Third-party integrations
   - Performance-sensitive features
   - Security-sensitive features
-- For simple features (UI-only, config changes), skip TRD and go to `/project-plan`
+- For simple features (UI-only, config changes), skip TRD and go to `/sdlc project-plan`
 - Ask user: "This involves architecture changes. Should I write a TRD?"
 
 ## Human Approval Gate
 
-**The TRD MUST be approved by the user before proceeding to `/project-plan` when architecture changes are involved.** Present the TRD and explicitly ask: "Does this technical approach look right? Any concerns before I plan the implementation?"
+**The TRD MUST be approved by the user before proceeding to `/sdlc project-plan` when architecture changes are involved.** Present the TRD and explicitly ask: "Does this technical approach look right? Any concerns before I plan the implementation?"
 
 ## Instructions
 
 ### Phase 1: Read the PRD
 
-Read `documentation/stories/<feature-name>/PRD.md`. If it doesn't exist or isn't approved, stop and redirect to `/prd`.
+Read `documentation/stories/<feature-name>/PRD.md`. If it doesn't exist or isn't approved, stop and redirect to `/sdlc prd`.
 
 ### Phase 2: Assess Current Architecture
 
@@ -156,7 +156,7 @@ CREATE TABLE ...
 
 ## Implementation Order (High-Level)
 
-<Suggested order of implementation — this feeds into `/project-plan` task breakdown>
+<Suggested order of implementation — this feeds into `/sdlc project-plan` task breakdown>
 
 1. <First: data model / schema changes>
 2. <Second: service layer>
@@ -175,7 +175,7 @@ Present the TRD to the user. Highlight:
 
 **Ask explicitly**: "Does this technical approach look right? Any concerns about the architecture, data model, or design decisions?"
 
-**Do NOT proceed to `/project-plan` until the user approves architecture changes.**
+**Do NOT proceed to `/sdlc project-plan` until the user approves architecture changes.**
 
 For minor technical details (naming, file structure), user can defer to Claude's judgment.
 
@@ -188,16 +188,16 @@ After TRD approval:
 
 ### Phase 6: Next Step
 
-After approval: "Architecture approved. Running `/project-plan` to break this into stories and tasks."
+Mark status `🔒 Approved`, then hand back to the `sdlc` router for the next phase — it owns the graph.
 
 ## Rules
 
-- TRD must reference an approved PRD — redirect to `/prd` if missing
+- TRD must reference an approved PRD — redirect to `/sdlc prd` if missing
 - Every design decision must list alternatives considered
 - Use Mermaid diagrams for architecture, data model, and sequence flows
 - Schema changes must include rollback plan
 - Security and performance sections are mandatory (even if "N/A — no changes")
 - Design decisions recorded here become the project's technical memory
 - TRD lives at `documentation/stories/<feature-name>/TRD.md`
-- Never proceed to /project-plan for architecture changes without user approval
+- Never proceed to /sdlc project-plan for architecture changes without user approval
 - Keep the TRD focused — implementation details belong in task descriptions, not here

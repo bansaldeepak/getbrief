@@ -13,11 +13,16 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   ├── claude.md       # Claude-specific additions → ~/.claude/CLAUDE.md
 │   ├── codex.md        # Codex-specific additions → ~/.codex/AGENTS.md
 │   └── gemini.md       # Gemini-specific additions → ~/.gemini/GEMINI.md
-├── custom-skills/      # Skills we wrote — the publishable set (19)
-│   ├── coding-standards/
-│   ├── db-safety/
-│   ├── first-principles/
-│   └── ...
+├── custom-skills/      # Skills we wrote — the publishable set (12)
+│   ├── coding-standards/    # universal — file size, reuse, testing, types
+│   ├── backend-standards/   # layer contracts, API design, persistence
+│   ├── frontend-standards/  # component ladder, composition, data boundaries
+│   ├── sdlc/                # router — owns the lifecycle graph
+│   │   ├── prd/  trd/  discover/  project-plan/
+│   │   └── pr-review/  retro/  decision-doc/  memory-review/
+│   └── ...                  # db-safety, project-memory, documentation-standards, …
+├── templates/          # Copied into repos on purpose — never linked
+│   └── project-skills/ # Stack-specific skills (see its README)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
 │   ├── gstack/         # via garrytan/gstack
 │   ├── stitch-*/       # via google-labs-code/stitch-skills

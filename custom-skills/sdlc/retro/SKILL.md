@@ -1,22 +1,22 @@
 ---
 name: retro
-description: "/retro -- Retrospective after story completion and merge. Captures learnings, updates skills/memory, and feeds improvements back into the workflow. Auto-invoked after story merge."
+description: "Retrospective after story completion and merge. Captures learnings, updates skills/memory, and feeds improvements back into the workflow. Auto-invoked after story merge."
 user_invocable: true
 model: opus
 ---
 
-# /retro -- Story Retrospective
+# /sdlc retro -- Story Retrospective
 
 Captures learnings after story completion and feeds improvements back into the system. Runs after merge, before starting new work.
 
-**Usage**: `/retro` (reviews the most recently completed story) or `/retro S-NNN`
+**Usage**: `/sdlc retro` (reviews the most recently completed story) or `/sdlc retro S-NNN`
 
 **Source**: Adapted from phuryn/pm-skills retro facilitation + custom auto-improvement loop.
 
 ## When Claude Should Auto-Invoke
 
 - After a story is merged and marked as completed
-- Before starting a new `/discover` or `/project-plan` cycle
+- Before starting a new `/sdlc discover` or `/sdlc project-plan` cycle
 - Say: "Story complete and merged. Running retro to capture learnings."
 
 ## Instructions
@@ -82,17 +82,12 @@ For each proposed change, explain what and why.
 
 Memory updates (non-destructive) can proceed automatically.
 
-### Phase 4.5: Flush Feature Context
+### Phase 4.5: Flush Context and Curate Memory
 
-Flush feature-specific context to the permanent `context.md` file (see CLAUDE.md "Feature Context Files"):
+Run `/sdlc memory-review`. It flushes this feature's context to `context.md` and curates what remains —
+format and locations are defined in `project-memory`, so don't duplicate them here.
 
-1. **Find the right location**:
-   - Feature has `documentation/architecture/<feature>/` → write there
-   - Otherwise → `documentation/stories/<feature>/context.md`
-2. **Write/update `context.md`** with key decisions, gotchas, emergent patterns (compressed, signal-only)
-3. **Remove flushed content from MEMORY.md** — only keep cross-cutting patterns and active-feature context
-4. **Keep MEMORY.md under ~30 lines** after flush
-5. **Commit context.md** separately: `docs(context): flush <feature> implementation context`
+Commit the flush separately: `docs(context): flush <feature> implementation context`
 
 ### Phase 5: Collect Token Usage
 
@@ -148,13 +143,6 @@ Save to the story folder as `retro.md`:
 ## Recommendations for Next Story
 - <specific advice for the next piece of work>
 ```
-
-### Phase 7: Trigger Memory Review
-
-After retro, invoke the `self-improving` agent to:
-- Review recent memory additions
-- Prune stale entries
-- Promote valuable patterns to rules
 
 ## Rules
 

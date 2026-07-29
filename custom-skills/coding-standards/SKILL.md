@@ -1,13 +1,72 @@
 ---
 name: coding-standards
-description: Language-agnostic coding standards. Auto-applies when writing code in any language. Enforces documentation comments, linting, formatting, testing, naming, type safety, error handling, structured logging, dependency management, and code reuse conventions.
+description: Language-agnostic coding standards. Auto-applies when writing code in any language. Enforces file-size limits and modularity, code reuse, documentation comments, linting, formatting, testing, naming, type safety, error handling, structured logging, and dependency management.
 ---
 
 # Global Coding Standards
 
-Universal standards that apply to every project, regardless of language or framework. Project-level skills may extend these with framework-specific rules.
+Universal standards that apply to every project, regardless of language or framework. Framework and stack skills extend these — they must never restate them.
 
-## 1. Documentation Comments (Mandatory on Exports)
+## 1. Modularity & File Size (Enforced)
+
+**A file that outgrows its limit is a design defect, not a style preference.** Large files hide duplication, defeat review, and make every future change riskier than it needs to be.
+
+### Limits
+
+| File type | Review at | Split at |
+|-----------|----------:|---------:|
+| UI component | 150 | 250 |
+| Route / controller / handler | 150 | 250 |
+| Service / business logic | 200 | 300 |
+| Utility / helper module | 150 | 200 |
+| Type / schema definitions | 300 | 500 |
+| Test file | 300 | 500 |
+| Generated code (Prisma, protobuf, OpenAPI) | — | exempt |
+
+Function-level limits, all languages: **50 lines per function**, **4 parameters** (past that, take an options object), **3 levels of nesting**.
+
+**Review at** = justify it in the PR or split it. **Split at** = split it; "I'll clean it up later" is not a justification. When a file is already over the limit before you touch it, you are not obliged to fix the whole file — but you must not add to it. Extract your addition instead.
+
+### How to split
+
+"Split by responsibility" is only actionable if you can name the responsibility. Work down this list and stop at the first one that yields a name:
+
+1. **Extract pure helpers** — anything with no dependency on the file's state goes to a sibling `*-utils` / `*_helpers` module.
+2. **Extract types and schemas** — move to `types.*` / `schemas.*` in the same directory.
+3. **Extract constants and config** — lookup tables, defaults, enums.
+4. **Extract a cohesive sub-behavior** — a group of functions sharing a noun becomes its own module with a barrel export.
+5. **Split by consumer** — if half the file serves one caller and half serves another, that seam is the split.
+
+**Never split on line count alone.** A 260-line file with one job is healthier than two 130-line files that must be read together. If no seam has a name, the file is telling you the responsibility itself is wrong — fix that first.
+
+### Enforcement
+
+Lint config must carry these, warn at the review threshold and error at the split threshold:
+
+```jsonc
+// ESLint (adjust per-glob for the table above)
+"max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }],
+"max-lines-per-function": ["error", { "max": 50, "skipBlankLines": true }],
+"max-params": ["warn", 4],
+"max-depth": ["error", 3],
+"complexity": ["warn", 10]
+```
+
+Equivalents: `golangci-lint` (`funlen`, `gocognit`, `nestif`), `clippy` (`too_many_lines`, `too_many_arguments`, `cognitive_complexity`), `ruff` (`PLR0913`, `PLR0912`, `C901`).
+
+Code review checks file size and duplication explicitly — a passing typecheck and green tests say nothing about either.
+
+## 2. Code Reuse
+
+- **Extract at the second use — when both copies share a reason to change.** Two snippets that merely look alike are not duplication; coupling them creates a worse problem than the one you solved. Same shape, different reason → leave them alone.
+- **Pure functions first** — input → output, no side effects. Keep side effects at the edges.
+- **Explicit public API** — every module directory has a barrel (`index.*`) naming exactly what's public. Everything else is internal.
+- **Layered** — handlers → services → providers. Never call downward past a layer, never call upward.
+- **No circular dependencies** — if A imports B, B must not import A.
+- **Co-locate** — tests next to source, types next to usage.
+- **Prefer flat over nested** — directory nesting beyond 3 levels needs a reason.
+
+## 3. Documentation Comments (Mandatory on Exports)
 
 **Every exported function, class, method, interface, and type must have a documentation comment.** Internal/private helpers and test files are exempt.
 
@@ -21,9 +80,9 @@ Universal standards that apply to every project, regardless of language or frame
 
 Required tags: description (always), `@param` / Args, `@returns` / Returns, `@throws` / Raises.
 
-Exempt: internal/private functions, test files, React/UI components (`.tsx`/`.jsx`), one-line self-explanatory type aliases, barrel re-exports.
+Exempt: internal/private functions, test files, UI components, one-line self-explanatory type aliases, barrel re-exports.
 
-## 2. Linting (Mandatory)
+## 4. Linting (Mandatory)
 
 | Language | Linter |
 |----------|--------|
@@ -35,7 +94,7 @@ Exempt: internal/private functions, test files, React/UI components (`.tsx`/`.js
 - Must run in CI — lint errors must not merge
 - Never disable rules inline without a justifying comment
 
-## 3. Formatting (Mandatory)
+## 5. Formatting (Mandatory)
 
 | Language | Formatter |
 |----------|-----------|
@@ -46,7 +105,7 @@ Exempt: internal/private functions, test files, React/UI components (`.tsx`/`.js
 
 Format on save and on commit (pre-commit hook). Never override project formatting config.
 
-## 4. Testing Conventions
+## 6. Testing Conventions
 
 - **Arrange-Act-Assert** pattern for every test
 - **One behavior per test** — each test verifies exactly one thing
@@ -66,7 +125,7 @@ Format on save and on commit (pre-commit hook). Never override project formattin
 
 Co-located tests (`__tests__/`) for JS/TS/Go, mirror tree for Python/Java. Follow the project's existing convention.
 
-## 5. Naming Conventions
+## 7. Naming Conventions
 
 | What | Convention |
 |------|-----------|
@@ -78,7 +137,7 @@ Co-located tests (`__tests__/`) for JS/TS/Go, mirror tree for Python/Java. Follo
 
 Follow the project's existing convention above all else. Naming should reveal intent.
 
-## 6. Type Safety
+## 8. Type Safety
 
 - **Strictest mode available** — `strict: true` (TS), type hints (Python), strong typing everywhere
 - **Avoid escape hatches** — no `any` (TS), no `unsafe` without justification (Rust)
@@ -86,7 +145,7 @@ Follow the project's existing convention above all else. Naming should reveal in
 - **Prefer generated types** over manual definitions (Prisma, protobuf, OpenAPI codegen)
 - **Narrow types at boundaries** — validate external input, trust internal types
 
-## 7. Error Handling
+## 9. Error Handling
 
 - **Never catch and swallow errors** — every catch must log, re-throw, or handle meaningfully
 - **Use typed errors** — custom error classes (JS/TS), sentinel errors (Go), `Result<T, E>` (Rust)
@@ -94,15 +153,7 @@ Follow the project's existing convention above all else. Naming should reveal in
 - **Fail fast** — fail immediately with a clear message, don't silently continue with bad state
 - **Log context** — include operation, relevant IDs, and input that caused the failure
 
-## 8. Code Organization
-
-- **Single responsibility** — each file/module does one thing well
-- **No circular dependencies** — if A imports B, B must not import A
-- **Explicit exports** — barrel files list what's public
-- **Co-locate related code** — tests next to source, types next to usage
-- **Prefer flat over nested** — avoid deep nesting (>3 levels)
-
-## 9. Structured Logging
+## 10. Structured Logging
 
 **Never use raw `console.log`/`console.error` in production code.** Use a structured logger.
 
@@ -112,18 +163,10 @@ Follow the project's existing convention above all else. Naming should reveal in
 - **No sensitive data in logs** — never log tokens, secrets, passwords, PII
 - **Console is OK in tests** — this rule applies to application code only
 
-## 10. Dependency & Package Versions
+## 11. Dependency & Package Versions
 
 **Always use pinned versions from the project's package manifest.** Never suggest or install newer versions unless the user asks or a security patch requires it.
 
 1. **Read the project's package file first** — `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, etc.
 2. **Use documentation matching the pinned version** — not "latest"
 3. **Never add a new dependency without asking** — propose it, explain alternatives, let the user decide
-
-## 11. Code Reuse & Modularity
-
-- **DRY at 2 occurrences** — same logic in 2+ places → extract to shared utility
-- **Pure functions first** — input → output, no side effects. Keep side effects at the edges.
-- **Barrel exports** — every module/provider directory has an `index.ts` re-exporting the public API
-- **Layered architecture** — handlers → services → providers. Don't mix layers.
-- **Small files** — if a file exceeds ~200 lines, split by responsibility
