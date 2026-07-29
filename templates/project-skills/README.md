@@ -7,10 +7,18 @@ Nothing here is linked to any provider. These are copied into a project on purpo
 
 ## Using one
 
+Each host reads project skills from its own path, so link rather than copy twice:
+
 ```bash
-mkdir -p <repo>/.claude/skills
+mkdir -p <repo>/.claude/skills <repo>/.agents/skills
 cp -r ~/.agents/templates/project-skills/<template> <repo>/.claude/skills/<name>
+ln -s ../../.claude/skills/<name> <repo>/.agents/skills/<name>   # Codex reads .agents/skills
 ```
+
+| Host | Repo-level skill path |
+|------|----------------------|
+| Claude Code | `<repo>/.claude/skills/<name>/SKILL.md` |
+| Codex | `<repo>/.agents/skills/<name>/SKILL.md` (also cwd and parent dirs) |
 
 Then edit it — paths, module names, and commands must match the repo it now lives in. Commit it
 with the repo so every agent and teammate working there gets the same conventions.

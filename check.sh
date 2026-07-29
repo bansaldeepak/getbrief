@@ -76,9 +76,53 @@ for host in "${RULE_HOSTS[@]}"; do
   [ "$host_ok" -eq 1 ] && note "✓ ~/.$host/rules"
 done
 
+# --- Agent distribution ----------------------------------------------------
+# Claude's copy is a symlink (same two-way check as rules). Codex's is
+# GENERATED, so the check is a re-generate-and-diff: it catches a hand-edited
+# TOML, a stale one whose source moved on, and an orphan whose source is gone.
+echo ""
+echo "Agent distribution:"
+agents_ok=1
+for agent in "$AGENTS_DIR"/agents/*.md; do
+  [ -e "$agent" ] || continue
+  base=$(basename "$agent" .md)
+
+  link="$HOME/.claude/agents/$base.md"
+  if [ ! -L "$link" ]; then
+    note "✗ ~/.claude/agents/$base.md missing — run build.sh"; fail=1; agents_ok=0
+  elif [ "$(readlink "$link")" != "$agent" ]; then
+    note "✗ ~/.claude/agents/$base.md → $(readlink "$link"), expected $agent"; fail=1; agents_ok=0
+  fi
+
+  toml="$HOME/.codex/agents/$base.toml"
+  if [ ! -f "$toml" ]; then
+    note "✗ ~/.codex/agents/$base.toml missing — run build.sh"; fail=1; agents_ok=0
+  elif ! diff -q <(python3 "$AGENTS_DIR/scripts/gen-codex-agent.py" "$agent" 2>/dev/null) "$toml" >/dev/null 2>&1; then
+    note "✗ ~/.codex/agents/$base.toml drifted — edit agents/$base.md, then build.sh"; fail=1; agents_ok=0
+  fi
+done
+
+for orphan in "$HOME"/.codex/agents/*.toml; do
+  [ -e "$orphan" ] || continue
+  base=$(basename "$orphan" .toml)
+  if [ ! -e "$AGENTS_DIR/agents/$base.md" ]; then
+    note "✗ ~/.codex/agents/$base.toml is an orphan — no ~/.agents/agents/$base.md (delete it)"; fail=1; agents_ok=0
+  fi
+done
+
+for orphan in "$HOME"/.claude/agents/*.md; do
+  [ -L "$orphan" ] || continue
+  base=$(basename "$orphan" .md)
+  if [ ! -e "$AGENTS_DIR/agents/$base.md" ]; then
+    note "✗ ~/.claude/agents/$base.md is an orphan — no ~/.agents/agents/$base.md (delete it)"; fail=1; agents_ok=0
+  fi
+done
+
+[ "$agents_ok" -eq 1 ] && note "✓ ~/.claude/agents + ~/.codex/agents"
+
 echo ""
 if [ "$fail" -ne 0 ]; then
   echo "OUT OF SYNC — run ~/.agents/build.sh, then re-run this check."
   exit 1
 fi
-echo "In sync. All provider configs + rules match ~/.agents/ source."
+echo "In sync. All provider configs + rules + agents match ~/.agents/ source."

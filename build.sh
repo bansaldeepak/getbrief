@@ -45,5 +45,23 @@ for host in "${RULE_HOSTS[@]}"; do
   echo "✓ ~/.$host/rules — $count rule(s) linked"
 done
 
+# --- Distribute agents -----------------------------------------------------
+# Claude reads the shared definition directly (symlink — edits are live).
+# Codex needs a TOML translation, so its copy is GENERATED and must never be
+# hand-edited; check.sh re-generates and diffs to catch that. Gemini has no
+# subagent concept and is skipped. Fields with no Codex equivalent (per-tool
+# allowlists, maxTurns) are reported by the generator rather than dropped
+# silently — sandbox_mode is a coarser approximation of a read-only agent.
+mkdir -p "$HOME/.claude/agents" "$HOME/.codex/agents"
+agent_count=0
+for agent in "$AGENTS_DIR"/agents/*.md; do
+  [ -e "$agent" ] || continue
+  base="$(basename "$agent" .md)"
+  ln -sfn "$agent" "$HOME/.claude/agents/$base.md"
+  python3 "$AGENTS_DIR/scripts/gen-codex-agent.py" "$agent" > "$HOME/.codex/agents/$base.toml"
+  agent_count=$((agent_count + 1))
+done
+echo "✓ ~/.claude/agents — $agent_count linked · ~/.codex/agents — $agent_count generated"
+
 echo ""
-echo "All provider configs + rules synced from ~/.agents/"
+echo "All provider configs + rules + agents synced from ~/.agents/"

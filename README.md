@@ -21,6 +21,10 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   │   ├── prd/  trd/  discover/  project-plan/
 │   │   └── pr-review/  retro/  decision-doc/  memory-review/
 │   └── ...                  # db-safety, project-memory, documentation-standards, …
+├── agents/             # Subagent definitions — one source, two formats
+│   ├── qa.md  reviewer.md  researcher.md  self-improving.md
+├── scripts/
+│   └── gen-codex-agent.py  # agents/*.md → Codex TOML
 ├── templates/          # Copied into repos on purpose — never linked
 │   └── project-skills/ # Stack-specific skills (see its README)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
@@ -63,6 +67,23 @@ editing a skill takes effect immediately with no re-install step.
 | Codex | `~/.codex/skills/<skill> → ~/.agents/custom-skills/<skill>` |
 
 Third-party skills are linked in selectively, by hand.
+
+### Agents Distribution
+
+One definition in `agents/<name>.md`, two outputs:
+
+| Provider | Output | How |
+|----------|--------|-----|
+| Claude Code | `~/.claude/agents/<name>.md` | Symlink — edits are live |
+| Codex | `~/.codex/agents/<name>.toml` | **Generated** by `build.sh` — never hand-edit |
+| Gemini | — | No subagent concept |
+
+The formats aren't isomorphic. `model` maps through an alias table (`haiku` →
+`gpt-5.6-terra`/`low`, `sonnet` → `gpt-5.6`/`medium`, `opus` → `gpt-5.6`/`high`), and Codex has no
+per-tool allowlist — an agent without `Write`/`Edit` becomes `sandbox_mode = "read-only"`, which is
+coarser than Claude's `tools` list. `maxTurns` and `memory` have no equivalent and are dropped. The
+generator prints every approximation it makes; `check.sh` re-generates and diffs to catch a
+hand-edited or stale TOML.
 
 ### Rules Distribution
 
