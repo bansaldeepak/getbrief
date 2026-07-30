@@ -6,7 +6,8 @@ How it fits together is in [README.md](README.md); this file is what is not deri
 ## Reference
 
 - [Config loading](memory/reference_agent-config-loading.md) — skills contribute only descriptions;
-  `CLAUDE.md` and `rules/` load in full. Decides where any new rule belongs.
+  `CLAUDE.md` and `rules/` load in full. Decides where any new rule belongs. **Personal skills
+  override project skills of the same name — never reuse a global skill's name in a repo.**
 - [Session log formats](memory/reference_session-log-formats.md) — where Claude and Codex record
   branch and token usage, and the three asymmetries that produce wrong totals.
 - [Skills CLI, local sources](memory/reference_skills-cli-local-sources.md) — it copies local paths

@@ -23,6 +23,17 @@ ln -s ../../.claude/skills/<name> <repo>/.agents/skills/<name>   # Codex reads .
 Then edit it — paths, module names, and commands must match the repo it now lives in. Commit it
 with the repo so every agent and teammate working there gets the same conventions.
 
+## Never reuse a user-level skill's name
+
+**A personal skill (`~/.claude/skills/`) overrides a project skill of the same name, silently.** So a
+project skill called `observability` or `product-analytics` is shadowed by the global one and never
+loads — you get the agnostic rules and none of the repo's wiring, with no warning.
+
+Name the project one for what it adds: `observability-wiring`, `analytics-wiring`. Both then load,
+which is the intent — global rules plus local specifics. Precedence across levels is
+enterprise → personal → project; only *nested* `.claude/skills/` below the cwd add scope without
+colliding.
+
 ## What goes here vs. global
 
 | Global (`custom-skills/`) | Project (`.claude/skills/`) |
