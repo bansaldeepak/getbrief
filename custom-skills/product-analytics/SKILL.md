@@ -41,13 +41,16 @@ Provider-specific setup — SDK, env vars, flag helpers, event helpers, session 
 a **project** skill, because it is only correct in a repo that uses that provider. Keep the rules
 above here; keep the wiring there.
 
-## Overriding This Skill
+## Extending This Skill in a Repo
 
-If your project uses a different analytics provider (e.g., Amplitude, Mixpanel, Google Analytics),
-create a project skill at `<repo>/.claude/skills/product-analytics/SKILL.md` that:
+If your project uses a specific provider (PostHog, Amplitude, Mixpanel, Google Analytics), add a
+project skill that:
 
 1. References this skill for the provider-agnostic "General Rules" — don't copy them
 2. Holds that provider's setup, event tracking, and flag patterns — the wiring this skill deliberately does not carry
 
-A project skill of the same name takes precedence over this one. See
+**Give it a different name** — `analytics-wiring`, `posthog-wiring`, whatever fits. A personal
+(user-level) skill overrides a project skill of the same name, so a project `product-analytics` would
+be silently shadowed by this one and never load. Distinct names mean both load, which is the point:
+the agnostic rules *and* the repo's wiring. See
 `~/.agents/templates/project-skills/README.md` for the copy-in procedure.

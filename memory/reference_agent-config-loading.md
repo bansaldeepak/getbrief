@@ -31,3 +31,15 @@ had not been pointed at.
 
 Multiple `CLAUDE.md` files **merge**, home directory downward. There is no override semantics — two
 files that disagree both land in context, and precedence comes from how strongly each is worded.
+
+**Skills do NOT merge — same name across levels means one wins, silently.** Precedence is
+enterprise → personal (`~/.claude/skills/`) → project (`.claude/skills/`), so **personal beats
+project** — the opposite of the intuition that the more specific location wins, and the opposite of
+what `product-analytics` claimed until 2026-07-30 (corrected). Confirmed in the Claude Code docs,
+"Where skills live".
+
+Consequence for the global/project split: a project skill must **never** reuse a user-level skill's
+name, or it is shadowed and never loads — you get the agnostic rules with none of the repo's wiring
+and no warning. Name it for what it adds (`observability-wiring`), so both load. Only *nested*
+`.claude/skills/` below the cwd extend scope without colliding. Codex precedence for the same
+collision is **unverified**; distinct names sidestep it on both hosts.
