@@ -22,7 +22,8 @@ How it fits together is in [README.md](README.md); this file is what is not deri
   is stale references, not duplication, and nothing checks for them. **Open: a reference validator
   in `check.sh` is the standing next candidate.**
 - [Memory mechanisms](memory/project_memory-mechanisms.md) — three memory systems coexist
-  unreconciled. **Open: read the two host hook scripts before extending memory anywhere.**
+  unreconciled. **Pending: the checkpoint hook never fires — wiring, not the script. Needs one
+  `claude --debug` run; not started.**
 
 ## Conventions
 
