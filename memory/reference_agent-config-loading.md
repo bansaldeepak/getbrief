@@ -18,7 +18,15 @@ Consequences that decide where a rule goes:
 
 - **The description is the trigger.** A skill absent from the listing can only fire if someone names
   it. So a router may hide *user-invoked* phases, never *auto-applying* guardrails — hiding
-  `db-safety` behind a router means nothing fires when someone writes a migration.
+  `db-safety` behind a router means nothing fires when someone writes a migration. **Fixed
+  2026-08-11**: moved the enforced rule set to `rules/db-safety.md` with `paths:` frontmatter
+  (`**/migrations/**`, `prisma/schema.prisma`, `**/*.sql`, …) — confirmed working via the
+  `prisma-migrations.md` precedent in taiboli-app. Loads in full whenever a matching file is touched,
+  independent of whether the `db-safety` skill gets invoked. `WORKFLOW.md` was considered but
+  rejected — it loads on every session in every project regardless of whether a database is even
+  involved, so path-scoping in `rules/` is the better fit for a guardrail that isn't universal.
+  `db-safety` (the skill) is now a thin pointer plus the one case path-scoping can't reach: destructive
+  commands typed into a DB console with no file touched.
 - Routing 8 phase skills saves ~250 tokens. That is not a reason to build a router. The reason is
   single-ownership of duplicated content — see [[cross-reference-drift]].
 - A rule that must hold when no skill was invoked belongs in `WORKFLOW.md`, not a skill. That is the
