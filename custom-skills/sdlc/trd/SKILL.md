@@ -29,6 +29,11 @@ Translates approved PRD requirements into technical architecture and design deci
 
 ## Instructions
 
+### Phase 0: Branch Check
+
+Run the branch check from `sdlc`'s router before writing `TRD.md`. Normally you're still on the
+feature branch `prd` created — if `git branch --show-current` prints `main` instead, branch out now.
+
 ### Phase 1: Read the PRD
 
 Read `documentation/stories/<feature-name>/PRD.md`. If it doesn't exist or isn't approved, stop and redirect to `/sdlc prd`.

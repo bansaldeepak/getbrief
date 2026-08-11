@@ -33,6 +33,19 @@ Collect information about the completed story:
 # Check any decision docs created during implementation
 ```
 
+**Branch audit.** Confirm every commit attributed to this story actually landed on the story's
+branch, not `main`:
+
+```bash
+git log main --oneline --grep "S-NNN" -i          # any story commits reachable from main directly?
+git log <story-branch> --oneline | grep -c "S-NNN"  # commits found on the actual branch
+```
+
+If any story commit is reachable from `main` outside the merge commit itself, that's a process
+violation — someone skipped the branch check in `prd`/`trd`/`project-plan`/`implement`. Record it as
+a "what didn't go well" with a concrete learning in Phase 3 (usually: the branch check got skipped
+because the task "looked small").
+
 **Format detection:** Check whether the story uses `tasks.md` (legacy single-file) or `tasks/index.md` (current split format). Read whichever exists. For the split format, read `tasks/index.md` for the overview, then drill into individual `tasks/T-NNN.md` files as needed.
 
 Compare:

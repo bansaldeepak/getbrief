@@ -25,6 +25,11 @@ Produces a tight, actionable PRD that becomes the single source of truth for wha
 
 ## Instructions
 
+### Phase 0: Branch Check
+
+Run the branch check from `sdlc`'s router before writing `PRD.md` — if `git branch --show-current`
+prints `main`, branch out first (`feature/<slug>` from the feature name).
+
 ### Phase 1: Gather Context
 
 If `/sdlc discover` was run, reference its output. Otherwise, read relevant code, docs, and existing features to understand the problem space.

@@ -41,7 +41,11 @@ Every project has `documentation/PROJECT-TRACKER.md`. One row per story. Updated
 not approval; approval for the last commit is not approval for this one; approval to commit is not
 approval to push. What to report at each gate: `/sdlc implement`.
 
-Never commit or push to `main` — all changes via PR. Check `git branch --show-current` before every commit; if on `main`, STOP and branch first. Branch names: `feature|fix|chore|hotfix/<name>`, pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
+Never commit or push to `main` — all changes via PR. Check `git branch --show-current` *before the
+first file write* in any lifecycle phase (`prd`, `trd`, `project-plan`, `implement`) — not just
+before committing. If on `main`, STOP and branch first. Branch names: `feature|fix|chore|hotfix/<name>`,
+pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
+Full procedure and per-phase trigger points: `sdlc`'s "Branch Check" section.
 
 ## Commit Convention
 
