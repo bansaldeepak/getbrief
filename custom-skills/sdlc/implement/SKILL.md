@@ -22,9 +22,25 @@ skill covers only *when you are allowed to commit, push, and open a PR*.
 Silence is not approval. "Looks good" on a previous task is not approval for this one. Approval to
 commit is not approval to push.
 
+## Gate 0 — Branch Check, Every Time You Enter the Loop
+
+Before picking up the first task, and again any time you resume this loop in a new session, run:
+
+```bash
+git branch --show-current
+```
+
+If it prints `main`, **stop and branch out before touching any file** — even for "just one small
+task." Use the branch named in `story.md`'s **Branch** field (`git checkout -b <name>` if it doesn't
+exist yet, `git checkout <name>` if it does). This is the check most likely to get skipped when a
+task looks trivial — that's exactly when it matters, because a "quick" task is how work ends up
+committed to `main` unnoticed.
+
 ## The Loop
 
 ```
+   verify branch != main (gate 0)
+                  ▼
    pick the next task from tasks/index.md
                   ▼
              implement it
@@ -133,6 +149,7 @@ missing: verify before acting on it, and report what you found.
 
 ## Rules
 
+- Verify `git branch --show-current` isn't `main` before every task, not just the first
 - One task, one commit; story bookkeeping commits separately
 - Every commit and every push is individually approved — silence is never approval
 - Every gate-1 report names a concrete verification point

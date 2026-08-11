@@ -15,6 +15,12 @@ Interactive planning skill for breaking features into tracked stories and tasks.
 
 You are entering planning mode. Do NOT write any implementation code. Your job is to produce a story with tasks that will guide implementation.
 
+### Phase 0a: Branch Check
+
+Run the branch check from `sdlc`'s router before creating any story files. You should already be on
+the feature branch from `prd`/`trd` — if `git branch --show-current` prints `main`, branch out now
+(`feature/<slug>`, matching what Phase 4 will write into `story.md`).
+
 ### Phase 0: Ensure PRD/TRD Exist
 
 **Every feature folder must have both `PRD.md` and `TRD.md`.** No exceptions — we don't skip steps.
@@ -254,7 +260,7 @@ Add the new story to `documentation/PROJECT-TRACKER.md` in the **Planned / Backl
 Report back:
 - Story ID and title
 - Number of tasks
-- Suggested branch name: `feature/<story-slug>`
+- Branch: `git branch --show-current` — confirm it matches `story.md`'s **Branch** field, not `main`
 - Ask: "Ready to start S-NNN-T1?"
 
 Also create Claude Code tasks (TaskCreate) mirroring the story tasks for session visibility.

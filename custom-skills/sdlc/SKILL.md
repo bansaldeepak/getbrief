@@ -31,6 +31,32 @@ table, or answer from memory — the table below is an index, not a substitute.
 Invoked with no argument: infer the phase from the lifecycle position below, name your choice, and
 proceed. If two phases are equally plausible, ask rather than guess.
 
+## Branch Check — Before Writing Anything
+
+Every phase from `prd` onward writes files into the repo (PRD.md, TRD.md, story files, code). Before
+the first write in **any** phase — `prd`, `trd`, `project-plan`, `implement` — run:
+
+```bash
+git branch --show-current
+```
+
+If it prints `main` (or the repo's default branch), branch out immediately. Don't wait for the
+commit gate in `implement` to notice — by then the docs or code are already sitting on `main`.
+
+```bash
+git checkout -b feature/<slug>   # or fix|chore|hotfix — see WORKFLOW.md for naming
+```
+
+Derive `<slug>` from the feature/story name. If a branch already exists for this feature (you're
+resuming a later phase of the same story), switch to it instead of creating a new one — check
+`git branch --list '*<slug>*'` first. Creating or switching branches needs no approval — it's local
+and reversible. Everything that happens *after* the switch still follows the commit/push gates owned
+by `implement`.
+
+`retro` runs after merge, so there's no branch to create — instead it audits: confirm every commit
+for the story landed on the story's branch, not `main`, and flag it as a finding if not (see
+`retro`'s Phase 1).
+
 ## The Graph
 
 ```
