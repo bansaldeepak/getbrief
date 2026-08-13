@@ -24,9 +24,9 @@ Off-graph: `/sdlc decision-doc` for any non-obvious choice, `/pre-mortem` before
 - **Story ID**: `S-NNN`. **Task ID**: `S-NNN-T1`, `S-NNN-T2`, etc.
 - **One task = one commit** — atomic unit of work
 - **Mandatory PRD/TRD**: Always exist in every feature folder (skip-justified for trivial work)
-- **Story-first rule**: `story.md`, `tasks/index.md`, `tasks/T-NNN.md`, `summary.md` must exist BEFORE implementation
-- **After each task**: `qa` agent → commit → update `tasks/index.md` + `summary.md` → commit story updates separately
-- **Legacy compat**: If story has `tasks.md` (single file), continue that format. New stories use `tasks/`.
+- **Story-first rule**: `story.md`, `tasks/T-NNN.md`, `summary.md` must exist BEFORE implementation
+- **After each task**: `qa` agent → commit → update task status + `summary.md` → commit story updates separately
+- **Legacy compat**: If story has `tasks.md` or `tasks/index.md`, continue that format. New stories use individual `tasks/T-NNN.md` files (status lives in each task file).
 - **Before PR**: `/sdlc pr-review` → wait for human approval
 - **After merge**: `/sdlc retro` → `self-improving` agent
 - **Story completion**: All tasks done, `summary.md` finalized, status `completed`, tracker updated
@@ -91,7 +91,10 @@ When in planning mode, **follow the lifecycle workflow above**. Planning is stru
 
 ## Memory Checkpoints (Mandatory)
 
-Memory lives in the project repo only — root `MEMORY.md` index + `memory/` files, never in provider global config. Capture at three gates; if nothing's notable, say "No new memory at this checkpoint" so a skipped gate stays visible:
+Memory lives **in the repo as structured files** (`memory/`, `decisions/`, `context.md`, `retro.md`) —
+never in provider global config. Knowledge graph (`.project/knowledge.db`) is the primary read path
+when available; files are always the source of truth. Capture at three gates; if nothing's notable,
+say "No new memory at this checkpoint" so a skipped gate stays visible:
 
 - **Post-planning** (PRD + TRD 🔒 approved) — decisions, scope boundaries, rejected alternatives, constraints
 - **Post-implementation** (tasks done, qa green) — gotchas, patterns that emerged, surprises

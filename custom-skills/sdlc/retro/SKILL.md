@@ -27,7 +27,7 @@ Collect information about the completed story:
 
 ```bash
 # What was planned vs. delivered
-# Read story.md, tasks/index.md (+ individual task files as needed), summary.md
+# Read story.md, individual tasks/T-NNN.md files, summary.md
 # Read PRD.md and TRD.md (always present in feature folder)
 # Check git log for the branch
 # Check any decision docs created during implementation
@@ -46,7 +46,7 @@ violation — someone skipped the branch check in `prd`/`trd`/`project-plan`/`im
 a "what didn't go well" with a concrete learning in Phase 3 (usually: the branch check got skipped
 because the task "looked small").
 
-**Format detection:** Check whether the story uses `tasks.md` (legacy single-file) or `tasks/index.md` (current split format). Read whichever exists. For the split format, read `tasks/index.md` for the overview, then drill into individual `tasks/T-NNN.md` files as needed.
+**Format detection:** Check whether the story uses `tasks.md` (legacy single-file), `tasks/index.md` (legacy split format), or individual `tasks/T-NNN.md` files (current format). For legacy formats, read whichever exists. For current format, read individual task files — status lives in each file's frontmatter.
 
 Compare:
 - **Planned scope** (from PRD/story) vs. **Actual scope** (from commits/summary)

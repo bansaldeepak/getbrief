@@ -123,26 +123,11 @@ As a <role>, I want <capability>, so that <benefit>.
 <Links to relevant docs, schema, requirements>
 ```
 
-#### `documentation/stories/<feature-name>/S-NNN/tasks/index.md`
-
-Lightweight roster — only status overview. This is what gets loaded for quick status checks.
-
-```markdown
-# S-NNN Tasks
-
-| Task ID | Title | Status | Commit |
-|---------|-------|--------|--------|
-| S-NNN-T1 | <title> | pending | -- |
-| S-NNN-T2 | <title> | pending | -- |
-| S-NNN-T3 | <title> | pending | -- |
-```
-
-**Rules for index.md:**
-- Maximum ~30 lines — just the table, no detail
-- Update one row when a task completes (status + commit hash)
-- This is the only file loaded for status overview — keep it lean
-
 #### `documentation/stories/<feature-name>/S-NNN/tasks/T-001.md` (one per task)
+
+Each task file is self-contained and tracks its own status. No separate index file needed —
+task status lives in the task file's frontmatter (`Status: pending` → `completed`).
+For projects using external PM (GitHub Projects, Linear), status syncs there instead.
 
 Each task gets its own file with full detail. **Each task spec must be self-contained.** Assume the executing agent (Sonnet, Codex, Gemini, or a fresh Claude session) has ZERO context from the planning conversation. The task spec is the only brief they receive.
 
@@ -275,11 +260,11 @@ Also create Claude Code tasks (TaskCreate) mirroring the story tasks for session
 
 ## Legacy Format Handling
 
-Existing stories may use a single `tasks.md` file instead of the `tasks/` directory. When working with an existing story:
+Existing stories may use older formats. When working with an existing story:
 
-1. **Detect format** — Check whether `S-NNN/tasks.md` (legacy) or `S-NNN/tasks/index.md` (current) exists
-2. **Legacy story (tasks.md exists)** — Continue using the single file for that story. Do NOT migrate mid-execution — finish the story in its original format
-3. **New stories** — Always use the `tasks/` directory format
+1. **Detect format** — Check whether `S-NNN/tasks.md` (legacy single-file) or `S-NNN/tasks/index.md` (legacy split) exists
+2. **Legacy story** — Continue using the existing format for that story. Do NOT migrate mid-execution — finish the story in its original format
+3. **New stories** — Use individual `tasks/T-NNN.md` files with status in frontmatter. No `index.md` needed — task files self-report status
 4. **Same for PRD/TRD** — If a feature folder predates mandatory PRD/TRD, don't retroactively create skip-justified files for completed stories. Only enforce for new work in that folder.
 
 ## Rules
