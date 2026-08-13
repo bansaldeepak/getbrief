@@ -4,3 +4,4 @@ skills/gstack-*/
 skills/gstack/
 # OS
 .DS_Store
+node_modules/
