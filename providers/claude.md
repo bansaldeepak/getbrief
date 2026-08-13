@@ -7,7 +7,17 @@ Read and follow the project-level `AGENTS.md` if it exists in the repository roo
 
 ### Memory Location
 
-**NEVER write memory to `~/.claude/projects/*/memory/`.** Project repo `MEMORY.md` + `memory/` only. Global claude config gets a pointer only. Format, and where completed feature context is flushed to: the `project-memory` skill.
+**NEVER write memory to `~/.claude/projects/*/memory/`.** Global claude config gets a pointer only.
+
+**Writing:** Always write to properly formatted files in the repo — `memory/`, `documentation/decisions/`,
+`context.md`, `retro.md`. These are the source of truth regardless of whether a knowledge graph exists.
+
+**Reading:** If `.project/knowledge.db` exists, use `knowledge_context`, `knowledge_search`,
+`knowledge_status` MCP tools — they index the same files. Fallback (no DB): read files directly.
+
+**`MEMORY.md`:** A lightweight index/redirect, not a data dump. Keep under ~40 lines.
+
+Full format and strategy: the `project-memory` skill.
 
 ### Skills & Rules
 

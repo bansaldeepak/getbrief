@@ -41,7 +41,7 @@ committed to `main` unnoticed.
 ```
    verify branch != main (gate 0)
                   ▼
-   pick the next task from tasks/index.md
+   pick the next pending task from tasks/T-NNN.md files
                   ▼
              implement it
                   ▼
@@ -55,7 +55,7 @@ committed to `main` unnoticed.
                   ▼  human says "commit"
        commit (one task = one commit)
                   ▼
-   update tasks/index.md + summary.md → commit separately
+   update task status (→ completed) + summary.md → commit separately
                   ▼
        more tasks? ──yes──▶ loop
                   │ no
