@@ -1,0 +1,212 @@
+# documentation/map.yaml — single source of truth for the agent doc graph.
+#
+# ############################################################################
+# THIS FILE IS NEVER LOADED INTO AGENT CONTEXT. It is CI config, like
+# eslint.config.js. Agents must not read it. Two artefacts are generated FROM
+# it, and those are what an agent actually sees:
+#
+#   1. the doc-map table in AGENTS.md  (~200 tokens, always loaded)
+#      → path + trigger words only. This is how a task finds its entry doc.
+#
+#   2. a "Related" footer in each tier-2/3 doc  (~30 tokens, loaded only if
+#      you were already reading that doc)
+#      → rendered from `links` below. This is how an agent traverses an edge.
+#
+# Both are written by `npm run docs:map`, between generated markers. CI fails
+# if regenerating produces a diff, so the projections cannot drift from this
+# source. Everything else here — covers_code, verified_at, freshness,
+# generated — exists for the drift checker and never enters a context window.
+#
+# Design consequence: the always-on cost of the whole documentation system is
+# the ~200-token table, flat, regardless of how big this file gets. What DOES
+# scale with node count is the table itself — see the ceiling note at the end.
+# ############################################################################
+#
+# CI validates every field (`npm run docs:drift`).
+#
+# Field meanings:
+#   id           stable slug; referenced by `links`. Never renamed once shipped.
+#   path         repo-relative file or directory. Must exist. Checked by CI.
+#   tier         1 = always loaded · 2 = loaded when task matches · 3 = followed from a tier-2 node
+#   triggers     task keywords that should pull this doc in; also what AGENTS.md's map row is built from
+#   covers_code  globs for the code this doc describes. Drives the same-PR rule and the staleness check.
+#   links        other node ids an agent may traverse to from here
+#   owner        who answers when this doc is wrong. Not who wrote it.
+#   verified_at  date a HUMAN last confirmed this doc is true. Not the git mtime — a reformat is not verification.
+#
+# Two fields beyond the brief's minimum, both earning their place:
+#   generated    if set, the doc is emitted by that command and must never be hand-edited.
+#                CI fails if a generated doc has manual commits. This is the only real fix for
+#                schema/API docs, which drift fastest (see PROPOSAL.md §1.4).
+#   freshness    max age in days before the staleness report flags it. Per-node, because
+#                schema.md going stale is an outage and a design brief going stale is not.
+
+version: 1
+
+defaults:
+  owner: db
+  freshness: 90
+
+nodes:
+  # ---------- Tier 1 ----------
+  - id: agents
+    path: AGENTS.md
+    tier: 1
+    triggers: [always]
+    covers_code: ["package.json", ".github/workflows/**", "prisma/schema.prisma"]
+    links: [schema, api, session, engagement, deploy, observability, posthog, testing, coding-standards, product, decisions]
+    owner: db
+    verified_at: 2026-07-19
+    freshness: 30
+
+  # ---------- Tier 2: reference (generated) ----------
+  - id: schema
+    path: documentation/reference/schema.md
+    tier: 2
+    triggers: [database, schema, migration, prisma, model, table, seed]
+    covers_code: ["prisma/schema.prisma", "prisma/migrations/**", "prisma/seed/**"]
+    links: [agents, decisions]
+    owner: db
+    verified_at: 2026-07-19
+    generated: npm run docs:schema
+    freshness: 14
+
+  - id: api
+    path: documentation/reference/api.md
+    tier: 2
+    triggers: [endpoint, route, api, hono, zod, openapi, handler, middleware]
+    covers_code: ["app/server/modules/**/*routes.ts", "app/server/index.ts"]
+    links: [agents, schema, coding-standards]
+    owner: db
+    verified_at: 2026-07-19
+    generated: npm run docs:generate
+    freshness: 14
+
+  # ---------- Tier 2: architecture ----------
+  - id: session
+    path: documentation/architecture/session/
+    tier: 2
+    triggers: [session, tutor, prompt, lesson, planner, avatar, live session, syllabus, assessment]
+    covers_code:
+      - "app/server/modules/session/**"
+      - "app/server/modules/tutor/**"
+      - "app/server/modules/syllabus/**"
+      - "app/server/services/tutor-engine/**"
+    links: [engagement, schema, product, decisions]
+    owner: db
+    verified_at: 2026-07-19
+    freshness: 30
+
+  - id: engagement
+    path: documentation/architecture/engagement.md
+    tier: 2
+    triggers: [game, fsrs, engagement, spaced repetition, mastery, object state, post-session]
+    covers_code:
+      - "app/server/modules/game/**"
+      - "app/server/modules/engagement/**"
+      # Was app/shared/state/derive-object-state.ts until S-068 (#120, 2026-07-20)
+      # folded the two conflicting derivations into one server-side module — the
+      # split-brain recorded as TODO-020. First live drift this map caught.
+      - "app/server/services/tutor-engine/state-derivation.ts"
+    links: [session, schema]
+    owner: db
+    verified_at: 2026-07-19
+    freshness: 45
+
+  # ---------- Tier 2: operations ----------
+  - id: deploy
+    path: documentation/setup/backend-ecr-deploy.md
+    tier: 2
+    triggers: [deploy, docker, ecs, ecr, ci, github actions, env var, environment, build]
+    covers_code:
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - ".github/workflows/**"
+      - "vite.config*.ts"
+      - "server/entry.ts"
+    links: [agents, observability, decisions]
+    owner: db
+    verified_at: 2026-07-19
+    freshness: 30
+
+  - id: observability
+    path: documentation/guides/observability.md
+    tier: 2
+    triggers: [sentry, otel, langfuse, logging, pino, tracing, error, telemetry]
+    covers_code:
+      - "server/instrument.ts"
+      - "app/server/middleware/**"
+      - "app/server/lib/logger*"
+    links: [deploy, coding-standards]
+    owner: db
+    verified_at: 2026-06-11
+    freshness: 90
+
+  - id: posthog
+    path: documentation/guides/posthog-integration.md
+    tier: 2
+    triggers: [analytics, feature flag, posthog, event, tracking]
+    covers_code: ["app/client/lib/posthog*", "app/server/lib/posthog*"]
+    links: [observability]
+    owner: db
+    verified_at: 2026-07-17
+    freshness: 90
+
+  # ---------- Tier 2: craft ----------
+  - id: testing
+    path: documentation/guides/testing.md
+    tier: 2
+    triggers: [test, vitest, spec, mock, coverage]
+    covers_code: ["**/__tests__/**", "vitest.config.ts", "test/**"]
+    links: [coding-standards]
+    owner: db
+    verified_at: 2026-05-08
+    freshness: 120
+
+  - id: coding-standards
+    path: documentation/guides/coding-standards.md
+    tier: 2
+    triggers: [refactor, convention, tsdoc, naming, style, new module]
+    covers_code: ["app/**/*.ts", "app/**/*.tsx"]
+    links: [testing, api]
+    owner: db
+    verified_at: 2026-03-27
+    freshness: 120
+
+  # ---------- Tier 3 ----------
+  - id: product
+    path: documentation/product/
+    tier: 3
+    triggers: [product spec, requirement, pedagogy, universal core, curriculum, privacy, coppa]
+    covers_code: ["prisma/seed/data/prompt-templates/**"]
+    links: [session, decisions]
+    owner: db
+    verified_at: 2026-06-29
+    freshness: 180
+
+  - id: decisions
+    path: documentation/decisions/
+    tier: 3
+    triggers: [why, rationale, decision, adr, trade-off, alternative]
+    covers_code: []          # decisions are immutable records; they never go stale, only superseded
+    links: []
+    owner: db
+    verified_at: 2026-07-16
+    freshness: 3650
+
+# ---------- Node-count ceiling ----------
+# The generated AGENTS.md table costs ~15 tokens per row. At 13 nodes that is ~200
+# tokens — cheap. At ~25 nodes it is ~375 and AGENTS.md pushes past 60 lines. At ~40
+# it is a wall of rows an agent skims instead of matching against, which is the exact
+# failure the table exists to prevent.
+#
+# So: 25 nodes is the hard ceiling. Past it, do NOT add rows — collapse sibling nodes
+# behind one parent doc whose own Related footer fans out. Adding a 26th row should
+# require deleting one, the same way the 60-line AGENTS.md budget works.
+
+# ---------- Deliberately NOT in the graph ----------
+# documentation/stories/**   frozen work log. 549 files. Excluded from freshness and from agent
+#                            reads entirely — see the AGENTS.md doc-map footer. Reference a story
+#                            from a doc by commit SHA, never the reverse.
+# documentation/proposals/** in-flight proposals, including this one.
+# memory/**                  agent memory, not repo documentation. See OPEN-QUESTIONS.md Q2.

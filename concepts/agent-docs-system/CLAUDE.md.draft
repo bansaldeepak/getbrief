@@ -1,0 +1,5 @@
+# CLAUDE.md
+
+**Read `AGENTS.md` in this repository root and follow it.** It is the single source of truth for all coding agents — commands, hard rules, and the documentation map.
+
+Nothing else belongs in this file. If you are about to add a rule here, add it to `AGENTS.md` instead; CI (`npm run docs:drift`) fails the build if this file grows beyond a pointer.
