@@ -4,7 +4,7 @@
 # Hook: UserPromptSubmit. Output is injected into the agent's context.
 # Counter is reset by memory-reset-counter.sh at SessionStart.
 #
-# Why this exists alongside the gates: WORKFLOW.md requires capture at three
+# Why this exists alongside the gates: AGENTS.md requires capture at three
 # lifecycle gates (post-planning, post-implementation, post-ship). A long
 # session can run for hours without crossing one and still produce plenty worth
 # keeping — this is the safety net for that case, not a second convention.

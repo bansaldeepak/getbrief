@@ -9,19 +9,19 @@
 set -uo pipefail   # NOT -e — collect every failure, don't stop at the first.
 
 AGENTS_DIR="$HOME/.agents"
-WORKFLOW="$AGENTS_DIR/WORKFLOW.md"
+SHARED="$AGENTS_DIR/AGENTS.md"
 RULE_HOSTS=(claude codex)   # MUST match build.sh's RULE_HOSTS.
 
 fail=0
 note() { printf '  %s\n' "$1"; }
 
-if [ ! -f "$WORKFLOW" ]; then
-  echo "ERROR: $WORKFLOW not found"
+if [ ! -f "$SHARED" ]; then
+  echo "ERROR: $SHARED not found"
   exit 1
 fi
 
 # --- Provider configs ------------------------------------------------------
-# Each generated file must equal WORKFLOW.md + its provider override, byte for
+# Each generated file must equal AGENTS.md + its provider override, byte for
 # byte. A mismatch means someone edited the generated file instead of the source.
 echo "Provider configs:"
 check_config() {
@@ -29,10 +29,10 @@ check_config() {
   if [ ! -f "$out" ]; then
     note "✗ $label missing — run build.sh"; fail=1; return
   fi
-  if diff -q <(cat "$WORKFLOW" "$AGENTS_DIR/providers/$override") "$out" >/dev/null 2>&1; then
+  if diff -q <(cat "$SHARED" "$AGENTS_DIR/providers/$override") "$out" >/dev/null 2>&1; then
     note "✓ $label"
   else
-    note "✗ $label drifted from source — edit WORKFLOW.md / providers/$override, then build.sh"; fail=1
+    note "✗ $label drifted from source — edit AGENTS.md / providers/$override, then build.sh"; fail=1
   fi
 }
 check_config "~/.claude/CLAUDE.md" claude.md "$HOME/.claude/CLAUDE.md"

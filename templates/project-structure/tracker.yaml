@@ -1,0 +1,71 @@
+# Project Tracker — Source of Truth
+# All items with lifecycle endpoints: TODOs, decisions, research, audits, stories.
+# Memory is NOT tracked here (managed separately via MEMORY.md + memory/).
+#
+# Status values: open | in_progress | done | dropped | superseded (decisions only)
+# Priority values: P0 (critical) | P1 (important) | P2 (nice-to-have)
+#
+# CLI: knowledge-graph create <type> <title>
+#      knowledge-graph update <id> <status>
+#      knowledge-graph generate  (regenerates PROJECT-TRACKER.md from this file)
+
+# --- Stories ---
+# Lifecycle: planned → in_progress → done
+# End state: merged PR with documentation
+- id: S-001
+  type: story
+  title: Example story
+  status: planned
+  branch: feature/example
+  current_task: null
+  story: documentation/stories/example/S-001/story.md
+  link: null            # external PM (GitHub Issues, Linear, Jira URL)
+  pr: null              # PR link — MUST be set on completion
+
+# --- TODOs ---
+# Lifecycle: open → in_progress → done | promoted to story
+# End state: fixed inline OR becomes a story
+- id: TODO-001
+  type: todo
+  title: Example TODO
+  status: open
+  priority: P1
+  story: null           # which story resolves this (if known)
+  link: null            # external tracker link
+  pr: null              # PR that resolved it
+
+# --- Decisions ---
+# Lifecycle: active → superseded (by new DEC)
+# End state: stays as record. Superseded decisions point to replacement.
+- id: DEC-001
+  type: decision
+  title: Example decision
+  status: active
+  created: 2026-08-19
+  superseded_by: null   # DEC-NNN that replaces this
+  story: null           # which story produced this
+  pr: null              # PR where implemented
+
+# --- Research ---
+# Lifecycle: open → accepted → done (spawns story) | rejected
+# End state: accepted research becomes a story for implementation
+- id: RES-001
+  type: research
+  title: Example research
+  status: open
+  priority: P2
+  story: null           # story spawned from this research
+  link: null
+  pr: null
+
+# --- Audits ---
+# Lifecycle: open → done (spawns TODOs/stories) | clean (no action needed)
+# End state: findings become TODOs or stories
+- id: AUD-001
+  type: audit
+  title: Example audit
+  status: open
+  priority: P1
+  findings: null        # "TODO-003, TODO-004" — what it produced
+  link: null
+  pr: null
