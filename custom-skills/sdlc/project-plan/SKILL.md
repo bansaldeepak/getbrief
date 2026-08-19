@@ -87,6 +87,19 @@ Based on answers, propose:
 
 **Documentation impact analysis** -- For each task, assess whether the change affects how the project is understood. If any task introduces new patterns, configs, commands, or conventions, include a doc sync step.
 
+**Vendor-primitive risk check** -- For each task, ask: does this task's design *depend on* a specific
+behavior of a third-party vendor/SDK primitive (an auth provider's reverification semantics, a
+payment provider's webhook ordering, a specific API's rate-limit or retry behavior, etc.) that is
+described in docs but not something you've confirmed hands-on in *this* codebase? If yes, that
+dependency is a distinct risk tier from ordinary implementation risk — vendor docs describe intent,
+not always actual behavior, and a wrong assumption here is usually only found by building the whole
+feature first. Split out a small, cheap spike task ("confirm X actually behaves as Y with a minimal
+reproduction") ahead of the full-build task, rather than folding the discovery into the build itself.
+(Found the hard way in onboarding-design-parity-s109/S-110: an account switcher's core design and a
+Google-signup step-up mechanism were both built substantially before the vendor primitive they
+depended on — Clerk's reverification — turned out not to do what its docs implied, at a cost of two
+full build-then-revert cycles that a 30-minute spike each would have caught first.)
+
 **Wait for user approval or adjustments before proceeding.**
 
 ### Phase 4: Create Story Files
@@ -134,7 +147,8 @@ Each task gets its own file with full detail. **Each task spec must be self-cont
 ```markdown
 # S-NNN-T1: <Title>
 
-**Priority:** P0/P1/P2 | **Status:** pending | **Blocked By:** --
+**Priority:** P0/P1/P2 (append **-spike** if this task exists only to confirm a vendor primitive's
+actual behavior before a dependent build task starts, e.g. `P0-spike`) | **Status:** pending | **Blocked By:** --
 
 ## What
 One-paragraph description of the deliverable. Be specific: name the function, the file, the behavior.

@@ -44,7 +44,7 @@ If it prints `main` (or the repo's default branch), branch out immediately. Don'
 commit gate in `implement` to notice — by then the docs or code are already sitting on `main`.
 
 ```bash
-git checkout -b feature/<slug>   # or fix|chore|hotfix — see WORKFLOW.md for naming
+git checkout -b feature/<slug>   # or fix|chore|hotfix — see AGENTS.md for naming
 ```
 
 Derive `<slug>` from the feature/story name. If a branch already exists for this feature (you're

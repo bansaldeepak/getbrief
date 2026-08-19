@@ -10,7 +10,7 @@ model: opus
 Runs between `project-plan` and `pr-review`: one task at a time, with a human gate at every commit
 and every push.
 
-Universal git and scope rules come from `WORKFLOW.md`; destructive database operations from
+Universal git and scope rules come from `AGENTS.md`; destructive database operations from
 `db-safety`; code shape from `coding-standards` and its backend/frontend companions. **Commands,
 scripts, and deploy behaviour are project-specific — read the repo's `AGENTS.md` for those.** This
 skill covers only *when you are allowed to commit, push, and open a PR*.
@@ -55,7 +55,9 @@ committed to `main` unnoticed.
                   ▼  human says "commit"
        commit (one task = one commit)
                   ▼
-   update task status (→ completed) + summary.md → commit separately
+   update task status header (**Status:** → completed — a separate edit from the
+   Acceptance Criteria checkboxes and Result section, verify by grepping the
+   file for the literal string) + summary.md → commit separately
                   ▼
        more tasks? ──yes──▶ loop
                   │ no
@@ -112,7 +114,7 @@ On approval: `git push -u origin <branch>`, then open the PR into `main`.
 
 ## Never, Regardless of Approval
 
-`WORKFLOW.md` covers the standing prohibitions — `main`, force-push, repo-wide auto-fix, working
+`AGENTS.md` covers the standing prohibitions — `main`, force-push, repo-wide auto-fix, working
 outside the task's scope. Two more that belong to this loop:
 
 - **`git commit --no-verify`** — unless the human asked for it and you say why in the same message
