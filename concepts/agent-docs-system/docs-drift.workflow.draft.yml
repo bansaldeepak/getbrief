@@ -1,0 +1,72 @@
+# .github/workflows/docs-drift.yml
+#
+# Separate from ci.yml on purpose. `ci.yml` carries:
+#
+#     paths-ignore: ["documentation/**", "**/*.md", ".vscode/**"]
+#
+# ...which is correct for typecheck/lint/test/build, but would make a drift check
+# useless: the check must run BOTH when code changes (code outpacing docs) and when
+# docs change (docs claiming paths that don't exist). Adding the job to ci.yml would
+# mean it never runs on the doc half. So it gets its own workflow with no paths-ignore.
+#
+# Runtime is a few seconds — it is git log plus file existence checks.
+
+name: Docs Drift
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    # Mondays 06:00 UTC — the staleness report. Weekly, because the same-PR rule is the
+    # primary defence and this is only the backstop that catches what slipped through.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: docs-drift-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift:
+    name: Documentation drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The staleness check compares commit dates against verified_at, so it needs
+          # real history. A shallow clone silently reports "no commits since" for
+          # everything — a green build that checked nothing.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Drift check
+        if: github.event_name == 'pull_request'
+        run: npm run docs:drift
+
+      # On the weekly run, report rather than fail — nobody is watching a red cron job,
+      # and a permanently-red schedule teaches the team to ignore it.
+      - name: Staleness report
+        if: github.event_name != 'pull_request'
+        run: npm run docs:drift -- --report || true
+
+      - name: Open or update staleness issue
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run docs:drift -- --report > /tmp/report.md || true
+          if [ -s /tmp/report.md ]; then
+            existing=$(gh issue list --label docs-staleness --state open --json number --jq '.[0].number')
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body-file /tmp/report.md
+            else
+              gh issue create --title "Stale documentation nodes" \
+                --label docs-staleness --body-file /tmp/report.md
+            fi
+          fi

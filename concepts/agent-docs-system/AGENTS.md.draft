@@ -1,0 +1,59 @@
+# AGENTS.md
+
+Single source of truth for every coding agent. `CLAUDE.md` and `.cursor/rules/*` are pointers to this file — never copies.
+
+Panya / Taiboli — GenAI Hindi tutor for diaspora children (6–12). **Ships as a Node.js Docker container on AWS ECS**, not Cloudflare Workers (DEC-001).
+
+## Commands
+
+| Task | Command |
+|---|---|
+| Install | `npm ci` |
+| Dev | `npm run dev` |
+| Typecheck (what CI runs) | `npx react-router typegen && npx tsc -b` |
+| Lint | `npm run lint` |
+| Test · one file | `npm test` · `npx vitest run <path>` |
+| Build (deployed path) | `npm run build:node` |
+| Format staged · verify repo | `npm run check` · `npm run check:all` |
+| DB migrate · generate · seed | `npm run db:migrate` · `npm run db:generate` · `npm run db:seed` |
+| Deploy | Push the branch — `.github/workflows/deploy-backend.yml` does it |
+
+`npm run deploy` and `npm run dev:server` are Cloudflare-era and retired — never run them.
+
+## Hard rules
+
+- Never commit to `main`. Branch `feature|fix|chore|hotfix/<name>`. Claim the story ID with a `documentation/PROJECT-TRACKER.md` row before implementing.
+- Schema change → `db:migrate`, never `db:push`. No migration file = broken CI deploy.
+- DB scripts need `dotenv -o`. Without `-o` a stale shell export silently wins.
+- `VITE_*` is inlined at image-build time. Anything that varies per deploy must not be `VITE_`-prefixed.
+- `VITE_ENVIRONMENT` is an **access gate** (`app/server/modules/simulate/handlers.ts`), not a tag. Never fold it into `DEPLOYMENT_ENVIRONMENT`.
+- Clerk `c.get("userId")` ≠ Prisma `User.id`. Resolve via `vendorId` first.
+- Never merge the two Vite configs while `server/entry.ts` exists (DEC-003). Sentry wiring must sit in both or `build:node` dies.
+- CSP `style-src 'unsafe-inline'` is deliberate — Clerk requires it. Do not "fix" it.
+- Never add a repo-wide `prettier --write .` or `eslint --fix` script. Never hand-edit `worker-configuration.d.ts`, `.react-router/`, `app/generated/`, `*.tsbuildinfo`.
+- Frontend never imports `@backend/*`; backend never imports `@frontend/*`.
+- Be terse. No preamble, no restating the question, no recap of what you just did.
+
+## Doc map
+
+| If the task is… | Read first |
+|---|---|
+| DB, schema, migration | `documentation/reference/schema.md` |
+| Adding or changing an API route | `documentation/reference/api.md` |
+| Session, tutor, prompt engine | `documentation/architecture/session/` |
+| Games, FSRS, engagement | `documentation/architecture/engagement.md` |
+| Deploy, Docker, CI, env vars | `documentation/setup/backend-ecr-deploy.md` |
+| Observability, Sentry, Langfuse | `documentation/guides/observability.md` |
+| Analytics, feature flags | `documentation/guides/posthog-integration.md` |
+| Writing tests | `documentation/guides/testing.md` |
+| Any other code change | `documentation/guides/coding-standards.md` |
+| Current product spec | `documentation/product/` |
+| Why something is the way it is | `documentation/decisions/` |
+
+**IMPORTANT: before starting, read the one row that matches your task. Read only that row.**
+Each doc ends with a generated **Related** footer — follow those links to go deeper. Never read `documentation/map.yaml`; it is CI config, not context.
+`documentation/stories/` is a frozen history log, not current truth — do not read it for how things work today.
+
+## Same-PR rule
+
+**If you change code matching a map node's `covers_code`, update that node's doc in the same PR and set its `verified_at` to today.** CI fails the build otherwise. If the doc is wrong and you cannot fix it in scope, delete the claim rather than leave it — a stale doc costs more than a missing one.
