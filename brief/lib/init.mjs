@@ -22,7 +22,7 @@ const DIRS = [
 
 const FILES = [
   { src: "tracker.yaml", dest: "documentation/tracker.yaml" },
-  { src: "MEMORY.md", dest: "documentation/MEMORY.md" },
+  { src: "MEMORY.md", dest: "MEMORY.md" },
   { src: "AGENTS.md", dest: "AGENTS.md" },
   { src: "PROJECT-TRACKER.md", dest: "documentation/PROJECT-TRACKER.md" },
 ];

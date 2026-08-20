@@ -23,12 +23,21 @@ brief search "<query>" --memory # memory only
 
 ## Active
 
+- [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands, project
+  structure, skills, and what's deferred.
 - [Standards split](documentation/memory/project_standards-split.md) — why standards are three
   skills, why stack content lives in repos.
 - [Cross-reference drift](documentation/memory/project_cross-reference-drift.md) — stale references
   are the dominant failure mode; nothing checks for them.
 - [Memory mechanisms](documentation/memory/project_memory-mechanisms.md) — three memory systems
   coexist unreconciled.
+
+## Feedback
+
+- [Lifecycle: retro position](documentation/memory/feedback_lifecycle-retro-position.md) — retro
+  after PR + user tests, before merge. Token usage removed from all skills.
+- [Status normalization](documentation/memory/feedback_status-normalization.md) — only first word of
+  status field matters; complex prose after it is ignored.
 
 ## Conventions
 

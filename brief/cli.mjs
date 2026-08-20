@@ -72,6 +72,7 @@ Resource Commands:
   research <action>    Manage research items
   audit <action>       Manage audits
   log <action>         Project log entries (multi-agent safe)
+  tracker <action>     Rebuild/inspect tracker.yaml
 
   Run "brief <resource> help" for resource-specific actions.
 
@@ -90,10 +91,12 @@ Search:
     --memory           Filter to memory
     --retro            Filter to retro findings
 
+Utilities:
+  next [type]          Print next available ID (default: story)
+
 Project Setup:
   init                 Scaffold canonical project structure
-  generate             Regenerate PROJECT-TRACKER.md (optional)
-  migrate              Convert existing items to tracker format
+  migrate              Check/apply brief format upgrades
 
 MCP Server:
   serve --mcp          Start MCP server (stdio transport)
@@ -130,6 +133,10 @@ if (command === "story") {
 } else if (command === "log") {
   const { logCommand } = await import("./lib/commands/log.mjs");
   logCommand(root, args[1], args.slice(2), rawArgs);
+
+} else if (command === "tracker") {
+  const { trackerCommand } = await import("./lib/commands/tracker.mjs");
+  trackerCommand(root, args[1], args.slice(2), rawArgs);
 
 // Cross-type filters
 } else if (command === "status") {
@@ -187,6 +194,18 @@ if (command === "story") {
     console.log(`\n${results.length} result(s)`);
   }
 
+// Next ID query
+} else if (command === "next") {
+  const type = args[1] || "story";
+  const { readTracker, nextId, TYPE_CONFIG } = await import("./lib/tracker.mjs");
+  if (!TYPE_CONFIG[type]) {
+    console.error(`Unknown type: ${type}. Valid: story, todo, decision, research, audit`);
+    process.exit(1);
+  }
+  const items = readTracker(root);
+  const id = nextId(items, type, root);
+  console.log(id);
+
 // Init / Generate / Migrate
 } else if (command === "init") {
   const { initProject } = await import("./lib/init.mjs");
@@ -201,11 +220,6 @@ if (command === "story") {
   }
   if (!created.length) console.log("Nothing to do — project already initialized.");
   else console.log(`\n✓ Project scaffolded at ${root}`);
-
-} else if (command === "generate") {
-  const { generateMarkdown } = await import("./lib/tracker.mjs");
-  const { path, activeCount } = generateMarkdown(root);
-  console.log(`✓ Generated ${path} (${activeCount} active items)`);
 
 } else if (command === "migrate") {
   const { migrateProject } = await import("./lib/migrate.mjs");

@@ -210,7 +210,7 @@ function itemCreate(root, type, args, rawArgs) {
   }
 
   const items = readTracker(root);
-  const id = nextId(items, type);
+  const id = nextId(items, type, root);
   const today = new Date().toISOString().slice(0, 10);
   const cfg = TYPE_CONFIG[type];
 
