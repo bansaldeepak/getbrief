@@ -91,7 +91,8 @@ function storyTasks(root, storyId) {
     const priorityMatch = content.match(/\*\*Priority:\*\*\s*(\S+)/i) || content.match(/Priority:\s*(\S+)/i);
     const blockedMatch = content.match(/\*\*Blocked By:\*\*\s*(.+)/i);
 
-    const id = `${storyId}-${file.replace(".md", "").toUpperCase()}`;
+    const num = parseInt(file.match(/T-(\d+)/i)[1], 10);
+    const id = `${storyId}-T${num}`;
     const title = titleMatch ? titleMatch[1].replace(/^S-\d+-T\d+:\s*/, "") : file;
     const status = statusMatch ? statusMatch[1].trim() : "pending";
     const priority = priorityMatch ? priorityMatch[1].trim() : "—";
@@ -107,8 +108,12 @@ function storyTasks(root, storyId) {
 }
 
 function storyTask(root, args, rawArgs) {
+  // brief story task create S-001 "Task title" [--blocked-by=S-001-T1]
   // brief story task S-001-T2
   // brief story task update S-001-T2 status=completed
+  if (args[0] === "create") {
+    return storyTaskCreate(root, args.slice(1), rawArgs);
+  }
   if (args[0] === "update") {
     return storyTaskUpdate(root, args.slice(1), rawArgs);
   }
@@ -116,6 +121,7 @@ function storyTask(root, args, rawArgs) {
   const taskId = args[0];
   if (!taskId) {
     console.error("Usage: brief story task <S-NNN-TN>");
+    console.error("       brief story task create <S-NNN> <title>");
     console.error("       brief story task update <S-NNN-TN> status=<value>");
     process.exit(1);
   }
@@ -136,6 +142,76 @@ function storyTask(root, args, rawArgs) {
   const relPath = `${tasksDir}/${taskFile}`;
   console.log(`→ ${relPath}`);
   console.log(readFileSync(filePath, "utf8"));
+}
+
+function storyTaskCreate(root, args, rawArgs) {
+  const storyId = args[0];
+  const titleParts = args.slice(1).filter((a) => !a.startsWith("--"));
+  const title = titleParts.join(" ");
+
+  if (!storyId || !title) {
+    console.error("Usage: brief story task create <S-NNN> <title> [--blocked-by=S-NNN-TN] [--priority=P1]");
+    process.exit(1);
+  }
+
+  const tasksDir = findTasksDir(root, storyId);
+  if (!tasksDir) {
+    console.error(`No tasks directory found for ${storyId}. Create the story first: brief story create`);
+    process.exit(1);
+  }
+
+  // Auto-number: find highest existing T-NNN
+  const existing = readdirSync(join(root, tasksDir))
+    .filter((f) => /^T-\d+\.md$/i.test(f))
+    .map((f) => parseInt(f.match(/T-(\d+)/i)[1], 10));
+  const nextNum = existing.length > 0 ? Math.max(...existing) + 1 : 1;
+  const taskNum = String(nextNum).padStart(3, "0");
+  const taskId = `${storyId}-T${nextNum}`;
+  const taskFile = `T-${taskNum}.md`;
+
+  // Parse flags
+  let blockedBy = null;
+  let priority = "P1";
+  let description = "";
+  for (const arg of rawArgs) {
+    if (arg.startsWith("--blocked-by=")) blockedBy = arg.split("=").slice(1).join("=");
+    if (arg.startsWith("--priority=")) priority = arg.split("=")[1];
+    if (arg.startsWith("--description=")) description = arg.split("=").slice(1).join("=");
+  }
+
+  const content = `# ${taskId}: ${title}
+
+**Status:** pending
+**Priority:** ${priority}
+**Blocked By:** ${blockedBy || "—"}
+
+## Description
+
+${description || "<!-- What this task accomplishes -->"}
+
+## Implementation Notes
+
+<!-- Technical approach, key files, gotchas -->
+
+## Verification
+
+- [ ] ...
+`;
+
+  writeFileSync(join(root, tasksDir, taskFile), content);
+
+  // Update current_task in tracker if this is the first task
+  if (existing.length === 0) {
+    const items = readTracker(root);
+    const storyIdx = items.findIndex((i) => i.id === storyId);
+    if (storyIdx !== -1) {
+      items[storyIdx].current_task = taskId;
+      writeTracker(root, items);
+    }
+  }
+
+  console.log(`✓ Created ${taskId}: ${title}`);
+  console.log(`  → ${tasksDir}/${taskFile}`);
 }
 
 function storyTaskUpdate(root, args, rawArgs) {
@@ -167,14 +243,36 @@ function storyTaskUpdate(root, args, rawArgs) {
   }
 
   if (updates.status) {
-    // Update **Status:** field in task file
     content = content.replace(
-      /(\*\*Status:\*\*\s*)\w+/i,
+      /(\*\*Status:\*\*\s*)\S+/i,
       `$1${updates.status}`,
+    );
+  }
+  if (updates.priority) {
+    content = content.replace(
+      /(\*\*Priority:\*\*\s*)\S+/i,
+      `$1${updates.priority}`,
+    );
+  }
+  if (updates["blocked-by"]) {
+    content = content.replace(
+      /(\*\*Blocked By:\*\*\s*).+/i,
+      `$1${updates["blocked-by"]}`,
     );
   }
 
   writeFileSync(filePath, content);
+
+  // Update current_task in tracker when task becomes in_progress
+  if (updates.status === "in_progress" || updates.status === "in-progress") {
+    const items = readTracker(root);
+    const storyIdx = items.findIndex((i) => i.id === storyId);
+    if (storyIdx !== -1) {
+      items[storyIdx].current_task = taskId;
+      writeTracker(root, items);
+    }
+  }
+
   console.log(`✓ Updated ${taskId}: ${JSON.stringify(updates)}`);
   console.log(`  → ${tasksDir}/${taskFile}`);
 }
@@ -183,7 +281,7 @@ function storyCreate(root, args, rawArgs) {
   const titleParts = args.filter((a) => !a.startsWith("--"));
   const title = titleParts.join(" ");
   if (!title) {
-    console.error("Usage: brief story create <title> [--branch=<name>]");
+    console.error("Usage: brief story create <title> [--branch=<name>] [--description=<text>] [--feature=<folder>]");
     process.exit(1);
   }
 
@@ -191,12 +289,14 @@ function storyCreate(root, args, rawArgs) {
   for (const arg of rawArgs) {
     if (arg.startsWith("--branch=")) opts.branch = arg.split("=").slice(1).join("=");
     if (arg.startsWith("--link=")) opts.link = arg.split("=").slice(1).join("=");
+    if (arg.startsWith("--description=")) opts.description = arg.split("=").slice(1).join("=");
+    if (arg.startsWith("--feature=")) opts.feature = arg.split("=").slice(1).join("=");
   }
 
   const items = readTracker(root);
   const id = nextId(items, "story");
   const today = new Date().toISOString().slice(0, 10);
-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const slug = opts.feature || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const branch = opts.branch || `feature/${slug}`;
 
   // Determine feature folder and create story structure
@@ -212,7 +312,8 @@ function storyCreate(root, args, rawArgs) {
 **Created**: ${today}
 
 ## Context
-<!-- Why this work is needed -->
+
+${opts.description || "<!-- Why this work is needed -->"}
 
 ## Goal
 <!-- One sentence outcome -->
@@ -299,6 +400,17 @@ function storyUpdate(root, args) {
     }
   }
 
+  // Append note to summary.md if provided
+  if (updates.note && items[idx].story) {
+    const summaryPath = join(root, items[idx].story.replace("story.md", "summary.md"));
+    if (existsSync(summaryPath)) {
+      const today = new Date().toISOString().slice(0, 10);
+      let content = readFileSync(summaryPath, "utf8");
+      content = content.trimEnd() + `\n\n### Note (${today})\n\n${updates.note}\n`;
+      writeFileSync(summaryPath, content);
+    }
+  }
+
   console.log(`✓ Updated ${id}: ${JSON.stringify(updates)}`);
 }
 
@@ -306,14 +418,18 @@ function storyHelp() {
   console.log(`brief story <action>
 
 Actions:
-  list [--all]                    List stories (default: active only)
-  show <S-NNN>                    Show story detail (reads story.md)
-  tasks <S-NNN>                   List all tasks for a story (table)
-  task <S-NNN-TN>                 Show single task content
-  task update <S-NNN-TN> <k=v>    Update task status in file
-  create <title> [--branch=...]   Create story (tracker + files)
-  update <S-NNN> <k=v...>         Update story in tracker
-  help                            Show this help`);
+  list [--all]                          List stories (default: active only)
+  show <S-NNN>                          Show story detail (reads story.md)
+  tasks <S-NNN>                         List all tasks for a story (table)
+  task <S-NNN-TN>                       Show single task content
+  task create <S-NNN> <title>           Create task (auto-numbers T-001, T-002...)
+    [--priority=P1] [--blocked-by=...]
+  task update <S-NNN-TN> <k=v...>       Update task fields (status, priority, blocked-by)
+  create <title>                        Create story (tracker + all files)
+    [--branch=...] [--description=...]
+    [--feature=<folder>]
+  update <S-NNN> <k=v...>              Update story in tracker
+  help                                  Show this help`);
 }
 
 // --- Helpers ---

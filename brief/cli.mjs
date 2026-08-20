@@ -3,8 +3,10 @@
 // Resource-based commands: brief <resource> <action> [args] [flags]
 
 import { existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, basename } from "node:path";
 import { execSync } from "node:child_process";
+
+const startTime = Date.now();
 
 const rawArgs = process.argv.slice(2);
 
@@ -69,6 +71,7 @@ Resource Commands:
   decision <action>    Manage decisions
   research <action>    Manage research items
   audit <action>       Manage audits
+  log <action>         Project log entries (multi-agent safe)
 
   Run "brief <resource> help" for resource-specific actions.
 
@@ -77,6 +80,7 @@ Cross-Type Views:
   pending              All open/planned items across types
   active               All in_progress items across types
   completed            All done items across types
+  stats [--global]     Usage stats (queries per project per day)
 
 Search:
   search <query>       Search all types
@@ -123,6 +127,10 @@ if (command === "story") {
   const { itemCommand } = await import("./lib/commands/item.mjs");
   itemCommand(root, command, args[1], args.slice(2), rawArgs);
 
+} else if (command === "log") {
+  const { logCommand } = await import("./lib/commands/log.mjs");
+  logCommand(root, args[1], args.slice(2), rawArgs);
+
 // Cross-type filters
 } else if (command === "status") {
   const { statusCommand } = await import("./lib/commands/filters.mjs");
@@ -139,6 +147,11 @@ if (command === "story") {
 } else if (command === "completed") {
   const { completedCommand } = await import("./lib/commands/filters.mjs");
   completedCommand(root);
+
+} else if (command === "stats") {
+  const { statsCommand } = await import("./lib/usage.mjs");
+  const projectFilter = args[1] === "--global" ? null : basename(root);
+  statsCommand(projectFilter);
 
 // Search
 } else if (command === "search") {
@@ -239,3 +252,7 @@ if (command === "story") {
   console.error(`Unknown command: ${command}. Run: brief help`);
   process.exit(1);
 }
+
+// Log usage (non-blocking, never fails)
+import { logUsage } from "./lib/usage.mjs";
+logUsage(basename(root), args.join(" "), startTime);

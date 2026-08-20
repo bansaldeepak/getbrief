@@ -124,6 +124,16 @@ full build-then-revert cycles that a 30-minute spike each would have caught firs
 
 ### Phase 4: Create Story Files
 
+**Primary** — if `brief` CLI is installed:
+```bash
+brief story create "<title>" --description="<context>" --feature=<folder> --branch=feature/<name>
+# Then for each task:
+brief story task create S-NNN "<task title>" --priority=P0 [--blocked-by=S-NNN-TN]
+```
+This creates story.md, summary.md, tasks/ directory, and tracker entry automatically.
+
+**Fallback** — create files manually following templates below.
+
 Determine the next story ID by scanning all `documentation/stories/*/S-NNN/` folders. IDs are sequential per project. Determine the feature folder name -- use an existing one if the story belongs to an in-progress feature, or create a new one (name matches branch slug).
 
 #### `documentation/stories/<feature-name>/S-NNN/story.md`
@@ -256,23 +266,20 @@ What makes a good "How" section:
 `<TBD at implementation>` — planning cannot know whether a browser check is needed, and pre-filling
 "no manual verification needed" on a story that touches a live path is how that check gets skipped.>
 
-## Token Usage
-<Filled at retro — run token-usage script with project dir and story start date>
-
-| Model | Input | Cache Create | Cache Read | Output | Total |
-|-------|------:|-------------:|-----------:|-------:|------:|
-| Opus | | | | | |
-| Sonnet | | | | | |
-| Haiku | | | | | |
-| **Total** | | | | | |
-
 ## Follow-up
 <Deferred items, future improvements>
 ```
 
 ### Phase 5: Update Project Tracker
 
-Add the new story to `documentation/PROJECT-TRACKER.md` in the **Planned / Backlog** section. If the file doesn't exist, create it using the template from the `update-tracker` skill.
+**Primary** — if `brief` CLI is installed:
+```bash
+brief story create "<title>" --description="<context>" --feature=<folder>
+# Then for each task:
+brief story task create S-NNN "<task title>" --priority=P1 [--blocked-by=S-NNN-TN]
+```
+
+**Fallback** — add the story to `documentation/PROJECT-TRACKER.md` in the Planned section manually.
 
 ### Phase 6: Confirm
 

@@ -79,13 +79,21 @@ you're about to touch.
 **Primary** — if `brief` CLI is installed (`which brief`):
 ```bash
 brief search "<file or module name>"
+brief story task update S-NNN-TN status=in_progress   # mark task started
 ```
 
 **Fallback** — if CLI is not installed, read files directly:
 - `PROJECT-TRACKER.md` — active decisions (DEC-NNN) that constrain this area
 - `memory/` files — gotchas or constraints related to these files
 
-Skip this if the task spec already inlines all relevant context (well-written specs often do).
+Skip context check if the task spec already inlines all relevant context.
+
+## After Each Task Commit
+
+```bash
+brief story task update S-NNN-TN status=completed
+brief log "Completed: <what was done>" --story=S-NNN --tag=progress
+```
 
 ## Gate 1 — Before Every Commit
 

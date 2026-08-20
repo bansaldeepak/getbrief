@@ -14,15 +14,17 @@ const DIRS = [
   "documentation",
   "documentation/stories",
   "documentation/decisions",
-  "memory",
+  "documentation/todo",
+  "documentation/logs",
+  "documentation/memory",
   ".project",
 ];
 
 const FILES = [
-  { src: "tracker.yaml", dest: "tracker.yaml" },
-  { src: "MEMORY.md", dest: "MEMORY.md" },
+  { src: "tracker.yaml", dest: "documentation/tracker.yaml" },
+  { src: "MEMORY.md", dest: "documentation/MEMORY.md" },
   { src: "AGENTS.md", dest: "AGENTS.md" },
-  { src: "PROJECT-TRACKER.md", dest: "PROJECT-TRACKER.md" },
+  { src: "PROJECT-TRACKER.md", dest: "documentation/PROJECT-TRACKER.md" },
 ];
 
 export function initProject(projectRoot, opts = {}) {

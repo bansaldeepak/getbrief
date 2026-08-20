@@ -280,10 +280,16 @@ function itemUpdate(root, type, args) {
   if (existsSync(mdPath)) {
     let content = readFileSync(mdPath, "utf8");
     for (const [key, value] of Object.entries(updates)) {
+      if (key === "note") continue;
       const re = new RegExp(`^(${key}:)\\s*.+$`, "m");
       if (re.test(content)) {
         content = content.replace(re, `$1 ${value || "null"}`);
       }
+    }
+    // Append note if provided
+    if (updates.note) {
+      const today = new Date().toISOString().slice(0, 10);
+      content = content.trimEnd() + `\n\n### Note (${today})\n\n${updates.note}\n`;
     }
     writeFileSync(mdPath, content);
   }
