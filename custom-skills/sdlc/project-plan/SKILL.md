@@ -272,7 +272,14 @@ What makes a good "How" section:
 
 ### Phase 5: Update Project Tracker
 
-Add the new story to `documentation/PROJECT-TRACKER.md` in the **Planned / Backlog** section. If the file doesn't exist, create it using the template from the `update-tracker` skill.
+**Primary** — if `brief` CLI is installed:
+```bash
+brief story create "<title>" --description="<context>" --feature=<folder>
+# Then for each task:
+brief story task create S-NNN "<task title>" --priority=P1 [--blocked-by=S-NNN-TN]
+```
+
+**Fallback** — add the story to `documentation/PROJECT-TRACKER.md` in the Planned section manually.
 
 ### Phase 6: Confirm
 

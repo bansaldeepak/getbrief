@@ -127,19 +127,22 @@ overlap in time — say so in the summary rather than presenting it as exact.
 
 ### Phase 6: Update Project Tracker
 
-If `tracker.yaml` exists, update the story's status and record the PR:
+If `brief` CLI is installed:
 
 ```bash
-# If brief CLI is installed:
-brief update S-NNN status=done pr="<PR URL>"
+brief story update S-NNN status=done pr="<PR URL>"
 
-# Fallback — edit tracker.yaml directly:
-# Set status: done and pr: <URL> on the story entry
+# Create TODOs from learnings that need future action:
+brief todo create "<action item>" --priority=P2 --story=S-NNN
+
+# Create decisions from architectural choices made during implementation:
+brief decision create "<what was decided>" --story=S-NNN
+
+# Log the retro completion:
+brief log "Retro completed for S-NNN" --tag=retro --story=S-NNN
 ```
 
-Also create any new TODOs/decisions that emerged from this retro:
-- Learnings that need future action → create TODO entries
-- Architectural choices made during implementation → create DEC entries
+**Fallback** — edit tracker.yaml directly: set `status: done` and `pr: <URL>` on the story entry.
 
 ### Phase 7: Retro Summary
 
