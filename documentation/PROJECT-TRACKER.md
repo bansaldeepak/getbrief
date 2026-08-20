@@ -9,6 +9,7 @@
 | ID | Title | Status | Branch | Current Task |
 |----|-------|--------|--------|--------------|
 | S-001 | Example story | in_progress | feature/example | S-001-T2 |
+| S-003 | Bundle Codegraph + Unified Context Command | planned | feature/brief-context-codegraph | S-003-T1 |
 
 ## TODOs
 
