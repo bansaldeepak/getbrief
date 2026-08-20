@@ -7,17 +7,18 @@ model: opus
 
 # /sdlc retro -- Story Retrospective
 
-Captures learnings after story completion and feeds improvements back into the system. Runs after merge, before starting new work.
+Captures learnings after story completion and feeds improvements back into the system.
+Retro is the **last step before merge** — not a separate story. It runs after the PR is opened,
+pr-review is done, and the user has tested the build. The retro output (retro.md, tracker
+updates, TODOs) is committed to the same PR branch before the human merges.
 
 **Usage**: `/sdlc retro` (reviews the most recently completed story) or `/sdlc retro S-NNN`
 
-**Source**: Adapted from phuryn/pm-skills retro facilitation + custom auto-improvement loop.
-
 ## When Claude Should Auto-Invoke
 
-- After a story is merged and marked as completed
-- Before starting a new `/sdlc discover` or `/sdlc project-plan` cycle
-- Say: "Story complete and merged. Running retro to capture learnings."
+- After user has tested the build and confirmed it works
+- PR is already open — retro commit goes into the same PR before merge
+- Say: "User confirmed build works. Running retro to capture learnings before merge."
 
 ## Instructions
 
@@ -102,30 +103,7 @@ format and locations are defined in `project-memory`, so don't duplicate them he
 
 Commit the flush separately: `docs(context): flush <feature> implementation context`
 
-### Phase 5: Collect Token Usage
-
-Capture cost data for this story. Both Claude and Codex record the git branch in
-their session logs, so the branch is the accurate scope — not a date window:
-
-```bash
-~/.agents/scripts/token-usage.py --branch <story-branch> --project <repo-path>
-```
-
-1. Get the branch from `story.md` (Branch field)
-2. Run `--list` first to sanity-check which sessions matched, then run the totals
-3. Paste the table into `summary.md` under Token Usage
-4. Add the compact line to `PROJECT-TRACKER.md` in the story's row
-
-**Covers both hosts.** If work was done in Codex as well as Claude, both appear —
-a Claude-only number on a story worked in both silently under-reports.
-
-**When branch isn't enough:** several stories sharing one branch, or work done off
-it. If the repo has `documentation/.sessions.jsonl` (written by the optional
-`record-session.sh` SessionStart hook), use `--sessions-file` for exact
-attribution. Falling back to `--after <date>` is approximate whenever stories
-overlap in time — say so in the summary rather than presenting it as exact.
-
-### Phase 6: Update Project Tracker
+### Phase 5: Update Project Tracker
 
 If `brief` CLI is installed:
 
@@ -144,7 +122,7 @@ brief log "Retro completed for S-NNN" --tag=retro --story=S-NNN
 
 **Fallback** — edit tracker.yaml directly: set `status: done` and `pr: <URL>` on the story entry.
 
-### Phase 7: Retro Summary
+### Phase 6: Retro Summary
 
 Save to the story folder as `retro.md`:
 
@@ -170,9 +148,6 @@ Save to the story folder as `retro.md`:
 | # | Learning | Action Taken |
 |---|---------|-------------|
 | 1 | <learning> | <what we updated> |
-
-## Token Usage
-<paste output from ~/.claude/scripts/token-usage.sh>
 
 ## System Improvements Made
 - <skill/memory/rule updated and why>

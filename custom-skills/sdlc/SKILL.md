@@ -24,7 +24,7 @@ table, or answer from memory — the table below is an index, not a substitute.
 | `project-plan` | `~/.agents/custom-skills/sdlc/project-plan/SKILL.md` | Approved requirements need breaking into stories and tasks |
 | `implement` | `~/.agents/custom-skills/sdlc/implement/SKILL.md` | Working through a story's tasks — commit and push gates |
 | `pr-review` | `~/.agents/custom-skills/sdlc/pr-review/SKILL.md` | Branch is ready for review, before a PR |
-| `retro` | `~/.agents/custom-skills/sdlc/retro/SKILL.md` | A story merged |
+| `retro` | `~/.agents/custom-skills/sdlc/retro/SKILL.md` | User tested build, before merge |
 | `decision-doc` | `~/.agents/custom-skills/sdlc/decision-doc/SKILL.md` | A non-obvious choice was made, any time |
 | `memory-review` | `~/.agents/custom-skills/sdlc/memory-review/SKILL.md` | Memory needs flushing or curating, any time |
 
@@ -53,14 +53,14 @@ resuming a later phase of the same story), switch to it instead of creating a ne
 and reversible. Everything that happens *after* the switch still follows the commit/push gates owned
 by `implement`.
 
-`retro` runs after merge, so there's no branch to create — instead it audits: confirm every commit
-for the story landed on the story's branch, not `main`, and flag it as a finding if not (see
-`retro`'s Phase 1).
+`retro` runs on the story branch after user testing, before merge — the retro commit is part of the
+same PR. It audits: confirm every commit for the story landed on the story's branch, not `main`,
+and flag it as a finding if not (see `retro`'s Phase 1).
 
 ## The Graph
 
 ```
-discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-review (🔒) → merge (🔒) → retro
+discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-review (🔒) → retro → merge (🔒)
              │          │                       │      │
       gstack plan-  gstack plan-          qa agent   every commit (🔒)
       ceo-review    eng-review            per task   every push (🔒)
@@ -97,8 +97,9 @@ Announce the next phase and why, then wait if the transition crosses a 🔒 gate
 | `trd` 🔒 | `/gstack plan-eng-review`, then `project-plan` |
 | `project-plan` | `implement` — task by task, `qa` agent, gated commits |
 | `implement` | `pr-review` once every task is done and pushed 🔒 |
-| `pr-review` 🔒 | PR, then merge 🔒 |
-| merge | `retro` — which calls `memory-review` |
+| `pr-review` 🔒 | PR opened, user tests the build |
+| user tests | `retro` — captures learnings, updates docs/status, commits to same PR |
+| `retro` | merge 🔒 — `self-improving` agent runs post-merge |
 
 ## Rules
 

@@ -5,7 +5,7 @@ Universal rules for every project on this machine.
 ## Full Lifecycle Workflow
 
 ```
-discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-review (🔒) → merge (🔒) → retro
+discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-review (🔒) → retro → merge (🔒)
                                                    │
                                             qa agent per task
 ```
@@ -27,9 +27,10 @@ Off-graph: `/sdlc decision-doc` for any non-obvious choice, `/pre-mortem` before
 - **Story-first rule**: `story.md`, `tasks/T-NNN.md`, `summary.md` must exist BEFORE implementation
 - **After each task**: `qa` agent → commit → update task status + `summary.md` → commit story updates separately
 - **Legacy compat**: If story has `tasks.md` or `tasks/index.md`, continue that format. New stories use individual `tasks/T-NNN.md` files (status lives in each task file).
-- **Before PR**: `/sdlc pr-review` → wait for human approval
-- **After merge**: `/sdlc retro` → `self-improving` agent
-- **Story completion**: All tasks done, `summary.md` finalized, status `completed`, tracker updated
+- **PR opened**: `/sdlc pr-review` → wait for human approval
+- **User tests**: Human verifies the build works
+- **Before merge**: `/sdlc retro` — captures learnings, updates docs/status, commits to same PR
+- **After merge**: `self-improving` agent curates memory from retro findings
 
 ## Project Tracker
 

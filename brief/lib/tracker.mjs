@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { parseDocument, stringify } from "yaml";
 
-const TRACKER_FILE = "tracker.yaml";
+const TRACKER_FILE = "documentation/tracker.yaml";
 
 // --- Type config ---
 
@@ -191,7 +191,7 @@ export function generateMarkdown(projectRoot) {
     md += `\n_No active items._\n`;
   }
 
-  const outPath = join(projectRoot, "PROJECT-TRACKER.md");
+  const outPath = join(projectRoot, "documentation/PROJECT-TRACKER.md");
   writeFileSync(outPath, md);
   return { path: outPath, activeCount: active.length };
 }

@@ -16,14 +16,15 @@ export function searchFiles(projectRoot, query) {
 
   const matchMode = hasOr ? "or" : "and";
   searchTracker(projectRoot, terms, matchMode, results);
+  searchDir(projectRoot, "documentation/memory", "memory", terms, matchMode, results);
   searchDir(projectRoot, "memory", "memory", terms, matchMode, results);
   searchDir(projectRoot, "documentation/decisions", "decision", terms, matchMode, results);
   searchDir(projectRoot, "documentation/todo", "todo", terms, matchMode, results, /^TODO-\d+/i);
   searchDir(projectRoot, "documentation", "todo", terms, matchMode, results, /^TODO-\d+/i);
   searchDir(projectRoot, "documentation/research", "research", terms, matchMode, results, /^RES-\d+/i);
   searchDir(projectRoot, "documentation", "research", terms, matchMode, results, /^RES-\d+/i);
-  searchDir(projectRoot, "documentation", "audit", terms, matchMode, results, /^AUD-\d+/i);
   searchDir(projectRoot, "documentation/audit", "audit", terms, matchMode, results, /^AUD-\d+/i);
+  searchDir(projectRoot, "documentation", "audit", terms, matchMode, results, /^AUD-\d+/i);
   searchRetros(projectRoot, terms, matchMode, results);
   searchLegacyTodos(projectRoot, terms, matchMode, results);
 

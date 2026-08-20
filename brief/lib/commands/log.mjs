@@ -5,7 +5,7 @@ import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from 
 import { join } from "node:path";
 import { table } from "../format.mjs";
 
-const LOGS_DIR = "logs";
+const LOGS_DIR = "documentation/logs";
 
 export function logCommand(root, action, args, rawArgs) {
   switch (action) {
@@ -42,6 +42,16 @@ function logAdd(root, args, rawArgs) {
   const logsDir = join(root, LOGS_DIR);
   if (!existsSync(logsDir)) mkdirSync(logsDir, { recursive: true });
 
+  // Parse additional flags
+  let action = "UPDATE";
+  let nodes = "—";
+  let pr = "—";
+  for (const arg of rawArgs) {
+    if (arg.startsWith("--action=")) action = arg.split("=")[1].toUpperCase();
+    if (arg.startsWith("--nodes=")) nodes = arg.split("=").slice(1).join("=");
+    if (arg.startsWith("--pr=")) pr = arg.split("=")[1];
+  }
+
   // Filename: timestamp-based for uniqueness (ISO without colons for filesystem safety)
   const now = new Date();
   const ts = now.toISOString().replace(/[:.]/g, "-").slice(0, 23);
@@ -49,12 +59,12 @@ function logAdd(root, args, rawArgs) {
 
   const content = `---
 date: ${now.toISOString().slice(0, 10)}
-time: ${now.toISOString().slice(11, 19)}
-tag: ${tag || "general"}
-story: ${story || "null"}
+action: ${action}
+nodes: ${nodes}
+story: ${story || "—"}
+pr: ${pr}
+note: ${message}
 ---
-
-${message}
 `;
 
   writeFileSync(join(logsDir, fileName), content);
@@ -84,33 +94,29 @@ function logList(root, args) {
   for (const file of files) {
     const content = readFileSync(join(logsDir, file), "utf8");
     const dateMatch = content.match(/^date:\s*(.+)/m);
-    const timeMatch = content.match(/^time:\s*(.+)/m);
-    const tagMatch = content.match(/^tag:\s*(.+)/m);
+    const actionMatch = content.match(/^action:\s*(.+)/m);
+    const nodesMatch = content.match(/^nodes:\s*(.+)/m);
     const storyMatch = content.match(/^story:\s*(.+)/m);
+    const prMatch = content.match(/^pr:\s*(.+)/m);
+    const noteMatch = content.match(/^note:\s*(.+)/m);
+    // Legacy format fallback
+    const tagMatch = content.match(/^tag:\s*(.+)/m);
 
     const date = dateMatch ? dateMatch[1].trim() : file.slice(0, 10);
-    const time = timeMatch ? timeMatch[1].trim() : "";
-    const entryTag = tagMatch ? tagMatch[1].trim() : "general";
-    const entryStory = storyMatch ? storyMatch[1].trim() : "null";
+    const action = actionMatch ? actionMatch[1].trim() : (tagMatch ? tagMatch[1].trim() : "UPDATE");
+    const nodes = nodesMatch ? nodesMatch[1].trim() : "—";
+    const entryStory = storyMatch ? storyMatch[1].trim() : "—";
+    const prVal = prMatch ? prMatch[1].trim() : "—";
+    const note = noteMatch ? noteMatch[1].trim() : "";
 
-    if (tagFilter.length > 0 && !tagFilter.includes(entryTag)) continue;
+    if (tagFilter.length > 0 && !tagFilter.includes(action.toLowerCase())) continue;
 
-    // Extract message (first non-empty line after frontmatter)
-    const lines = content.split("\n");
-    let pastFm = !content.startsWith("---");
-    let fmCount = 0;
-    let msg = "";
-    for (const line of lines) {
-      if (line.trim() === "---") { fmCount++; if (fmCount >= 2) pastFm = true; continue; }
-      if (!pastFm) continue;
-      if (line.trim()) { msg = line.trim(); break; }
-    }
-
-    entries.push([date, time.slice(0, 5), entryTag, msg.length > 60 ? msg.slice(0, 57) + "..." : msg, entryStory === "null" ? "" : entryStory]);
+    const noteShort = note.length > 50 ? note.slice(0, 47) + "..." : note;
+    entries.push([date, action, nodes, entryStory, prVal, noteShort]);
   }
 
   const shown = entries.slice(0, limit);
-  console.log(table(["Date", "Time", "Tag", "Message", "Story"], shown));
+  console.log(table(["Date", "Action", "Nodes", "Story", "PR", "Note"], shown));
   console.log(`\n${shown.length} of ${entries.length} log entries (use --last=N to adjust)`);
 }
 
@@ -134,9 +140,13 @@ function logHelp() {
   console.log(`brief log <action>
 
 Actions:
-  add <message>         Add a log entry [--tag=<tag>] [--story=S-NNN]
-  <message>             Shorthand for "add"
-  list [--last=20]      List recent entries [--tag=<filter>]
+  add <note>            Add a log entry
+    [--action=UPDATE]   CREATE|UPDATE|SUPERSEDE|DELETE|VERIFY|LINT
+    [--nodes=<ids>]     Comma-separated item IDs (e.g. TODO-001,DEC-003)
+    [--story=S-NNN]     Associated story
+    [--pr=#NNN]         Pull request number
+  <note>                Shorthand for "add"
+  list [--last=20]      List recent entries [--tag=<action-filter>]
   show <filename>       Show full entry
   help                  Show this help`);
 }

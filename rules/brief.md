@@ -1,4 +1,10 @@
-# Knowledge Graph — Project Context Tool
+---
+paths:
+  - "documentation/**"
+  - "*.md"
+---
+
+# Brief — Project Context Tool
 
 Project management CLI. If `brief` is in PATH, use it for lookups and mutations.
 Run `brief help` for full command reference.
