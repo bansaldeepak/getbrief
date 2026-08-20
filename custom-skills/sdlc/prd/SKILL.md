@@ -32,13 +32,19 @@ prints `main`, branch out first (`feature/<slug>` from the feature name).
 
 ### Phase 1: Gather Context
 
-**Check project history first.** Before writing requirements, surface what the project already knows
-about this problem area. Read these if they exist:
-- `tracker.yaml` or `PROJECT-TRACKER.md` — open TODOs, decisions, research items
+**Check project history first.** Before writing requirements, surface what the project already knows.
+
+**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+```bash
+knowledge-graph search "<feature keywords>"
+knowledge-graph status
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active items only (lean, start here)
+- `tracker.yaml` — full history (only if you need completed/dropped context)
 - `memory/` files — prior learnings, retro findings relevant to this feature
 - Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar work
-
-If `knowledge-graph` CLI is installed, use `knowledge-graph search "<keywords>"` instead.
 
 Look for: related TODOs (maybe already identified), prior decisions (constraints that apply), retro
 findings (what went wrong last time in similar work), open research. Reference anything relevant —

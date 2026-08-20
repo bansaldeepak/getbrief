@@ -58,14 +58,22 @@ Before planning, check `documentation/stories/<feature-name>/`:
 
 ### Phase 1: Gather Context
 
-**Check project history first.** Before planning tasks, surface what the project already knows. Read
-these if they exist:
-- `tracker.yaml` or `PROJECT-TRACKER.md` — open TODOs, decisions, research (some may feed into this story)
+**Check project history first.** Before planning tasks, surface what the project already knows.
+
+**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+```bash
+knowledge-graph search "<feature keywords>"
+knowledge-graph status
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active items only (lean, start here)
+- `tracker.yaml` — full history (only if you need completed/dropped context)
 - `memory/` files — prior learnings, constraints, gotchas for this area
 - Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar past work
-- Open TODOs that this story might resolve (link them in tracker when planning)
 
-If `knowledge-graph` CLI is installed, use `knowledge-graph search "<keywords>"` instead.
+Look for: open TODOs this story might resolve (link them in tracker), prior decisions (constraints),
+retro findings (patterns from similar past work).
 
 **Why this matters:** A story that re-solves a problem a retro already diagnosed, or ignores a
 TODO that's already tracked, wastes effort. Prior findings are planning inputs.

@@ -27,12 +27,19 @@ You are entering discovery mode. Do NOT write code, stories, PRDs, or tasks. You
 ### Phase 1: Context Gathering
 
 **Check project history first.** Before exploring the codebase, surface what the project already knows
-about this problem area. Read these if they exist:
-- `tracker.yaml` or `PROJECT-TRACKER.md` — open TODOs, decisions, research related to this area
+about this problem area.
+
+**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+```bash
+knowledge-graph search "<problem keywords>"
+knowledge-graph status
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active items only (lean, start here)
+- `tracker.yaml` — full history (only if you need completed/dropped items)
 - `memory/` files — prior learnings, gotchas, retro findings
 - Recent retro files (`documentation/stories/*/retro.md`) — patterns from similar past work
-
-If `knowledge-graph` CLI is installed, use `knowledge-graph search "<keywords>"` instead.
 
 Look for: prior retro findings, open TODOs, existing decisions, related research. These are inputs
 to discovery — don't re-discover what's already known.

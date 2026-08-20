@@ -74,11 +74,16 @@ committed to `main` unnoticed.
 ## Project Context Check — Before Each Task
 
 Before implementing a task, check if there are decisions, constraints, or known gotchas for the files
-you're about to touch. Read these if they exist:
-- `tracker.yaml` — decisions (DEC-NNN) that constrain this area
-- `memory/` files — gotchas or constraints related to these files
+you're about to touch.
 
-If `knowledge-graph` CLI is installed, use `knowledge-graph search "<file or module name>"` instead.
+**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+```bash
+knowledge-graph search "<file or module name>"
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active decisions (DEC-NNN) that constrain this area
+- `memory/` files — gotchas or constraints related to these files
 
 Skip this if the task spec already inlines all relevant context (well-written specs often do).
 
