@@ -32,6 +32,27 @@ function matchesTerms(text, terms) {
   return terms.every((t) => lower.includes(t));
 }
 
+function extractBrief(content) {
+  // Skip frontmatter, find first non-empty non-heading line
+  const lines = content.split("\n");
+  let pastFrontmatter = !content.startsWith("---");
+  let frontmatterCount = 0;
+
+  for (const line of lines) {
+    if (line.trim() === "---") {
+      frontmatterCount++;
+      if (frontmatterCount >= 2) pastFrontmatter = true;
+      continue;
+    }
+    if (!pastFrontmatter) continue;
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    // Return first meaningful line, truncated
+    return trimmed.length > 120 ? trimmed.slice(0, 117) + "..." : trimmed;
+  }
+  return null;
+}
+
 function searchTracker(root, terms, results) {
   const path = join(root, "tracker.yaml");
   if (!existsSync(path)) return;
@@ -88,13 +109,21 @@ function searchDir(root, dirPath, sourceLabel, terms, results) {
     const content = readFileSync(join(dir, file), "utf8");
     if (!matchesTerms(content, terms)) continue;
 
+    const descMatch = content.match(/description:\s*["']?(.+?)["']?\s*$/m);
     const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/title:\s*(.+)/m);
-    const title = titleMatch ? titleMatch[1].trim() : file.replace(".md", "");
     const statusMatch = content.match(/status:\s*(.+)/m);
+
+    // Show description (brief context) or fall back to first content line after frontmatter
+    let brief = descMatch ? descMatch[1].trim() : null;
+    if (!brief) {
+      brief = extractBrief(content);
+    }
+    const title = titleMatch ? titleMatch[1].trim() : file.replace(".md", "");
+    const display = brief ? `${title} — ${brief}` : title;
 
     results.push({
       source: sourceLabel,
-      match: title,
+      match: display,
       status: statusMatch ? statusMatch[1].trim() : null,
     });
   }
