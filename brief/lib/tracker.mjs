@@ -3,7 +3,7 @@
  * Source of truth for all project items (stories, TODOs, decisions, research, audits).
  */
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parseDocument, stringify } from "yaml";
 
@@ -30,8 +30,10 @@ export function readTracker(projectRoot) {
   if (!existsSync(path)) return [];
   const content = readFileSync(path, "utf8");
   const doc = parseDocument(content);
-  const items = doc.toJSON();
-  return Array.isArray(items) ? items : [];
+  const parsed = doc.toJSON();
+  if (Array.isArray(parsed)) return parsed;
+  if (parsed && Array.isArray(parsed.items)) return parsed.items;
+  return [];
 }
 
 export function writeTracker(projectRoot, items) {
@@ -41,25 +43,66 @@ export function writeTracker(projectRoot, items) {
 #      brief update <id> <status>
 #      brief generate  (regenerates PROJECT-TRACKER.md)
 `;
-  const body = stringify(items, { lineWidth: 0, nullStr: "null" });
+  const body = stringify({ items }, { lineWidth: 0, nullStr: "null" });
   writeFileSync(path, header + "\n" + body);
 }
 
 // --- ID generation ---
 
-export function nextId(items, type) {
+export function nextId(items, type, projectRoot) {
   const cfg = TYPE_CONFIG[type];
   if (!cfg) throw new Error(`Unknown type: ${type}`);
 
   const prefix = cfg.prefix;
-  const existing = items
+  const re = new RegExp(`^${prefix}-(\\d+)`, "i");
+
+  // IDs from tracker
+  const trackerNums = items
     .filter((i) => i.type === type)
     .map((i) => {
-      const match = i.id.match(new RegExp(`^${prefix}-(\\d+)$`));
+      const match = i.id.match(re);
       return match ? parseInt(match[1], 10) : 0;
     });
 
-  const max = existing.length > 0 ? Math.max(...existing) : 0;
+  // IDs from filesystem (safety net if tracker is stale/empty)
+  const fsNums = [];
+  if (projectRoot) {
+    const dirs = {
+      story: "documentation/stories",
+      todo: "documentation/todo",
+      decision: "documentation/decisions",
+      research: "documentation/research",
+      audit: "documentation/audit",
+    };
+    const scanDir = dirs[type];
+    if (scanDir) {
+      const fullDir = join(projectRoot, scanDir);
+      if (existsSync(fullDir)) {
+        const scan = (dir) => {
+          try {
+            for (const entry of readdirSync(dir)) {
+              const match = entry.match(re);
+              if (match) fsNums.push(parseInt(match[1], 10));
+            }
+          } catch {}
+        };
+        if (type === "story") {
+          // Stories are nested: stories/<feature>/S-NNN/
+          for (const feature of readdirSync(fullDir)) {
+            const featurePath = join(fullDir, feature);
+            try {
+              if (statSync(featurePath).isDirectory()) scan(featurePath);
+            } catch {}
+          }
+        } else {
+          scan(fullDir);
+        }
+      }
+    }
+  }
+
+  const allNums = [...trackerNums, ...fsNums];
+  const max = allNums.length > 0 ? Math.max(...allNums) : 0;
   return `${prefix}-${String(max + 1).padStart(3, "0")}`;
 }
 
@@ -67,7 +110,7 @@ export function nextId(items, type) {
 
 export function createItem(projectRoot, type, title, opts = {}) {
   const items = readTracker(projectRoot);
-  const id = nextId(items, type);
+  const id = nextId(items, type, projectRoot);
   const cfg = TYPE_CONFIG[type];
   const today = new Date().toISOString().slice(0, 10);
 

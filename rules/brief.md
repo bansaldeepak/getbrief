@@ -42,6 +42,16 @@ brief todo update TODO-001 status=done "note=Resolution details"
 brief log "What happened" --tag=progress --story=S-001
 brief log list                      # recent entries
 brief log list --tag=progress       # filter by tag
+
+# Tracker management
+brief tracker generate              # rebuild tracker.yaml from filesystem
+brief tracker generate --markdown   # same + regenerate PROJECT-TRACKER.md
+brief tracker generate --dry-run    # preview without writing
+brief tracker show                  # print raw tracker.yaml
+
+# Utilities
+brief next story                    # print next available ID (e.g. S-112)
+brief next todo                     # works for any type
 ```
 
 ## If CLI is not available

@@ -4,6 +4,22 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
+const KNOWN_STATUSES = ["planned", "in_progress", "blocked", "completed", "done", "open", "active", "draft", "obsolete", "moot", "superseded"];
+
+function normalizeStatus(raw) {
+  if (!raw) return "active";
+  const lower = raw.toLowerCase().trim();
+  const firstWord = lower.split(/[\s(,·—–-]/)[0];
+  if (KNOWN_STATUSES.includes(firstWord)) return firstWord;
+  if (firstWord === "accepted") return "active";
+  if (firstWord === "decided") return "active";
+  if (firstWord === "complete") return "completed";
+  if (firstWord === "pending") return "planned";
+  if (lower.includes("superseded")) return "superseded";
+  if (lower.includes("obsolete")) return "obsolete";
+  return "active";
+}
+
 export function scanFiles(root) {
   const items = [];
   scanStories(root, items);
@@ -11,7 +27,7 @@ export function scanFiles(root) {
   scanTypedFiles(root, "documentation/todo", "todo", /^TODO-\d+/i, items);
   scanTypedFiles(root, "documentation", "todo", /^TODO-\d+/i, items);
   scanTypedFiles(root, "documentation/decisions", "decision", /^DEC-\d+/i, items);
-  scanTypedFiles(root, "documentation/research", "research", /^RES-\d+/i, items);
+  scanResearch(root, items);
   scanTypedFiles(root, "documentation", "research", /^RES-\d+/i, items);
   scanTypedFiles(root, "documentation/audit", "audit", /^AUD-\d+/i, items);
   scanTypedFiles(root, "documentation", "audit", /^AUD-\d+/i, items);
@@ -45,13 +61,26 @@ function scanStories(root, items) {
       const titleMatch = content.match(/^#\s+(?:S-\d+:\s*)?(.+)/m);
       const statusMatch = content.match(/\*\*Status\*\*:?\s*(\w+)/i);
       const branchMatch = content.match(/\*\*Branch\*\*:?\s*(\S+)/i);
+      const createdMatch = content.match(/\*\*Created\*\*:?\s*(\d{4}-\d{2}-\d{2})/i);
+      const categoryMatch = content.match(/\*\*Category\*\*:?\s*(\w+)/i);
+
+      // Count tasks
+      let taskCount = 0;
+      const tasksDir = join(featureDir, entry, "tasks");
+      if (existsSync(tasksDir)) {
+        try { taskCount = readdirSync(tasksDir).filter((f) => f.endsWith(".md")).length; } catch {}
+      }
 
       items.push({
         id: entry.toUpperCase(),
         type: "story",
         title: titleMatch ? titleMatch[1].trim() : entry,
-        status: statusMatch ? statusMatch[1].trim() : "planned",
+        status: statusMatch ? normalizeStatus(statusMatch[1]) : "planned",
+        feature,
         branch: branchMatch ? branchMatch[1].trim() : null,
+        category: categoryMatch ? categoryMatch[1].toLowerCase() : "feat",
+        created: createdMatch ? createdMatch[1] : null,
+        tasks: taskCount,
         current_task: null,
         story: `documentation/stories/${feature}/${entry}/story.md`,
         link: null,
@@ -84,7 +113,7 @@ function scanTypedFiles(root, dirPath, type, pattern, items) {
       id,
       type,
       title: titleMatch ? titleMatch[1].trim() : id,
-      status: statusMatch ? statusMatch[1].trim() : "open",
+      status: statusMatch ? normalizeStatus(statusMatch[1]) : "open",
     };
 
     if (priorityMatch && priorityMatch[1].trim() !== "null") {
@@ -98,5 +127,30 @@ function scanTypedFiles(root, dirPath, type, pattern, items) {
     item.pr = null;
 
     items.push(item);
+  }
+}
+
+function scanResearch(root, items) {
+  const dir = join(root, "documentation/research");
+  if (!existsSync(dir)) return;
+
+  let files;
+  try { files = readdirSync(dir).filter((f) => f.endsWith(".md")); } catch { return; }
+
+  let seq = 1;
+  for (const file of files) {
+    const content = readFileSync(join(dir, file), "utf8");
+    const idParts = file.match(/^(RES-\d+)/i);
+    const id = idParts ? idParts[1].toUpperCase() : `RES-${String(seq++).padStart(3, "0")}`;
+
+    const titleMatch = content.match(/^#\s+(.+)/m);
+    items.push({
+      id,
+      type: "research",
+      title: titleMatch ? titleMatch[1].trim() : file.replace(".md", ""),
+      status: "active",
+      link: null,
+      pr: null,
+    });
   }
 }

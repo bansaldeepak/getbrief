@@ -294,7 +294,7 @@ function storyCreate(root, args, rawArgs) {
   }
 
   const items = readTracker(root);
-  const id = nextId(items, "story");
+  const id = nextId(items, "story", root);
   const today = new Date().toISOString().slice(0, 10);
   const slug = opts.feature || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const branch = opts.branch || `feature/${slug}`;
