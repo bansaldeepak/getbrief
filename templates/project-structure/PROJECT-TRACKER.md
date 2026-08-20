@@ -1,5 +1,5 @@
 <!-- GENERATED — do not edit. Source: tracker.yaml -->
-<!-- Regenerate: knowledge-graph generate -->
+<!-- Regenerate: brief generate -->
 <!-- Shows active items only. Full history in tracker.yaml. -->
 
 # Project Tracker

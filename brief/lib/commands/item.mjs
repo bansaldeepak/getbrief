@@ -1,4 +1,4 @@
-// knowledge-graph todo|decision|research|audit <action>
+// brief todo|decision|research|audit <action>
 // Generic item commands for non-story types
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
@@ -153,7 +153,7 @@ export function itemCommand(root, type, action, args, rawArgs) {
     case "show": return itemShow(root, type, args[0]);
     case "help": return itemHelp(type);
     default:
-      console.error(`Unknown ${type} action: ${action}. Run: knowledge-graph ${type} help`);
+      console.error(`Unknown ${type} action: ${action}. Run: brief ${type} help`);
       process.exit(1);
   }
 }
@@ -198,7 +198,7 @@ function itemCreate(root, type, args, rawArgs) {
   const titleParts = args.filter((a) => !a.startsWith("--"));
   const title = titleParts.join(" ");
   if (!title) {
-    console.error(`Usage: knowledge-graph ${type} create <title> [--priority=P1] [--link=<url>]`);
+    console.error(`Usage: brief ${type} create <title> [--priority=P1] [--link=<url>]`);
     process.exit(1);
   }
 
@@ -253,8 +253,8 @@ function itemUpdate(root, type, args) {
   const id = args[0];
   const fields = args.slice(1);
   if (!id || fields.length === 0) {
-    console.error(`Usage: knowledge-graph ${type} update <${id || "ID"}> <field=value...>`);
-    console.error(`Example: knowledge-graph ${type} update ${id || "TODO-001"} status=done pr=#42`);
+    console.error(`Usage: brief ${type} update <${id || "ID"}> <field=value...>`);
+    console.error(`Example: brief ${type} update ${id || "TODO-001"} status=done pr=#42`);
     process.exit(1);
   }
 
@@ -297,7 +297,7 @@ function itemUpdate(root, type, args) {
 
 function itemShow(root, type, id) {
   if (!id) {
-    console.error(`Usage: knowledge-graph ${type} show <ID>`);
+    console.error(`Usage: brief ${type} show <ID>`);
     process.exit(1);
   }
 
@@ -327,7 +327,7 @@ function itemShow(root, type, id) {
 
 function itemHelp(type) {
   const prefix = TYPE_CONFIG[type]?.prefix || type.toUpperCase();
-  console.log(`knowledge-graph ${type} <action>
+  console.log(`brief ${type} <action>
 
 Actions:
   list [--all]                    List ${type}s (default: active only)

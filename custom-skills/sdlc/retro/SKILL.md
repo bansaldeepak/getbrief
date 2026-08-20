@@ -130,8 +130,8 @@ overlap in time — say so in the summary rather than presenting it as exact.
 If `tracker.yaml` exists, update the story's status and record the PR:
 
 ```bash
-# If knowledge-graph CLI is installed:
-knowledge-graph update S-NNN status=done pr="<PR URL>"
+# If brief CLI is installed:
+brief update S-NNN status=done pr="<PR URL>"
 
 # Fallback — edit tracker.yaml directly:
 # Set status: done and pr: <URL> on the story entry

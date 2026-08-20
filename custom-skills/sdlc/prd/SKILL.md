@@ -34,10 +34,10 @@ prints `main`, branch out first (`feature/<slug>` from the feature name).
 
 **Check project history first.** Before writing requirements, surface what the project already knows.
 
-**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+**Primary** — if `brief` CLI is installed (`which brief`):
 ```bash
-knowledge-graph search "<feature keywords>"
-knowledge-graph status
+brief search "<feature keywords>"
+brief status
 ```
 
 **Fallback** — if CLI is not installed, read files directly:

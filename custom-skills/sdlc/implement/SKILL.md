@@ -76,9 +76,9 @@ committed to `main` unnoticed.
 Before implementing a task, check if there are decisions, constraints, or known gotchas for the files
 you're about to touch.
 
-**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+**Primary** — if `brief` CLI is installed (`which brief`):
 ```bash
-knowledge-graph search "<file or module name>"
+brief search "<file or module name>"
 ```
 
 **Fallback** — if CLI is not installed, read files directly:

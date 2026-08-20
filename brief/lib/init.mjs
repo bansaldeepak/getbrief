@@ -1,5 +1,5 @@
 /**
- * knowledge-graph init — scaffold canonical project structure.
+ * brief init — scaffold canonical project structure.
  * Copies templates, creates directories, initializes tracker.yaml.
  */
 
@@ -8,7 +8,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const TEMPLATES_DIR = join(__dirname, "../../../templates/project-structure");
+const TEMPLATES_DIR = join(__dirname, "../../templates/project-structure");
 
 const DIRS = [
   "documentation",

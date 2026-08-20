@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// knowledge-graph CLI — project management + knowledge graph.
-// Resource-based commands: knowledge-graph <resource> <action> [args] [flags]
+// brief CLI — project management + knowledge graph.
+// Resource-based commands: brief <resource> <action> [args] [flags]
 
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -61,7 +61,7 @@ function findGitRoot() {
 
 // --- Help ---
 
-const HELP = `knowledge-graph — project management CLI
+const HELP = `brief — project management CLI
 
 Resource Commands:
   story <action>       Manage stories and tasks
@@ -70,7 +70,7 @@ Resource Commands:
   research <action>    Manage research items
   audit <action>       Manage audits
 
-  Run "knowledge-graph <resource> help" for resource-specific actions.
+  Run "brief <resource> help" for resource-specific actions.
 
 Cross-Type Views:
   status               Summary counts (type × status)
@@ -108,7 +108,7 @@ if (!command || command === "--help" || command === "-h" || command === "help") 
 }
 
 if (command === "version" || command === "--version" || command === "-V") {
-  console.log("knowledge-graph v0.1.0");
+  console.log("brief v0.2.0");
   process.exit(0);
 }
 
@@ -144,7 +144,7 @@ if (command === "story") {
 } else if (command === "search") {
   const query = args.slice(1).filter((a) => !a.startsWith("--")).join(" ");
   if (!query) {
-    console.error("Usage: knowledge-graph search <query> [--story|--todo|--decision|--memory|--retro]");
+    console.error("Usage: brief search <query> [--story|--todo|--decision|--memory|--retro]");
     process.exit(1);
   }
 
@@ -217,7 +217,7 @@ if (command === "story") {
   const target = args[1] || "claude";
   const config = {
     type: "stdio",
-    command: "knowledge-graph",
+    command: "brief",
     args: ["serve", "--mcp"],
   };
   console.log(`# Add to ~/.claude.json (or equivalent for ${target}):\n`);
@@ -236,6 +236,6 @@ if (command === "story") {
   }
 
 } else {
-  console.error(`Unknown command: ${command}. Run: knowledge-graph help`);
+  console.error(`Unknown command: ${command}. Run: brief help`);
   process.exit(1);
 }

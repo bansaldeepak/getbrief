@@ -1,5 +1,5 @@
 /**
- * knowledge-graph migrate — convert existing loose TODOs/decisions into canonical format.
+ * brief migrate — convert existing loose TODOs/decisions into canonical format.
  * Scans documentation/ and project root for known patterns, creates tracker entries.
  */
 

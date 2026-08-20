@@ -16,7 +16,7 @@ const PENDING_STATUSES = ["open", "planned", "active", "accepted"];
 export function statusCommand(root) {
   const items = getItems(root);
   if (items.length === 0) {
-    console.log("No items found. Run: knowledge-graph init");
+    console.log("No items found. Run: brief init");
     return;
   }
 

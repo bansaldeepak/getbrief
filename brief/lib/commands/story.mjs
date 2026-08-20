@@ -1,4 +1,4 @@
-// knowledge-graph story <action> — story and task management
+// brief story <action> — story and task management
 
 import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
@@ -16,7 +16,7 @@ export function storyCommand(root, action, args, rawArgs) {
     case "update": return storyUpdate(root, args);
     case "help": return storyHelp();
     default:
-      console.error(`Unknown story action: ${action}. Run: knowledge-graph story help`);
+      console.error(`Unknown story action: ${action}. Run: brief story help`);
       process.exit(1);
   }
 }
@@ -42,7 +42,7 @@ function storyList(root, args) {
 
 function storyShow(root, storyId) {
   if (!storyId) {
-    console.error("Usage: knowledge-graph story show <S-NNN>");
+    console.error("Usage: brief story show <S-NNN>");
     process.exit(1);
   }
   const storyPath = findStoryFile(root, storyId);
@@ -70,7 +70,7 @@ function storyShow(root, storyId) {
 
 function storyTasks(root, storyId) {
   if (!storyId) {
-    console.error("Usage: knowledge-graph story tasks <S-NNN>");
+    console.error("Usage: brief story tasks <S-NNN>");
     process.exit(1);
   }
   const tasksDir = findTasksDir(root, storyId);
@@ -107,16 +107,16 @@ function storyTasks(root, storyId) {
 }
 
 function storyTask(root, args, rawArgs) {
-  // knowledge-graph story task S-001-T2
-  // knowledge-graph story task update S-001-T2 status=completed
+  // brief story task S-001-T2
+  // brief story task update S-001-T2 status=completed
   if (args[0] === "update") {
     return storyTaskUpdate(root, args.slice(1), rawArgs);
   }
 
   const taskId = args[0];
   if (!taskId) {
-    console.error("Usage: knowledge-graph story task <S-NNN-TN>");
-    console.error("       knowledge-graph story task update <S-NNN-TN> status=<value>");
+    console.error("Usage: brief story task <S-NNN-TN>");
+    console.error("       brief story task update <S-NNN-TN> status=<value>");
     process.exit(1);
   }
 
@@ -142,7 +142,7 @@ function storyTaskUpdate(root, args, rawArgs) {
   const taskId = args[0];
   const fields = args.slice(1);
   if (!taskId || fields.length === 0) {
-    console.error("Usage: knowledge-graph story task update <S-NNN-TN> status=<value>");
+    console.error("Usage: brief story task update <S-NNN-TN> status=<value>");
     process.exit(1);
   }
 
@@ -183,7 +183,7 @@ function storyCreate(root, args, rawArgs) {
   const titleParts = args.filter((a) => !a.startsWith("--"));
   const title = titleParts.join(" ");
   if (!title) {
-    console.error("Usage: knowledge-graph story create <title> [--branch=<name>]");
+    console.error("Usage: brief story create <title> [--branch=<name>]");
     process.exit(1);
   }
 
@@ -269,7 +269,7 @@ function storyUpdate(root, args) {
   const id = args[0];
   const fields = args.slice(1);
   if (!id || fields.length === 0) {
-    console.error("Usage: knowledge-graph story update <S-NNN> status=<value> [pr=<url>]");
+    console.error("Usage: brief story update <S-NNN> status=<value> [pr=<url>]");
     process.exit(1);
   }
 
@@ -303,7 +303,7 @@ function storyUpdate(root, args) {
 }
 
 function storyHelp() {
-  console.log(`knowledge-graph story <action>
+  console.log(`brief story <action>
 
 Actions:
   list [--all]                    List stories (default: active only)

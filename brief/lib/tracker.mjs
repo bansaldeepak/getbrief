@@ -37,9 +37,9 @@ export function readTracker(projectRoot) {
 export function writeTracker(projectRoot, items) {
   const path = trackerPath(projectRoot);
   const header = `# Project Tracker — Source of Truth
-# CLI: knowledge-graph create <type> <title>
-#      knowledge-graph update <id> <status>
-#      knowledge-graph generate  (regenerates PROJECT-TRACKER.md)
+# CLI: brief create <type> <title>
+#      brief update <id> <status>
+#      brief generate  (regenerates PROJECT-TRACKER.md)
 `;
   const body = stringify(items, { lineWidth: 0, nullStr: "null" });
   writeFileSync(path, header + "\n" + body);
@@ -139,7 +139,7 @@ export function generateMarkdown(projectRoot) {
   const audits = active.filter((i) => i.type === "audit");
 
   let md = `<!-- GENERATED — do not edit. Source: tracker.yaml -->\n`;
-  md += `<!-- Regenerate: knowledge-graph generate -->\n\n`;
+  md += `<!-- Regenerate: brief generate -->\n\n`;
   md += `# Project Tracker\n`;
 
   if (stories.length) {

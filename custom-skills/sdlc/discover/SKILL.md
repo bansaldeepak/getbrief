@@ -29,10 +29,10 @@ You are entering discovery mode. Do NOT write code, stories, PRDs, or tasks. You
 **Check project history first.** Before exploring the codebase, surface what the project already knows
 about this problem area.
 
-**Primary** — if `knowledge-graph` CLI is installed (`which knowledge-graph`):
+**Primary** — if `brief` CLI is installed (`which brief`):
 ```bash
-knowledge-graph search "<problem keywords>"
-knowledge-graph status
+brief search "<problem keywords>"
+brief status
 ```
 
 **Fallback** — if CLI is not installed, read files directly:

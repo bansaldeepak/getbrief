@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Global knowledge-graph MCP server.
+ * Global brief MCP server.
  * Auto-detects .project/knowledge.db from cwd (walks up to git root).
  * Never crashes on missing DB — starts gracefully, reports via tool responses.
  * Runs on Node 22+ with native node:sqlite.
@@ -59,10 +59,10 @@ if (ROOT) {
     VALUES (?, ?, ?, ?, ?)
   `);
 
-  process.stderr.write(`knowledge-graph: serving ${KNOWLEDGE_DB}\n`);
+  process.stderr.write(`brief: serving ${KNOWLEDGE_DB}\n`);
 } else {
   process.stderr.write(
-    "knowledge-graph: no .project/knowledge.db found in cwd hierarchy. Tools will report unavailable.\n",
+    "brief: no .project/knowledge.db found in cwd hierarchy. Tools will report unavailable.\n",
   );
 }
 
