@@ -1,30 +1,41 @@
 # Knowledge Graph — Project Context Tool
 
-A project-local knowledge index. When available, provides fast lookups for TODOs, decisions,
-constraints, memory, and retro findings anchored to code.
+Project management CLI. If `knowledge-graph` is in PATH, use it for lookups and mutations.
+Run `knowledge-graph help` for full command reference.
 
-## If `knowledge-graph` CLI is in PATH
+## Quick Reference
 
-Use it for quick lookups instead of reading files:
+```bash
+# Search (works immediately — reads files, no setup needed)
+knowledge-graph search "<query>"              # all types
+knowledge-graph search "<query>" --todo       # filter by type
 
-| Command | Use For |
-|---------|---------|
-| `knowledge-graph search "<query>"` | Find TODOs, decisions, memory by keyword |
-| `knowledge-graph status` | Active stories, open items |
-| `knowledge-graph create <type> <title>` | Create a new TODO, decision, research, or audit |
-| `knowledge-graph update <id> field=value` | Update item status, PR link, etc. |
-| `knowledge-graph generate` | Regenerate PROJECT-TRACKER.md from tracker.yaml |
+# Views (tables)
+knowledge-graph story list                    # active stories
+knowledge-graph todo list                     # open TODOs
+knowledge-graph decision list                 # active decisions
+knowledge-graph status                        # summary counts
+knowledge-graph pending                       # all open items
+knowledge-graph active                        # all in_progress
+
+# Story detail
+knowledge-graph story tasks S-001             # task table
+knowledge-graph story task S-001-T2           # single task content
+
+# Mutations (writes tracker.yaml + .md files)
+knowledge-graph todo create "Fix the thing"
+knowledge-graph todo update TODO-001 status=done pr=#42
+knowledge-graph story task update S-001-T2 status=completed
+```
 
 ## If CLI is not available
 
 Fall back to reading files directly:
-- `tracker.yaml` — structured source of truth for all items
-- `PROJECT-TRACKER.md` — generated markdown (active items only)
-- `memory/` — individual memory files with frontmatter
+- `PROJECT-TRACKER.md` — active items (lean, start here)
+- `tracker.yaml` — full history
+- `memory/` — individual memory files
 
-## When to check project context
+## When to check
 
-SDLC skills (discover, prd, project-plan, implement) specify exactly when to check.
-The general principle: **before starting work, check what the project already knows** about
-the area you're touching. Don't re-discover what a retro already found or ignore a TODO
-that's already tracked.
+SDLC skills specify exactly when. General principle: **before starting work, check what the
+project already knows** about the area you're touching.

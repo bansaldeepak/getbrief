@@ -4,6 +4,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { readTracker, writeTracker, nextId, TYPE_CONFIG } from "../tracker.mjs";
+import { scanFiles } from "../scan.mjs";
 import { table, statusOrder } from "../format.mjs";
 
 const DONE_STATUSES = ["done", "completed", "dropped", "superseded", "rejected", "clean"];
@@ -138,10 +139,10 @@ _Filled when complete:_
 };
 
 const FILE_DIRS = {
-  todo: "documentation",
+  todo: "documentation/todo",
   decision: "documentation/decisions",
-  research: "documentation",
-  audit: "documentation",
+  research: "documentation/research",
+  audit: "documentation/audit",
 };
 
 export function itemCommand(root, type, action, args, rawArgs) {
@@ -157,8 +158,13 @@ export function itemCommand(root, type, action, args, rawArgs) {
   }
 }
 
+function getItems(root) {
+  const items = readTracker(root);
+  return items.length > 0 ? items : scanFiles(root);
+}
+
 function itemList(root, type, args) {
-  const items = readTracker(root).filter((i) => i.type === type);
+  const items = getItems(root).filter((i) => i.type === type);
   const showAll = args.includes("--all");
   const filtered = showAll ? items : items.filter((i) => !DONE_STATUSES.includes(i.status));
 

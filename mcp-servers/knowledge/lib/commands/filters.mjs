@@ -1,16 +1,22 @@
 // Cross-type filter commands: status, pending, active, completed
 
 import { readTracker } from "../tracker.mjs";
+import { scanFiles } from "../scan.mjs";
 import { table, statusOrder } from "../format.mjs";
+
+function getItems(root) {
+  const items = readTracker(root);
+  return items.length > 0 ? items : scanFiles(root);
+}
 
 const DONE_STATUSES = ["done", "completed", "dropped", "superseded", "rejected", "clean"];
 const ACTIVE_STATUSES = ["in_progress"];
 const PENDING_STATUSES = ["open", "planned", "active", "accepted"];
 
 export function statusCommand(root) {
-  const items = readTracker(root);
+  const items = getItems(root);
   if (items.length === 0) {
-    console.log("No tracker.yaml found or empty. Run: knowledge-graph init");
+    console.log("No items found. Run: knowledge-graph init");
     return;
   }
 
@@ -35,7 +41,7 @@ export function statusCommand(root) {
 }
 
 export function pendingCommand(root) {
-  const items = readTracker(root).filter((i) => PENDING_STATUSES.includes(i.status));
+  const items = getItems(root).filter((i) => PENDING_STATUSES.includes(i.status));
   items.sort((a, b) => statusOrder(a.status) - statusOrder(b.status));
 
   const rows = items.map((i) => [i.id, i.type, i.title, i.status, i.priority || ""]);
@@ -44,7 +50,7 @@ export function pendingCommand(root) {
 }
 
 export function activeCommand(root) {
-  const items = readTracker(root).filter((i) => ACTIVE_STATUSES.includes(i.status));
+  const items = getItems(root).filter((i) => ACTIVE_STATUSES.includes(i.status));
 
   const rows = items.map((i) => [i.id, i.type, i.title, i.status, i.priority || ""]);
   console.log(table(["ID", "Type", "Title", "Status", "Priority"], rows));
@@ -52,7 +58,7 @@ export function activeCommand(root) {
 }
 
 export function completedCommand(root) {
-  const items = readTracker(root).filter((i) => DONE_STATUSES.includes(i.status));
+  const items = getItems(root).filter((i) => DONE_STATUSES.includes(i.status));
 
   const rows = items.map((i) => [i.id, i.type, i.title, i.status, i.pr || ""]);
   console.log(table(["ID", "Type", "Title", "Status", "PR"], rows));

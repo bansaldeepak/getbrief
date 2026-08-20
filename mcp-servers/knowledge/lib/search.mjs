@@ -7,16 +7,25 @@ import { join } from "node:path";
 
 export function searchFiles(projectRoot, query) {
   const results = [];
-  const terms = query.toLowerCase().split(/\s+/);
+  // Support OR with pipe: "signin|auth" matches either term
+  // Support AND with space: "signin auth" requires both
+  const hasOr = query.includes("|");
+  const terms = hasOr
+    ? query.toLowerCase().split(/\|/).map((t) => t.trim()).filter(Boolean)
+    : query.toLowerCase().split(/\s+/);
 
-  searchTracker(projectRoot, terms, results);
-  searchDir(projectRoot, "memory", "memory", terms, results);
-  searchDir(projectRoot, "documentation/decisions", "decision", terms, results);
-  searchDir(projectRoot, "documentation", "todo", terms, results, /^TODO-\d+\.md$/);
-  searchDir(projectRoot, "documentation", "research", terms, results, /^RES-\d+\.md$/);
-  searchDir(projectRoot, "documentation", "audit", terms, results, /^AUD-\d+\.md$/);
-  searchRetros(projectRoot, terms, results);
-  searchLegacyTodos(projectRoot, terms, results);
+  const matchMode = hasOr ? "or" : "and";
+  searchTracker(projectRoot, terms, matchMode, results);
+  searchDir(projectRoot, "memory", "memory", terms, matchMode, results);
+  searchDir(projectRoot, "documentation/decisions", "decision", terms, matchMode, results);
+  searchDir(projectRoot, "documentation/todo", "todo", terms, matchMode, results, /^TODO-\d+/i);
+  searchDir(projectRoot, "documentation", "todo", terms, matchMode, results, /^TODO-\d+/i);
+  searchDir(projectRoot, "documentation/research", "research", terms, matchMode, results, /^RES-\d+/i);
+  searchDir(projectRoot, "documentation", "research", terms, matchMode, results, /^RES-\d+/i);
+  searchDir(projectRoot, "documentation", "audit", terms, matchMode, results, /^AUD-\d+/i);
+  searchDir(projectRoot, "documentation/audit", "audit", terms, matchMode, results, /^AUD-\d+/i);
+  searchRetros(projectRoot, terms, matchMode, results);
+  searchLegacyTodos(projectRoot, terms, matchMode, results);
 
   // Deduplicate: if same ID appears from tracker AND file, keep the file version (has more context)
   const seen = new Map();
@@ -30,9 +39,11 @@ export function searchFiles(projectRoot, query) {
   return [...seen.values()];
 }
 
-function matchesTerms(text, terms) {
+function matchesTerms(text, terms, mode = "and") {
   const lower = text.toLowerCase();
-  return terms.every((t) => lower.includes(t));
+  return mode === "or"
+    ? terms.some((t) => lower.includes(t))
+    : terms.every((t) => lower.includes(t));
 }
 
 function extractBrief(content) {
@@ -54,7 +65,7 @@ function extractBrief(content) {
   return null;
 }
 
-function searchTracker(root, terms, results) {
+function searchTracker(root, terms, mode, results) {
   const path = join(root, "tracker.yaml");
   if (!existsSync(path)) return;
 
@@ -64,7 +75,7 @@ function searchTracker(root, terms, results) {
   let currentItem = null;
   for (const line of lines) {
     if (line.startsWith("- id:")) {
-      if (currentItem && matchesTerms(currentItem.text, terms)) {
+      if (currentItem && matchesTerms(currentItem.text, terms, mode)) {
         results.push({
           type: currentItem.type || "tracker",
           file: "tracker.yaml",
@@ -87,7 +98,7 @@ function searchTracker(root, terms, results) {
       if (statusMatch) currentItem.status = statusMatch[1].trim();
     }
   }
-  if (currentItem && matchesTerms(currentItem.text, terms)) {
+  if (currentItem && matchesTerms(currentItem.text, terms, mode)) {
     results.push({
       type: currentItem.type || "tracker",
       file: "tracker.yaml",
@@ -98,7 +109,7 @@ function searchTracker(root, terms, results) {
   }
 }
 
-function searchDir(root, dirPath, sourceLabel, terms, results, fileFilter) {
+function searchDir(root, dirPath, sourceLabel, terms, mode, results, fileFilter) {
   const dir = join(root, dirPath);
   if (!existsSync(dir)) return;
 
@@ -113,7 +124,7 @@ function searchDir(root, dirPath, sourceLabel, terms, results, fileFilter) {
   for (const file of files) {
     const filePath = `${dirPath}/${file}`;
     const content = readFileSync(join(dir, file), "utf8");
-    if (!matchesTerms(content, terms)) continue;
+    if (!matchesTerms(content, terms, mode)) continue;
 
     const descMatch = content.match(/description:\s*["']?(.+?)["']?\s*$/m);
     const idMatch = content.match(/^id:\s*(.+)/m);
@@ -135,7 +146,7 @@ function searchDir(root, dirPath, sourceLabel, terms, results, fileFilter) {
   }
 }
 
-function searchRetros(root, terms, results) {
+function searchRetros(root, terms, mode, results) {
   const storiesDir = join(root, "documentation/stories");
   if (!existsSync(storiesDir)) return;
 
@@ -161,7 +172,7 @@ function searchRetros(root, terms, results) {
       if (!existsSync(retroPath)) continue;
 
       const content = readFileSync(retroPath, "utf8");
-      if (!matchesTerms(content, terms)) continue;
+      if (!matchesTerms(content, terms, mode)) continue;
 
       // Extract matching findings from key sections
       const lines = content.split("\n");
@@ -176,7 +187,7 @@ function searchRetros(root, terms, results) {
           inSection = false;
           continue;
         }
-        if (inSection && line.startsWith("- ") && matchesTerms(line, terms)) {
+        if (inSection && line.startsWith("- ") && matchesTerms(line, terms, mode)) {
           results.push({
             type: "retro",
             file: retroRelPath,
@@ -202,7 +213,7 @@ function searchRetros(root, terms, results) {
   }
 }
 
-function searchLegacyTodos(root, terms, results) {
+function searchLegacyTodos(root, terms, mode, results) {
   const path = join(root, "documentation/TODOS.md");
   if (!existsSync(path)) return;
 
@@ -211,7 +222,7 @@ function searchLegacyTodos(root, terms, results) {
 
   for (const line of lines) {
     if (!line.match(/^[-*]\s+\[[ x]\]/)) continue;
-    if (!matchesTerms(line, terms)) continue;
+    if (!matchesTerms(line, terms, mode)) continue;
 
     const isDone = /\[x\]/i.test(line);
     const text = line.replace(/^[-*]\s+\[[ x]\]\s+/, "").trim();

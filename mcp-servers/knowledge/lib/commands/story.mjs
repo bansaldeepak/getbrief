@@ -3,6 +3,7 @@
 import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { readTracker, writeTracker, nextId } from "../tracker.mjs";
+import { scanFiles } from "../scan.mjs";
 import { table, statusOrder } from "../format.mjs";
 
 export function storyCommand(root, action, args, rawArgs) {
@@ -20,8 +21,13 @@ export function storyCommand(root, action, args, rawArgs) {
   }
 }
 
+function getItems(root) {
+  const items = readTracker(root);
+  return items.length > 0 ? items : scanFiles(root);
+}
+
 function storyList(root, args) {
-  const items = readTracker(root).filter((i) => i.type === "story");
+  const items = getItems(root).filter((i) => i.type === "story");
   const showAll = args.includes("--all");
   const filtered = showAll
     ? items
