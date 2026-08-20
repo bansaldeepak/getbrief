@@ -1,17 +1,6 @@
 #!/usr/bin/env node
-/**
- * knowledge-graph CLI — project management + knowledge graph.
- * Usage:
- *   knowledge-graph init              Scaffold canonical project structure
- *   knowledge-graph create <type> <title>  Create a new item
- *   knowledge-graph update <id> <field=value...>  Update an item
- *   knowledge-graph generate          Regenerate PROJECT-TRACKER.md
- *   knowledge-graph migrate           Convert existing items to canonical format
- *   knowledge-graph serve --mcp       Start MCP server (stdio transport)
- *   knowledge-graph status            Show DB status and counts
- *   knowledge-graph search <query>    Quick search from terminal
- *   knowledge-graph install           Install MCP server into agents
- */
+// knowledge-graph CLI — project management + knowledge graph.
+// Resource-based commands: knowledge-graph <resource> <action> [args] [flags]
 
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -58,38 +47,6 @@ function findProjectRoot(startDir) {
   return null;
 }
 
-// --- Commands ---
-
-if (!command || command === "--help" || command === "-h") {
-  console.log(`Usage: knowledge-graph [options] [command]
-
-Project Management:
-  init                          Scaffold canonical project structure
-  create <type> <title>         Create a new item (todo, decision, research, audit, story)
-  update <id> <field=value...>  Update an item's fields
-  generate                      Regenerate PROJECT-TRACKER.md from tracker.yaml
-  migrate                       Convert existing items to canonical format
-
-Knowledge Graph:
-  serve --mcp    Start MCP server (stdio transport)
-  status         Show project knowledge DB status
-  search <query> Search knowledge by keyword
-  install        Install MCP server into agents (Claude Code, Cursor)
-
-Options:
-  --root <path>  Explicit project root (skips auto-detection from cwd)
-  -h, --help     Show this help
-  -V, --version  Print version`);
-  process.exit(0);
-}
-
-if (command === "version" || command === "--version" || command === "-V") {
-  console.log("knowledge-graph v0.0.1");
-  process.exit(0);
-}
-
-// --- Project root for non-DB commands (uses git root, not .project/knowledge.db) ---
-
 function findGitRoot() {
   if (explicitRoot) return explicitRoot;
   try {
@@ -102,8 +59,123 @@ function findGitRoot() {
   }
 }
 
-if (command === "init") {
-  const root = findGitRoot();
+// --- Help ---
+
+const HELP = `knowledge-graph — project management CLI
+
+Resource Commands:
+  story <action>       Manage stories and tasks
+  todo <action>        Manage TODOs
+  decision <action>    Manage decisions
+  research <action>    Manage research items
+  audit <action>       Manage audits
+
+  Run "knowledge-graph <resource> help" for resource-specific actions.
+
+Cross-Type Views:
+  status               Summary counts (type × status)
+  pending              All open/planned items across types
+  active               All in_progress items across types
+  completed            All done items across types
+
+Search:
+  search <query>       Search all types
+    --story            Filter to stories
+    --todo             Filter to TODOs
+    --decision         Filter to decisions
+    --memory           Filter to memory
+    --retro            Filter to retro findings
+
+Project Setup:
+  init                 Scaffold canonical project structure
+  generate             Regenerate PROJECT-TRACKER.md (optional)
+  migrate              Convert existing items to tracker format
+
+MCP Server:
+  serve --mcp          Start MCP server (stdio transport)
+  install [--write]    Show/write MCP config
+
+Options:
+  --root <path>        Explicit project root
+  -h, --help           Show this help
+  -V, --version        Print version`;
+
+// --- Command routing ---
+
+if (!command || command === "--help" || command === "-h" || command === "help") {
+  console.log(HELP);
+  process.exit(0);
+}
+
+if (command === "version" || command === "--version" || command === "-V") {
+  console.log("knowledge-graph v0.1.0");
+  process.exit(0);
+}
+
+const root = findGitRoot();
+
+// Resource commands
+if (command === "story") {
+  const { storyCommand } = await import("./lib/commands/story.mjs");
+  storyCommand(root, args[1], args.slice(2), rawArgs);
+
+} else if (["todo", "decision", "research", "audit"].includes(command)) {
+  const { itemCommand } = await import("./lib/commands/item.mjs");
+  itemCommand(root, command, args[1], args.slice(2), rawArgs);
+
+// Cross-type filters
+} else if (command === "status") {
+  const { statusCommand } = await import("./lib/commands/filters.mjs");
+  statusCommand(root);
+
+} else if (command === "pending") {
+  const { pendingCommand } = await import("./lib/commands/filters.mjs");
+  pendingCommand(root);
+
+} else if (command === "active") {
+  const { activeCommand } = await import("./lib/commands/filters.mjs");
+  activeCommand(root);
+
+} else if (command === "completed") {
+  const { completedCommand } = await import("./lib/commands/filters.mjs");
+  completedCommand(root);
+
+// Search
+} else if (command === "search") {
+  const query = args.slice(1).filter((a) => !a.startsWith("--")).join(" ");
+  if (!query) {
+    console.error("Usage: knowledge-graph search <query> [--story|--todo|--decision|--memory|--retro]");
+    process.exit(1);
+  }
+
+  const typeFilter = [];
+  if (rawArgs.includes("--story")) typeFilter.push("story");
+  if (rawArgs.includes("--todo")) typeFilter.push("todo");
+  if (rawArgs.includes("--decision")) typeFilter.push("decision");
+  if (rawArgs.includes("--memory")) typeFilter.push("memory");
+  if (rawArgs.includes("--retro")) typeFilter.push("retro");
+
+  const { searchFiles } = await import("./lib/search.mjs");
+  let results = searchFiles(root, query);
+
+  if (typeFilter.length > 0) {
+    results = results.filter((r) => typeFilter.includes(r.type));
+  }
+
+  if (results.length === 0) {
+    console.log("No results.");
+  } else {
+    for (const r of results) {
+      const status = r.status ? ` (${r.status})` : "";
+      const id = r.id ? `${r.id}: ` : "";
+      console.log(`[${r.type}] ${id}${r.brief || ""}${status}`);
+      console.log(`  → ${r.file}`);
+    }
+    console.log(`\n${results.length} result(s)`);
+  }
+
+// Init / Generate / Migrate
+} else if (command === "init") {
   const { initProject } = await import("./lib/init.mjs");
   const { created, skipped } = initProject(root);
   if (created.length) {
@@ -117,60 +189,12 @@ if (command === "init") {
   if (!created.length) console.log("Nothing to do — project already initialized.");
   else console.log(`\n✓ Project scaffolded at ${root}`);
 
-} else if (command === "create") {
-  const type = args[1];
-  const titleParts = args.slice(2).filter((a) => !a.startsWith("--"));
-  const title = titleParts.join(" ");
-  if (!type || !title) {
-    console.error("Usage: knowledge-graph create <type> <title>");
-    console.error("Types: todo, decision, research, audit, story");
-    process.exit(1);
-  }
-  const root = findGitRoot();
-  const { createItem, TYPE_CONFIG } = await import("./lib/tracker.mjs");
-  if (!TYPE_CONFIG[type]) {
-    console.error(`Unknown type: ${type}. Valid: ${Object.keys(TYPE_CONFIG).join(", ")}`);
-    process.exit(1);
-  }
-  // Parse --priority, --link, --story from remaining args
-  const opts = {};
-  for (const arg of rawArgs) {
-    if (arg.startsWith("--priority=")) opts.priority = arg.split("=")[1];
-    if (arg.startsWith("--link=")) opts.link = arg.split("=")[1];
-    if (arg.startsWith("--story=")) opts.story = arg.split("=")[1];
-    if (arg.startsWith("--branch=")) opts.branch = arg.split("=")[1];
-  }
-  const item = createItem(root, type, title, opts);
-  console.log(`✓ Created ${item.id}: ${item.title}`);
-  console.log(`  type: ${item.type}, status: ${item.status}`);
-
-} else if (command === "update") {
-  const id = args[1];
-  const fields = args.slice(2);
-  if (!id || fields.length === 0) {
-    console.error("Usage: knowledge-graph update <id> <field=value...>");
-    console.error("Example: knowledge-graph update TODO-001 status=done pr=#42");
-    process.exit(1);
-  }
-  const root = findGitRoot();
-  const { updateItem } = await import("./lib/tracker.mjs");
-  const updates = {};
-  for (const f of fields) {
-    const [key, ...rest] = f.split("=");
-    const value = rest.join("=");
-    updates[key] = value === "null" ? null : value;
-  }
-  const item = updateItem(root, id, updates);
-  console.log(`✓ Updated ${item.id}: ${JSON.stringify(updates)}`);
-
 } else if (command === "generate") {
-  const root = findGitRoot();
   const { generateMarkdown } = await import("./lib/tracker.mjs");
   const { path, activeCount } = generateMarkdown(root);
   console.log(`✓ Generated ${path} (${activeCount} active items)`);
 
 } else if (command === "migrate") {
-  const root = findGitRoot();
   const { migrateProject } = await import("./lib/migrate.mjs");
   const { added, totalItems } = migrateProject(root);
   if (added.length) {
@@ -183,73 +207,12 @@ if (command === "init") {
     console.log("Nothing to migrate — no new items found.");
   }
 
+// MCP Server
 } else if (command === "serve") {
-  const root = findProjectRoot(process.cwd());
-  if (root) process.env.KNOWLEDGE_ROOT = root;
-  await import("./serve.mjs");
-} else if (command === "status") {
-  const root = findGitRoot();
-  const { readTracker } = await import("./lib/tracker.mjs");
-  const items = readTracker(root);
-
-  if (items.length === 0) {
-    console.log("No tracker.yaml found or empty. Run: knowledge-graph init");
-    process.exit(0);
-  }
-
-  const byType = {};
-  const byStatus = {};
-  for (const item of items) {
-    byType[item.type] = (byType[item.type] || 0) + 1;
-    byStatus[item.status] = (byStatus[item.status] || 0) + 1;
-  }
-
-  const active = items.filter(
-    (i) => !["done", "dropped", "completed", "clean", "rejected"].includes(i.status),
-  );
-
-  console.log(`Project: ${root}\n`);
-  console.log("By type:");
-  for (const [type, count] of Object.entries(byType)) {
-    console.log(`  ${type.padEnd(12)} ${count}`);
-  }
-  console.log("\nBy status:");
-  for (const [status, count] of Object.entries(byStatus)) {
-    console.log(`  ${status.padEnd(14)} ${count}`);
-  }
-  console.log(`\nActive items: ${active.length} / ${items.length} total`);
-
-  // Also show DB status if available
   const dbRoot = findProjectRoot(process.cwd());
-  if (dbRoot) {
-    try {
-      const { DatabaseSync } = await import("node:sqlite");
-      const db = new DatabaseSync(join(dbRoot, ".project/knowledge.db"));
-      const [log] = db.prepare("SELECT COUNT(*) as n FROM query_log").all();
-      console.log(`\nKnowledge DB: ${log.n} queries logged`);
-    } catch {}
-  }
-} else if (command === "search") {
-  const query = args.slice(1).join(" ");
-  if (!query) {
-    console.error("Usage: knowledge-graph search <query>");
-    process.exit(1);
-  }
-  const { searchFiles } = await import("./lib/search.mjs");
-  const root = findGitRoot();
-  const results = searchFiles(root, query);
+  if (dbRoot) process.env.KNOWLEDGE_ROOT = dbRoot;
+  await import("./serve.mjs");
 
-  if (results.length === 0) {
-    console.log("No results.");
-  } else {
-    for (const r of results) {
-      const status = r.status ? ` (${r.status})` : "";
-      const id = r.id ? `${r.id}: ` : "";
-      console.log(`[${r.type}] ${id}${r.brief || ""}${status}`);
-      console.log(`  → ${r.file}`);
-    }
-    console.log(`\n${results.length} result(s)`);
-  }
 } else if (command === "install") {
   const target = args[1] || "claude";
   const config = {
@@ -259,9 +222,8 @@ if (command === "init") {
   };
   console.log(`# Add to ~/.claude.json (or equivalent for ${target}):\n`);
   console.log(JSON.stringify({ mcpServers: { knowledge: config } }, null, 2));
-  console.log(`\nOr run: knowledge-graph install --write`);
 
-  if (args.includes("--write")) {
+  if (rawArgs.includes("--write")) {
     const { readFileSync, writeFileSync } = await import("node:fs");
     const claudeJson = join(process.env.HOME, ".claude.json");
     const existing = existsSync(claudeJson)
@@ -272,7 +234,8 @@ if (command === "init") {
     writeFileSync(claudeJson, JSON.stringify(existing, null, 2) + "\n");
     console.log(`\n✓ Written to ${claudeJson}`);
   }
+
 } else {
-  console.error(`Unknown command: ${command}. Run: knowledge-graph --help`);
+  console.error(`Unknown command: ${command}. Run: knowledge-graph help`);
   process.exit(1);
 }

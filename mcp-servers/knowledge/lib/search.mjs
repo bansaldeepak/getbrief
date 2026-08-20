@@ -12,10 +12,22 @@ export function searchFiles(projectRoot, query) {
   searchTracker(projectRoot, terms, results);
   searchDir(projectRoot, "memory", "memory", terms, results);
   searchDir(projectRoot, "documentation/decisions", "decision", terms, results);
+  searchDir(projectRoot, "documentation", "todo", terms, results, /^TODO-\d+\.md$/);
+  searchDir(projectRoot, "documentation", "research", terms, results, /^RES-\d+\.md$/);
+  searchDir(projectRoot, "documentation", "audit", terms, results, /^AUD-\d+\.md$/);
   searchRetros(projectRoot, terms, results);
   searchLegacyTodos(projectRoot, terms, results);
 
-  return results;
+  // Deduplicate: if same ID appears from tracker AND file, keep the file version (has more context)
+  const seen = new Map();
+  for (const r of results) {
+    const key = r.id || `${r.type}:${r.file}`;
+    const existing = seen.get(key);
+    if (!existing || (r.file !== "tracker.yaml" && existing.file === "tracker.yaml")) {
+      seen.set(key, r);
+    }
+  }
+  return [...seen.values()];
 }
 
 function matchesTerms(text, terms) {
@@ -86,13 +98,14 @@ function searchTracker(root, terms, results) {
   }
 }
 
-function searchDir(root, dirPath, sourceLabel, terms, results) {
+function searchDir(root, dirPath, sourceLabel, terms, results, fileFilter) {
   const dir = join(root, dirPath);
   if (!existsSync(dir)) return;
 
   let files;
   try {
     files = readdirSync(dir).filter((f) => f.endsWith(".md"));
+    if (fileFilter) files = files.filter((f) => fileFilter.test(f));
   } catch {
     return;
   }
@@ -103,11 +116,14 @@ function searchDir(root, dirPath, sourceLabel, terms, results) {
     if (!matchesTerms(content, terms)) continue;
 
     const descMatch = content.match(/description:\s*["']?(.+?)["']?\s*$/m);
-    const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/title:\s*(.+)/m);
-    const statusMatch = content.match(/status:\s*(.+)/m);
+    const idMatch = content.match(/^id:\s*(.+)/m);
+    const titleMatch = content.match(/^title:\s*(.+)/m) || content.match(/^#\s+(.+)/m);
+    const statusMatch = content.match(/^status:\s*(.+)/m);
 
     let brief = descMatch ? descMatch[1].trim() : extractBrief(content);
-    const id = titleMatch ? titleMatch[1].trim() : file.replace(".md", "");
+    const id = idMatch ? idMatch[1].trim() : (titleMatch ? titleMatch[1].trim() : file.replace(".md", ""));
+    const title = titleMatch ? titleMatch[1].trim() : null;
+    if (title && title !== id) brief = brief || title;
 
     results.push({
       type: sourceLabel,
