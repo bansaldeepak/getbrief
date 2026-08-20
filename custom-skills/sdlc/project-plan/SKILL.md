@@ -58,7 +58,27 @@ Before planning, check `documentation/stories/<feature-name>/`:
 
 ### Phase 1: Gather Context
 
-Read relevant files to understand the current state:
+**Check project history first.** Before planning tasks, surface what the project already knows.
+
+**Primary** — if `brief` CLI is installed (`which brief`):
+```bash
+brief search "<feature keywords>"
+brief status
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active items only (lean, start here)
+- `tracker.yaml` — full history (only if you need completed/dropped context)
+- `memory/` files — prior learnings, constraints, gotchas for this area
+- Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar past work
+
+Look for: open TODOs this story might resolve (link them in tracker), prior decisions (constraints),
+retro findings (patterns from similar past work).
+
+**Why this matters:** A story that re-solves a problem a retro already diagnosed, or ignores a
+TODO that's already tracked, wastes effort. Prior findings are planning inputs.
+
+Then read:
 - **PRD.md and TRD.md** (always present — created in Phase 0)
 - Project AGENTS.md (or CLAUDE.md/GEMINI.md) and documentation/rules/
 - Database schema (prisma/schema.prisma if it exists)

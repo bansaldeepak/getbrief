@@ -32,7 +32,7 @@ EXTERNAL_SKILLS = {
 }
 
 # Directories that are not ours to validate.
-SKIP_DIRS = {"skills", ".git", "node_modules"}
+SKIP_DIRS = {"skills", ".git", "node_modules", "concepts", "templates"}
 
 SKILL_REF = re.compile(r"`([a-z][a-z0-9-]{2,})`\s+skill|skill\s+`([a-z][a-z0-9-]{2,})`")
 HOME_PATH = re.compile(r"~/\.agents/([A-Za-z0-9._/-]+)")
@@ -53,7 +53,7 @@ def known_skills():
 def markdown_files():
     for path in ROOT.rglob("*.md"):
         rel = path.relative_to(ROOT)
-        if rel.parts and rel.parts[0] in SKIP_DIRS:
+        if any(part in SKIP_DIRS for part in rel.parts):
             continue
         yield path
 

@@ -1,0 +1,13 @@
+{
+  "name": "brief",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Project management CLI — stories, TODOs, decisions, research, audits. File-based, zero-dependency, globally installed.",
+  "bin": {
+    "brief": "./cli.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "yaml": "^2.9.0"
+  }
+}

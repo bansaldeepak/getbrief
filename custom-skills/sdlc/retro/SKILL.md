@@ -125,7 +125,23 @@ it. If the repo has `documentation/.sessions.jsonl` (written by the optional
 attribution. Falling back to `--after <date>` is approximate whenever stories
 overlap in time — say so in the summary rather than presenting it as exact.
 
-### Phase 6: Retro Summary
+### Phase 6: Update Project Tracker
+
+If `tracker.yaml` exists, update the story's status and record the PR:
+
+```bash
+# If brief CLI is installed:
+brief update S-NNN status=done pr="<PR URL>"
+
+# Fallback — edit tracker.yaml directly:
+# Set status: done and pr: <URL> on the story entry
+```
+
+Also create any new TODOs/decisions that emerged from this retro:
+- Learnings that need future action → create TODO entries
+- Architectural choices made during implementation → create DEC entries
+
+### Phase 7: Retro Summary
 
 Save to the story folder as `retro.md`:
 

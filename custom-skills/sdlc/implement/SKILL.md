@@ -43,6 +43,8 @@ committed to `main` unnoticed.
                   ▼
    pick the next pending task from tasks/T-NNN.md files
                   ▼
+   check project context for files being touched (see below)
+                  ▼
              implement it
                   ▼
       run the project's checks (typecheck · lint · tests)
@@ -68,6 +70,22 @@ committed to `main` unnoticed.
                   ▼  human says "push"
         push, then open a PR into main
 ```
+
+## Project Context Check — Before Each Task
+
+Before implementing a task, check if there are decisions, constraints, or known gotchas for the files
+you're about to touch.
+
+**Primary** — if `brief` CLI is installed (`which brief`):
+```bash
+brief search "<file or module name>"
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active decisions (DEC-NNN) that constrain this area
+- `memory/` files — gotchas or constraints related to these files
+
+Skip this if the task spec already inlines all relevant context (well-written specs often do).
 
 ## Gate 1 — Before Every Commit
 

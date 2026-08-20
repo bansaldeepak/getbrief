@@ -26,11 +26,29 @@ You are entering discovery mode. Do NOT write code, stories, PRDs, or tasks. You
 
 ### Phase 1: Context Gathering
 
-Read relevant code, docs, analytics, and user-facing flows to understand the current state.
+**Check project history first.** Before exploring the codebase, surface what the project already knows
+about this problem area.
+
+**Primary** — if `brief` CLI is installed (`which brief`):
+```bash
+brief search "<problem keywords>"
+brief status
+```
+
+**Fallback** — if CLI is not installed, read files directly:
+- `PROJECT-TRACKER.md` — active items only (lean, start here)
+- `tracker.yaml` — full history (only if you need completed/dropped items)
+- `memory/` files — prior learnings, gotchas, retro findings
+- Recent retro files (`documentation/stories/*/retro.md`) — patterns from similar past work
+
+Look for: prior retro findings, open TODOs, existing decisions, related research. These are inputs
+to discovery — don't re-discover what's already known.
+
+Then read relevant code, docs, analytics, and user-facing flows to understand the current state.
 
 **Output**: A "Current Reality" section with:
 - How things work today (Mermaid diagram)
-- Known pain points or friction
+- Known pain points or friction (include any from tracker/retros)
 - Existing workarounds users employ
 
 ### Phase 2: Brainstorm (Multi-Perspective)

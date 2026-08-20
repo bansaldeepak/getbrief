@@ -1,0 +1,372 @@
+// brief story <action> — story and task management
+
+import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { readTracker, writeTracker, nextId } from "../tracker.mjs";
+import { scanFiles } from "../scan.mjs";
+import { table, statusOrder } from "../format.mjs";
+
+export function storyCommand(root, action, args, rawArgs) {
+  switch (action) {
+    case "list": return storyList(root, args);
+    case "show": return storyShow(root, args[0]);
+    case "tasks": return storyTasks(root, args[0]);
+    case "task": return storyTask(root, args, rawArgs);
+    case "create": return storyCreate(root, args, rawArgs);
+    case "update": return storyUpdate(root, args);
+    case "help": return storyHelp();
+    default:
+      console.error(`Unknown story action: ${action}. Run: brief story help`);
+      process.exit(1);
+  }
+}
+
+function getItems(root) {
+  const items = readTracker(root);
+  return items.length > 0 ? items : scanFiles(root);
+}
+
+function storyList(root, args) {
+  const items = getItems(root).filter((i) => i.type === "story");
+  const showAll = args.includes("--all");
+  const filtered = showAll
+    ? items
+    : items.filter((i) => !["done", "completed", "dropped"].includes(i.status));
+
+  filtered.sort((a, b) => statusOrder(a.status) - statusOrder(b.status));
+
+  const rows = filtered.map((s) => [s.id, s.title, s.status, s.branch || "", s.current_task || ""]);
+  console.log(table(["ID", "Title", "Status", "Branch", "Current Task"], rows));
+  console.log(`\n${filtered.length} story(s)${showAll ? "" : " (active only, use --all for full history)"}`);
+}
+
+function storyShow(root, storyId) {
+  if (!storyId) {
+    console.error("Usage: brief story show <S-NNN>");
+    process.exit(1);
+  }
+  const storyPath = findStoryFile(root, storyId);
+  if (!storyPath) {
+    // Fallback to tracker entry
+    const items = readTracker(root);
+    const item = items.find((i) => i.id === storyId);
+    if (item) {
+      console.log(`${item.id}: ${item.title}`);
+      console.log(`  Status: ${item.status}`);
+      console.log(`  Branch: ${item.branch || "—"}`);
+      console.log(`  Task:   ${item.current_task || "—"}`);
+      console.log(`  PR:     ${item.pr || "—"}`);
+      console.log(`  Link:   ${item.link || "—"}`);
+      if (item.story) console.log(`  File:   ${item.story}`);
+    } else {
+      console.error(`Story not found: ${storyId}`);
+      process.exit(1);
+    }
+    return;
+  }
+  console.log(`→ ${storyPath}`);
+  console.log(readFileSync(join(root, storyPath), "utf8"));
+}
+
+function storyTasks(root, storyId) {
+  if (!storyId) {
+    console.error("Usage: brief story tasks <S-NNN>");
+    process.exit(1);
+  }
+  const tasksDir = findTasksDir(root, storyId);
+  if (!tasksDir) {
+    console.error(`No tasks directory found for ${storyId}`);
+    process.exit(1);
+  }
+
+  const files = readdirSync(join(root, tasksDir))
+    .filter((f) => /^T-\d+\.md$/i.test(f))
+    .sort();
+
+  const rows = [];
+  for (const file of files) {
+    const content = readFileSync(join(root, tasksDir, file), "utf8");
+    const titleMatch = content.match(/^#\s+(.+)/m);
+    const statusMatch = content.match(/\*\*Status:\*\*\s*(\w+)/i) || content.match(/Status:\s*(\w+)/i);
+    const priorityMatch = content.match(/\*\*Priority:\*\*\s*(\S+)/i) || content.match(/Priority:\s*(\S+)/i);
+    const blockedMatch = content.match(/\*\*Blocked By:\*\*\s*(.+)/i);
+
+    const id = `${storyId}-${file.replace(".md", "").toUpperCase()}`;
+    const title = titleMatch ? titleMatch[1].replace(/^S-\d+-T\d+:\s*/, "") : file;
+    const status = statusMatch ? statusMatch[1].trim() : "pending";
+    const priority = priorityMatch ? priorityMatch[1].trim() : "—";
+    const blocked = blockedMatch ? blockedMatch[1].trim() : "—";
+
+    rows.push([id, title, status, priority, blocked]);
+  }
+
+  rows.sort((a, b) => statusOrder(a[2]) - statusOrder(b[2]));
+  console.log(table(["ID", "Title", "Status", "Priority", "Blocked By"], rows));
+  console.log(`  → ${tasksDir}`);
+  console.log(`\n${rows.length} task(s)`);
+}
+
+function storyTask(root, args, rawArgs) {
+  // brief story task S-001-T2
+  // brief story task update S-001-T2 status=completed
+  if (args[0] === "update") {
+    return storyTaskUpdate(root, args.slice(1), rawArgs);
+  }
+
+  const taskId = args[0];
+  if (!taskId) {
+    console.error("Usage: brief story task <S-NNN-TN>");
+    console.error("       brief story task update <S-NNN-TN> status=<value>");
+    process.exit(1);
+  }
+
+  const { storyId, taskFile } = parseTaskId(taskId);
+  const tasksDir = findTasksDir(root, storyId);
+  if (!tasksDir) {
+    console.error(`No tasks directory found for ${storyId}`);
+    process.exit(1);
+  }
+
+  const filePath = join(root, tasksDir, taskFile);
+  if (!existsSync(filePath)) {
+    console.error(`Task file not found: ${tasksDir}/${taskFile}`);
+    process.exit(1);
+  }
+
+  const relPath = `${tasksDir}/${taskFile}`;
+  console.log(`→ ${relPath}`);
+  console.log(readFileSync(filePath, "utf8"));
+}
+
+function storyTaskUpdate(root, args, rawArgs) {
+  const taskId = args[0];
+  const fields = args.slice(1);
+  if (!taskId || fields.length === 0) {
+    console.error("Usage: brief story task update <S-NNN-TN> status=<value>");
+    process.exit(1);
+  }
+
+  const { storyId, taskFile } = parseTaskId(taskId);
+  const tasksDir = findTasksDir(root, storyId);
+  if (!tasksDir) {
+    console.error(`No tasks directory found for ${storyId}`);
+    process.exit(1);
+  }
+
+  const filePath = join(root, tasksDir, taskFile);
+  if (!existsSync(filePath)) {
+    console.error(`Task file not found: ${tasksDir}/${taskFile}`);
+    process.exit(1);
+  }
+
+  let content = readFileSync(filePath, "utf8");
+  const updates = {};
+  for (const f of fields) {
+    const [key, ...rest] = f.split("=");
+    updates[key] = rest.join("=");
+  }
+
+  if (updates.status) {
+    // Update **Status:** field in task file
+    content = content.replace(
+      /(\*\*Status:\*\*\s*)\w+/i,
+      `$1${updates.status}`,
+    );
+  }
+
+  writeFileSync(filePath, content);
+  console.log(`✓ Updated ${taskId}: ${JSON.stringify(updates)}`);
+  console.log(`  → ${tasksDir}/${taskFile}`);
+}
+
+function storyCreate(root, args, rawArgs) {
+  const titleParts = args.filter((a) => !a.startsWith("--"));
+  const title = titleParts.join(" ");
+  if (!title) {
+    console.error("Usage: brief story create <title> [--branch=<name>]");
+    process.exit(1);
+  }
+
+  const opts = {};
+  for (const arg of rawArgs) {
+    if (arg.startsWith("--branch=")) opts.branch = arg.split("=").slice(1).join("=");
+    if (arg.startsWith("--link=")) opts.link = arg.split("=").slice(1).join("=");
+  }
+
+  const items = readTracker(root);
+  const id = nextId(items, "story");
+  const today = new Date().toISOString().slice(0, 10);
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const branch = opts.branch || `feature/${slug}`;
+
+  // Determine feature folder and create story structure
+  const storyDir = `documentation/stories/${slug}/${id}`;
+  const fullStoryDir = join(root, storyDir);
+  mkdirSync(join(fullStoryDir, "tasks"), { recursive: true });
+
+  // Write story.md
+  const storyContent = `# ${id}: ${title}
+
+**Status**: planned
+**Branch**: ${branch}
+**Created**: ${today}
+
+## Context
+<!-- Why this work is needed -->
+
+## Goal
+<!-- One sentence outcome -->
+
+## Acceptance Criteria
+- [ ] ...
+
+## Scope
+**In scope:** ...
+**Out of scope:** ...
+`;
+  writeFileSync(join(fullStoryDir, "story.md"), storyContent);
+
+  // Write summary.md
+  const summaryContent = `# ${id}: ${title} — Summary
+
+## What Changed
+<!-- Updated after each task is completed -->
+
+## Decisions Made
+<!-- Non-obvious choices and why -->
+
+## Testing
+<TBD at implementation>
+
+## Follow-up
+<!-- Deferred items, future improvements -->
+`;
+  writeFileSync(join(fullStoryDir, "summary.md"), summaryContent);
+
+  // Add to tracker
+  const item = {
+    id,
+    type: "story",
+    title,
+    status: "planned",
+    branch,
+    current_task: null,
+    story: `${storyDir}/story.md`,
+    link: opts.link || null,
+    pr: null,
+  };
+  items.push(item);
+  writeTracker(root, items);
+
+  console.log(`✓ Created ${id}: ${title}`);
+  console.log(`  Branch: ${branch}`);
+  console.log(`  → ${storyDir}/story.md`);
+  console.log(`  → ${storyDir}/summary.md`);
+  console.log(`  → ${storyDir}/tasks/`);
+}
+
+function storyUpdate(root, args) {
+  const id = args[0];
+  const fields = args.slice(1);
+  if (!id || fields.length === 0) {
+    console.error("Usage: brief story update <S-NNN> status=<value> [pr=<url>]");
+    process.exit(1);
+  }
+
+  const items = readTracker(root);
+  const idx = items.findIndex((i) => i.id === id);
+  if (idx === -1) {
+    console.error(`Story not found: ${id}`);
+    process.exit(1);
+  }
+
+  const updates = {};
+  for (const f of fields) {
+    const [key, ...rest] = f.split("=");
+    updates[key] = rest.join("=") === "null" ? null : rest.join("=");
+  }
+
+  Object.assign(items[idx], updates);
+  writeTracker(root, items);
+
+  // Also update story.md Status field if status changed
+  if (updates.status && items[idx].story) {
+    const storyPath = join(root, items[idx].story);
+    if (existsSync(storyPath)) {
+      let content = readFileSync(storyPath, "utf8");
+      content = content.replace(/(\*\*Status\*\*:\s*)\w+/i, `$1${updates.status}`);
+      writeFileSync(storyPath, content);
+    }
+  }
+
+  console.log(`✓ Updated ${id}: ${JSON.stringify(updates)}`);
+}
+
+function storyHelp() {
+  console.log(`brief story <action>
+
+Actions:
+  list [--all]                    List stories (default: active only)
+  show <S-NNN>                    Show story detail (reads story.md)
+  tasks <S-NNN>                   List all tasks for a story (table)
+  task <S-NNN-TN>                 Show single task content
+  task update <S-NNN-TN> <k=v>    Update task status in file
+  create <title> [--branch=...]   Create story (tracker + files)
+  update <S-NNN> <k=v...>         Update story in tracker
+  help                            Show this help`);
+}
+
+// --- Helpers ---
+
+function findStoryFile(root, storyId) {
+  const items = readTracker(root);
+  const item = items.find((i) => i.id === storyId);
+  if (item?.story && existsSync(join(root, item.story))) return item.story;
+
+  // Scan documentation/stories for the story
+  const storiesDir = join(root, "documentation/stories");
+  if (!existsSync(storiesDir)) return null;
+
+  for (const feature of readdirSync(storiesDir)) {
+    const storyDir = join(storiesDir, feature, storyId);
+    const storyFile = join(storyDir, "story.md");
+    if (existsSync(storyFile)) {
+      return `documentation/stories/${feature}/${storyId}/story.md`;
+    }
+  }
+  return null;
+}
+
+function findTasksDir(root, storyId) {
+  // Check tracker for story path
+  const items = readTracker(root);
+  const item = items.find((i) => i.id === storyId);
+  if (item?.story) {
+    const dir = item.story.replace("/story.md", "/tasks");
+    if (existsSync(join(root, dir))) return dir;
+  }
+
+  // Scan documentation/stories
+  const storiesDir = join(root, "documentation/stories");
+  if (!existsSync(storiesDir)) return null;
+
+  for (const feature of readdirSync(storiesDir)) {
+    const tasksDir = join(storiesDir, feature, storyId, "tasks");
+    if (existsSync(tasksDir)) {
+      return `documentation/stories/${feature}/${storyId}/tasks`;
+    }
+  }
+  return null;
+}
+
+function parseTaskId(taskId) {
+  // S-001-T2 → { storyId: "S-001", taskFile: "T-002.md" }
+  const match = taskId.match(/^(S-\d+)-T(\d+)$/i);
+  if (!match) {
+    console.error(`Invalid task ID format: ${taskId}. Expected: S-NNN-TN`);
+    process.exit(1);
+  }
+  const storyId = match[1].toUpperCase();
+  const taskNum = match[2].padStart(3, "0");
+  return { storyId, taskFile: `T-${taskNum}.md` };
+}
