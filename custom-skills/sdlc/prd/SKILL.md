@@ -32,6 +32,19 @@ prints `main`, branch out first (`feature/<slug>` from the feature name).
 
 ### Phase 1: Gather Context
 
+**Check project history first.** Before writing requirements, surface what the project already knows
+about this problem area. Read these if they exist:
+- `tracker.yaml` or `PROJECT-TRACKER.md` — open TODOs, decisions, research items
+- `memory/` files — prior learnings, retro findings relevant to this feature
+- Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar work
+
+If `knowledge-graph` CLI is installed, use `knowledge-graph search "<keywords>"` instead.
+
+Look for: related TODOs (maybe already identified), prior decisions (constraints that apply), retro
+findings (what went wrong last time in similar work), open research. Reference anything relevant —
+don't define requirements that contradict existing decisions or re-solve problems a retro already
+diagnosed.
+
 If `/sdlc discover` was run, reference its output. Otherwise, read relevant code, docs, and existing features to understand the problem space.
 
 If no discovery was done and the problem seems complex, suggest running `/sdlc discover` first.

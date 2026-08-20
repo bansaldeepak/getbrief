@@ -1,33 +1,30 @@
-# Knowledge Graph — Primary Memory Read Path
+# Knowledge Graph — Project Context Tool
 
-A project-local SQLite knowledge graph surfaced via MCP server. Indexes project context (TODOs,
-decisions, constraints, memory, retro findings) from source files, linked to specific code via anchors.
+A project-local knowledge index. When available, provides fast lookups for TODOs, decisions,
+constraints, memory, and retro findings anchored to code.
 
-## If `.project/knowledge.db` exists in the project
+## If `knowledge-graph` CLI is in PATH
 
-**USE IT. This is not optional.** The knowledge graph is the primary read path for project memory.
-Do NOT skip it and read `memory/` files directly — the MCP tools are faster and more complete.
+Use it for quick lookups instead of reading files:
 
-| Tool | Use For |
-|------|---------|
-| `knowledge_context` | Get relevant knowledge (TODOs, decisions, constraints, memory) for a file path — **call this before editing any file with known constraints** |
-| `knowledge_search` | Search project knowledge by keyword, optionally filtered by type — **use instead of grepping through memory/ or decisions/ files** |
-| `knowledge_status` | Get project status (active stories, open TODOs) — **use instead of reading PROJECT-TRACKER.md or TODOS.md** |
+| Command | Use For |
+|---------|---------|
+| `knowledge-graph search "<query>"` | Find TODOs, decisions, memory by keyword |
+| `knowledge-graph status` | Active stories, open items |
+| `knowledge-graph create <type> <title>` | Create a new TODO, decision, research, or audit |
+| `knowledge-graph update <id> field=value` | Update item status, PR link, etc. |
+| `knowledge-graph generate` | Regenerate PROJECT-TRACKER.md from tracker.yaml |
 
-### When to call these tools
+## If CLI is not available
 
-- **Before editing a file**: `knowledge_context` with the file path — surfaces constraints, decisions, and TODOs anchored to it
-- **When searching for project history/decisions**: `knowledge_search` — replaces reading individual `memory/` files
-- **When checking project state**: `knowledge_status` — replaces reading tracker or todo files
-- **At memory checkpoints**: Query before writing to avoid duplicating what's already captured
+Fall back to reading files directly:
+- `tracker.yaml` — structured source of truth for all items
+- `PROJECT-TRACKER.md` — generated markdown (active items only)
+- `memory/` — individual memory files with frontmatter
 
-### Writing memory
+## When to check project context
 
-Write to source files (`memory/`, `documentation/decisions/`, `context.md`, `retro.md`) with proper
-format — the knowledge DB indexes them. Never write to the DB directly. See `project-memory` skill
-for file formats.
-
-## If `.project/knowledge.db` does NOT exist
-
-The project hasn't set up a knowledge graph. Read `memory/`, `documentation/decisions/`, and
-`documentation/TODOS.md` directly as needed.
+SDLC skills (discover, prd, project-plan, implement) specify exactly when to check.
+The general principle: **before starting work, check what the project already knows** about
+the area you're touching. Don't re-discover what a retro already found or ignore a TODO
+that's already tracked.
