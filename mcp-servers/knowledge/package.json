@@ -7,6 +7,7 @@
     "knowledge-graph": "./cli.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1"
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "yaml": "^2.9.0"
   }
 }
