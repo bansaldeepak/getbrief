@@ -9,19 +9,10 @@ export function searchFiles(projectRoot, query) {
   const results = [];
   const terms = query.toLowerCase().split(/\s+/);
 
-  // --- tracker.yaml (all items) ---
   searchTracker(projectRoot, terms, results);
-
-  // --- memory/*.md ---
   searchDir(projectRoot, "memory", "memory", terms, results);
-
-  // --- documentation/decisions/*.md ---
   searchDir(projectRoot, "documentation/decisions", "decision", terms, results);
-
-  // --- documentation/stories/*/retro.md ---
   searchRetros(projectRoot, terms, results);
-
-  // --- documentation/TODOS.md (legacy) ---
   searchLegacyTodos(projectRoot, terms, results);
 
   return results;
@@ -33,7 +24,6 @@ function matchesTerms(text, terms) {
 }
 
 function extractBrief(content) {
-  // Skip frontmatter, find first non-empty non-heading line
   const lines = content.split("\n");
   let pastFrontmatter = !content.startsWith("---");
   let frontmatterCount = 0;
@@ -47,7 +37,6 @@ function extractBrief(content) {
     if (!pastFrontmatter) continue;
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) continue;
-    // Return first meaningful line, truncated
     return trimmed.length > 120 ? trimmed.slice(0, 117) + "..." : trimmed;
   }
   return null;
@@ -65,8 +54,10 @@ function searchTracker(root, terms, results) {
     if (line.startsWith("- id:")) {
       if (currentItem && matchesTerms(currentItem.text, terms)) {
         results.push({
-          source: currentItem.type || "tracker",
-          match: `${currentItem.id}: ${currentItem.title}`,
+          type: currentItem.type || "tracker",
+          file: "tracker.yaml",
+          id: currentItem.id,
+          brief: currentItem.title,
           status: currentItem.status,
         });
       }
@@ -84,11 +75,12 @@ function searchTracker(root, terms, results) {
       if (statusMatch) currentItem.status = statusMatch[1].trim();
     }
   }
-  // Don't forget the last item
   if (currentItem && matchesTerms(currentItem.text, terms)) {
     results.push({
-      source: currentItem.type || "tracker",
-      match: `${currentItem.id}: ${currentItem.title}`,
+      type: currentItem.type || "tracker",
+      file: "tracker.yaml",
+      id: currentItem.id,
+      brief: currentItem.title,
       status: currentItem.status,
     });
   }
@@ -106,6 +98,7 @@ function searchDir(root, dirPath, sourceLabel, terms, results) {
   }
 
   for (const file of files) {
+    const filePath = `${dirPath}/${file}`;
     const content = readFileSync(join(dir, file), "utf8");
     if (!matchesTerms(content, terms)) continue;
 
@@ -113,17 +106,14 @@ function searchDir(root, dirPath, sourceLabel, terms, results) {
     const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/title:\s*(.+)/m);
     const statusMatch = content.match(/status:\s*(.+)/m);
 
-    // Show description (brief context) or fall back to first content line after frontmatter
-    let brief = descMatch ? descMatch[1].trim() : null;
-    if (!brief) {
-      brief = extractBrief(content);
-    }
-    const title = titleMatch ? titleMatch[1].trim() : file.replace(".md", "");
-    const display = brief ? `${title} — ${brief}` : title;
+    let brief = descMatch ? descMatch[1].trim() : extractBrief(content);
+    const id = titleMatch ? titleMatch[1].trim() : file.replace(".md", "");
 
     results.push({
-      source: sourceLabel,
-      match: display,
+      type: sourceLabel,
+      file: filePath,
+      id,
+      brief: brief || null,
       status: statusMatch ? statusMatch[1].trim() : null,
     });
   }
@@ -151,14 +141,16 @@ function searchRetros(root, terms, results) {
 
     for (const story of stories) {
       const retroPath = join(featureDir, story, "retro.md");
+      const retroRelPath = `documentation/stories/${feature}/${story}/retro.md`;
       if (!existsSync(retroPath)) continue;
 
       const content = readFileSync(retroPath, "utf8");
       if (!matchesTerms(content, terms)) continue;
 
-      // Extract key findings (lines starting with - under "What Didn't" or "Learnings")
+      // Extract matching findings from key sections
       const lines = content.split("\n");
       let inSection = false;
+      let foundSpecific = false;
       for (const line of lines) {
         if (/^##\s+(What Didn't|Learnings|What We Learned)/i.test(line)) {
           inSection = true;
@@ -170,19 +162,23 @@ function searchRetros(root, terms, results) {
         }
         if (inSection && line.startsWith("- ") && matchesTerms(line, terms)) {
           results.push({
-            source: `retro:${story}`,
-            match: line.slice(2).trim(),
+            type: "retro",
+            file: retroRelPath,
+            id: story,
+            brief: line.slice(2).trim(),
             status: null,
           });
+          foundSpecific = true;
         }
       }
 
-      // If no specific line matched, show the retro title
-      if (!results.some((r) => r.source === `retro:${story}`)) {
+      if (!foundSpecific) {
         const titleMatch = content.match(/^#\s+(.+)/m);
         results.push({
-          source: `retro:${story}`,
-          match: titleMatch ? titleMatch[1].trim() : `${story}/retro.md`,
+          type: "retro",
+          file: retroRelPath,
+          id: story,
+          brief: titleMatch ? titleMatch[1].trim() : null,
           status: null,
         });
       }
@@ -204,8 +200,10 @@ function searchLegacyTodos(root, terms, results) {
     const isDone = /\[x\]/i.test(line);
     const text = line.replace(/^[-*]\s+\[[ x]\]\s+/, "").trim();
     results.push({
-      source: "todo",
-      match: text,
+      type: "todo",
+      file: "documentation/TODOS.md",
+      id: null,
+      brief: text,
       status: isDone ? "done" : "open",
     });
   }

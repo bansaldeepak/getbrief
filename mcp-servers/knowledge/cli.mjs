@@ -243,7 +243,10 @@ if (command === "init") {
     console.log("No results.");
   } else {
     for (const r of results) {
-      console.log(`[${r.source}] ${r.match}${r.status ? ` (${r.status})` : ""}`);
+      const status = r.status ? ` (${r.status})` : "";
+      const id = r.id ? `${r.id}: ` : "";
+      console.log(`[${r.type}] ${id}${r.brief || ""}${status}`);
+      console.log(`  → ${r.file}`);
     }
     console.log(`\n${results.length} result(s)`);
   }
