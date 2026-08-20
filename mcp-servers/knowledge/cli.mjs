@@ -188,55 +188,65 @@ if (command === "init") {
   if (root) process.env.KNOWLEDGE_ROOT = root;
   await import("./serve.mjs");
 } else if (command === "status") {
-  const root = findProjectRoot(process.cwd());
-  if (!root) {
-    console.error("✗ No .project/knowledge.db found.");
-    process.exit(1);
+  const root = findGitRoot();
+  const { readTracker } = await import("./lib/tracker.mjs");
+  const items = readTracker(root);
+
+  if (items.length === 0) {
+    console.log("No tracker.yaml found or empty. Run: knowledge-graph init");
+    process.exit(0);
   }
-  const { DatabaseSync } = await import("node:sqlite");
-  const db = new DatabaseSync(join(root, ".project/knowledge.db"));
-  const tables = ["stories", "todos", "decisions", "constraints", "memory", "retro_findings", "anchors"];
-  console.log(`Knowledge graph: ${root}/.project/knowledge.db\n`);
-  for (const t of tables) {
+
+  const byType = {};
+  const byStatus = {};
+  for (const item of items) {
+    byType[item.type] = (byType[item.type] || 0) + 1;
+    byStatus[item.status] = (byStatus[item.status] || 0) + 1;
+  }
+
+  const active = items.filter(
+    (i) => !["done", "dropped", "completed", "clean", "rejected"].includes(i.status),
+  );
+
+  console.log(`Project: ${root}\n`);
+  console.log("By type:");
+  for (const [type, count] of Object.entries(byType)) {
+    console.log(`  ${type.padEnd(12)} ${count}`);
+  }
+  console.log("\nBy status:");
+  for (const [status, count] of Object.entries(byStatus)) {
+    console.log(`  ${status.padEnd(14)} ${count}`);
+  }
+  console.log(`\nActive items: ${active.length} / ${items.length} total`);
+
+  // Also show DB status if available
+  const dbRoot = findProjectRoot(process.cwd());
+  if (dbRoot) {
     try {
-      const [row] = db.prepare(`SELECT COUNT(*) as n FROM ${t}`).all();
-      console.log(`  ${t.padEnd(16)} ${row.n}`);
+      const { DatabaseSync } = await import("node:sqlite");
+      const db = new DatabaseSync(join(dbRoot, ".project/knowledge.db"));
+      const [log] = db.prepare("SELECT COUNT(*) as n FROM query_log").all();
+      console.log(`\nKnowledge DB: ${log.n} queries logged`);
     } catch {}
   }
-  const [log] = db.prepare("SELECT COUNT(*) as n FROM query_log").all();
-  console.log(`\n  query_log       ${log.n} queries recorded`);
 } else if (command === "search") {
   const query = args.slice(1).join(" ");
   if (!query) {
     console.error("Usage: knowledge-graph search <query>");
     process.exit(1);
   }
-  const root = findProjectRoot(process.cwd());
-  if (!root) {
-    console.error("✗ No .project/knowledge.db found.");
-    process.exit(1);
-  }
-  const { DatabaseSync } = await import("node:sqlite");
-  const db = new DatabaseSync(join(root, ".project/knowledge.db"));
-  const pattern = `%${query}%`;
-  const tables = [
-    { name: "todos", col: "title", hasStatus: true },
-    { name: "decisions", col: "title", hasStatus: true },
-    { name: "constraints", col: "summary", hasStatus: false },
-    { name: "memory", col: "summary", hasStatus: false },
-    { name: "retro_findings", col: "summary", hasStatus: false },
-  ];
-  let total = 0;
-  for (const { name, col, hasStatus } of tables) {
-    const select = hasStatus ? `${col}, status` : col;
-    const rows = db.prepare(`SELECT ${select} FROM ${name} WHERE ${col} LIKE ?`).all(pattern);
-    for (const r of rows) {
-      console.log(`[${name}] ${r[col]}${r.status ? ` (${r.status})` : ""}`);
-      total++;
+  const { searchFiles } = await import("./lib/search.mjs");
+  const root = findGitRoot();
+  const results = searchFiles(root, query);
+
+  if (results.length === 0) {
+    console.log("No results.");
+  } else {
+    for (const r of results) {
+      console.log(`[${r.source}] ${r.match}${r.status ? ` (${r.status})` : ""}`);
     }
+    console.log(`\n${results.length} result(s)`);
   }
-  if (total === 0) console.log("No results.");
-  else console.log(`\n${total} result(s)`);
 } else if (command === "install") {
   const target = args[1] || "claude";
   const config = {
