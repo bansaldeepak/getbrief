@@ -54,6 +54,30 @@ brief next story                    # print next available ID (e.g. S-112)
 brief next todo                     # works for any type
 ```
 
+## Code + Doc Search
+
+```bash
+brief query "<symbol or keyword>"          # code symbols + docs in one call
+brief query --callers "<fn>"               # who calls this function
+brief query --impact "<fn>"                # blast radius of a change
+brief query --json "<q>"                   # structured JSON output
+```
+
+Use `brief query` as the **default lookup** — it covers both code and docs.
+Only use `brief search` when you specifically need doc-only results.
+
+## Graduated Context
+
+```bash
+echo "body" | brief context graduate "title"   # save cross-cutting knowledge
+echo "body" | brief context graduate "title" --source=skill/implement
+brief context list                             # see all graduated context
+brief context "<query>"                        # search graduated context
+```
+
+Graduate context when you discover knowledge that applies across features,
+would be lost if only in conversation, or future agents need to know.
+
 ## If CLI is not available
 
 Fall back to reading files directly:
