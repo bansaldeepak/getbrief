@@ -6,6 +6,9 @@
   "bin": {
     "brief": "./cli.mjs"
   },
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "@colbymchenry/codegraph": "^1.5.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
