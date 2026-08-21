@@ -105,7 +105,8 @@ items:
     title: brief v0.3 — CLI Command Enhancements
     status: in_progress
     branch: feature/brief-v03-cli-enhancements
-    current_task: S-004-T6
+    current_task: null
     story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md
     link: null
     pr: null
+    last_task: S-004-T6
