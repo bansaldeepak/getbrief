@@ -69,14 +69,6 @@ describe("query command", () => {
     assert.ok(Array.isArray(parsed.docs));
   });
 
-  it("all callers returned without cap", () => {
-    const allCallers = Array.from({ length: 20 }, (_, i) => ({
-      name: `c${i}`, file: "x.mjs", line: i,
-    }));
-    const output = { callers: allCallers.map((c) => ({ name: c.name, file: c.file, line: c.line })) };
-    assert.equal(output.callers.length, 20);
-  });
-
   it("base output always shows callees and callers", async () => {
     const { queryCommand } = await import("../lib/commands/query.mjs");
     await queryCommand(tmpDir, ["nonexistent"], ["nonexistent"]);

@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, basename } from "node:path";
+import { stringify } from "yaml";
 
 const CONTEXT_DIR = "documentation/context";
 
@@ -31,14 +32,8 @@ export function graduate(root, title, body, opts = {}) {
   const source = opts.source || "manual";
   const created = new Date().toISOString().split("T")[0];
 
-  const content = `---
-title: ${title}
-created: ${created}
-source: ${source}
----
-
-${body.trim()}
-`;
+  const frontmatter = stringify({ title, created, source }).trim();
+  const content = `---\n${frontmatter}\n---\n\n${body.trim()}\n`;
 
   const filePath = join(dir, filename);
   writeFileSync(filePath, content);
@@ -60,7 +55,8 @@ export function list(root) {
         title: titleMatch ? titleMatch[1] : basename(f, ".md"),
         created: createdMatch ? createdMatch[1] : "unknown",
       };
-    });
+    })
+    .sort((a, b) => a.created.localeCompare(b.created));
 }
 
 export function searchContext(root, query) {
@@ -68,21 +64,19 @@ export function searchContext(root, query) {
   if (!existsSync(dir)) return [];
 
   const q = query.toLowerCase();
-  return readdirSync(dir)
-    .filter((f) => f.endsWith(".md"))
-    .filter((f) => {
-      const content = readFileSync(join(dir, f), "utf8").toLowerCase();
-      return content.includes(q);
-    })
-    .map((f) => {
-      const content = readFileSync(join(dir, f), "utf8");
-      const titleMatch = content.match(/^title:\s*(.+)$/m);
-      const lines = content.split("\n");
-      const matchLine = lines.find((l) => l.toLowerCase().includes(q) && !l.startsWith("---"));
-      return {
-        file: join(CONTEXT_DIR, f),
-        title: titleMatch ? titleMatch[1] : basename(f, ".md"),
-        match: matchLine ? matchLine.trim() : "",
-      };
+  const results = [];
+  for (const f of readdirSync(dir)) {
+    if (!f.endsWith(".md")) continue;
+    const content = readFileSync(join(dir, f), "utf8");
+    if (!content.toLowerCase().includes(q)) continue;
+    const titleMatch = content.match(/^title:\s*(.+)$/m);
+    const lines = content.split("\n");
+    const matchLine = lines.find((l) => l.toLowerCase().includes(q) && !l.startsWith("---"));
+    results.push({
+      file: join(CONTEXT_DIR, f),
+      title: titleMatch ? titleMatch[1] : basename(f, ".md"),
+      match: matchLine ? matchLine.trim() : "",
     });
+  }
+  return results;
 }

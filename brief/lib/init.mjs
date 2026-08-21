@@ -6,7 +6,7 @@
 import { existsSync, mkdirSync, copyFileSync, writeFileSync, readFileSync, appendFileSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "../../templates/project-structure");
@@ -86,7 +86,7 @@ function initCodegraph(projectRoot, opts = {}) {
 
   if (!existsSync(codegraphDir)) {
     try {
-      execSync(`"${CODEGRAPH_BIN}" init -i "${projectRoot}"`, {
+      execFileSync(CODEGRAPH_BIN, ["init", "-i", projectRoot], {
         stdio: "inherit",
         timeout: 120000,
       });

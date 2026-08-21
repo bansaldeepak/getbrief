@@ -7,6 +7,10 @@ let cachedGraph = null;
 let cachedRoot = null;
 let cachedMtime = 0;
 
+function warn(label, err) {
+  process.stderr.write(`[code-index] ${label}: ${err.message}\n`);
+}
+
 function loadCodegraph() {
   return require("@colbymchenry/codegraph");
 }
@@ -22,7 +26,8 @@ export function open(root) {
     cachedRoot = root;
     cachedMtime = mtime;
     return cachedGraph;
-  } catch {
+  } catch (e) {
+    warn("open", e);
     return null;
   }
 }
@@ -38,7 +43,8 @@ export function getHandle(root) {
       return cachedGraph;
     }
     return open(root);
-  } catch {
+  } catch (e) {
+    warn("getHandle", e);
     return null;
   }
 }
@@ -56,7 +62,8 @@ export function search(handle, query) {
       signature: r.node.signature || null,
       score: r.score,
     }));
-  } catch {
+  } catch (e) {
+    warn("search", e);
     return [];
   }
 }
@@ -72,7 +79,8 @@ export function callers(handle, nodeId) {
       file: r.node.filePath,
       line: r.node.startLine,
     }));
-  } catch {
+  } catch (e) {
+    warn("callers", e);
     return [];
   }
 }
@@ -90,7 +98,8 @@ export function nodesInPath(handle, pathPrefix) {
       }
     }
     return nodes;
-  } catch {
+  } catch (e) {
+    warn("nodesInPath", e);
     return [];
   }
 }
@@ -111,7 +120,8 @@ export function impact(handle, nodeId) {
       });
     }
     return nodes;
-  } catch {
+  } catch (e) {
+    warn("impact", e);
     return [];
   }
 }
@@ -127,7 +137,8 @@ export function callees(handle, nodeId) {
       file: r.node.filePath,
       line: r.node.startLine,
     }));
-  } catch {
+  } catch (e) {
+    warn("callees", e);
     return [];
   }
 }
@@ -144,7 +155,8 @@ export function usages(handle, nodeId) {
       line: r.node.startLine,
       edgeKind: r.edge?.kind || "unknown",
     }));
-  } catch {
+  } catch (e) {
+    warn("usages", e);
     return [];
   }
 }
@@ -177,7 +189,8 @@ export function edges(handle, nodeId) {
     }));
 
     return { outgoing, incoming };
-  } catch {
+  } catch (e) {
+    warn("edges", e);
     return { outgoing: [], incoming: [] };
   }
 }
@@ -200,7 +213,8 @@ export function getNodeDetail(handle, nodeId) {
       isAsync: n.isAsync || false,
       docstring: n.docstring || null,
     };
-  } catch {
+  } catch (e) {
+    warn("getNodeDetail", e);
     return null;
   }
 }

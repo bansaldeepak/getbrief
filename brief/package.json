@@ -10,8 +10,7 @@
     "test": "node --test"
   },
   "dependencies": {
-    "@colbymchenry/codegraph": "^1.5.0",
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@colbymchenry/codegraph": "1.5.0",
     "yaml": "^2.9.0"
   }
 }
