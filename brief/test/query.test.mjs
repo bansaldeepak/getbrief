@@ -69,39 +69,12 @@ describe("query command", () => {
     assert.ok(Array.isArray(parsed.docs));
   });
 
-  it("caps callers display at 10", async () => {
-    const manyCallers = Array.from({ length: 15 }, (_, i) => ({
-      node: { id: `fn:${i}`, name: `caller${i}`, kind: "function", filePath: "a.mjs", startLine: i },
-      edge: {},
-    }));
-    const { queryCommand } = await import("../lib/commands/query.mjs");
-
-    const codeIndex = await import("../lib/code-index.mjs");
-    const origGetHandle = codeIndex.getHandle;
-    const origSearch = codeIndex.search;
-    const origCallers = codeIndex.callers;
-
-    // Can't easily mock ES modules, so test the cap logic directly
-    const display = manyCallers.slice(0, 10);
-    assert.equal(display.length, 10);
-    assert.equal(manyCallers.length - 10, 5);
-  });
-
-  it("caps impact display at 10", () => {
-    const manyImpact = Array.from({ length: 12 }, (_, i) => ({
-      name: `impacted${i}`, file: "b.mjs", line: i,
-    }));
-    const display = manyImpact.slice(0, 10);
-    assert.equal(display.length, 10);
-    assert.equal(manyImpact.length - 10, 2);
-  });
-
-  it("--json returns all callers uncapped", () => {
+  it("all callers returned without cap", () => {
     const allCallers = Array.from({ length: 20 }, (_, i) => ({
       name: `c${i}`, file: "x.mjs", line: i,
     }));
-    const jsonOutput = { callers: allCallers.map((c) => ({ name: c.name, file: c.file, line: c.line })) };
-    assert.equal(jsonOutput.callers.length, 20);
+    const output = { callers: allCallers.map((c) => ({ name: c.name, file: c.file, line: c.line })) };
+    assert.equal(output.callers.length, 20);
   });
 
   it("base output always shows callees and callers", async () => {

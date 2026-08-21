@@ -12,17 +12,14 @@ import {
 } from "../code-index.mjs";
 import { searchFiles } from "../search.mjs";
 
-const DISPLAY_CAP = 10;
-
 export async function queryCommand(root, args, rawArgs) {
   const query = args.filter((a) => !a.startsWith("--")).join(" ");
   if (!query) {
-    console.error("Usage: brief query <query> [--full] [--callers] [--impact] [--json]");
+    console.error("Usage: brief query <query> [--full] [--impact] [--json]");
     process.exit(1);
   }
 
   const wantFull = rawArgs.includes("--full") || rawArgs.includes("-f");
-  const wantCallers = rawArgs.includes("--callers");
   const wantImpact = rawArgs.includes("--impact");
   const wantJson = rawArgs.includes("--json");
 
@@ -40,7 +37,6 @@ export async function queryCommand(root, args, rawArgs) {
         signature: node.signature,
       };
 
-      // Base: always include callees + callers
       result.callers = getCallers(handle, node.id);
       result.callees = getCallees(handle, node.id);
 
@@ -100,23 +96,15 @@ function renderBase(codeResults, docResults, handle) {
 
       if (r.callees.length > 0) {
         console.log("    calls:");
-        const display = r.callees.slice(0, DISPLAY_CAP);
-        for (const c of display) {
+        for (const c of r.callees) {
           console.log(`      → ${c.name} (${c.file}:${c.line})`);
-        }
-        if (r.callees.length > DISPLAY_CAP) {
-          console.log(`      … ${r.callees.length - DISPLAY_CAP} more`);
         }
       }
 
       if (r.callers.length > 0) {
         console.log("    callers:");
-        const display = r.callers.slice(0, DISPLAY_CAP);
-        for (const c of display) {
+        for (const c of r.callers) {
           console.log(`      ← ${c.name} (${c.file}:${c.line})`);
-        }
-        if (r.callers.length > DISPLAY_CAP) {
-          console.log(`      … ${r.callers.length - DISPLAY_CAP} more`);
         }
       } else {
         console.log("    callers: none");
@@ -124,12 +112,8 @@ function renderBase(codeResults, docResults, handle) {
 
       if (r.impact) {
         console.log("    impact:");
-        const display = r.impact.slice(0, DISPLAY_CAP);
-        for (const i of display) {
+        for (const i of r.impact) {
           console.log(`      ⚡ ${i.name} (${i.file}:${i.line})`);
-        }
-        if (r.impact.length > DISPLAY_CAP) {
-          console.log(`      … ${r.impact.length - DISPLAY_CAP} more`);
         }
       }
 
@@ -156,7 +140,6 @@ function renderFull(codeResults, docResults) {
     console.log(`**Exploration: ${codeResults[0].name}**\n`);
     console.log(`Found ${codeResults.length} symbols.\n`);
 
-    // Blast radius summary
     const withCallers = codeResults.filter((r) => r.callers.length > 0);
     if (withCallers.length > 0) {
       console.log("**Blast radius — what depends on these**\n");
@@ -166,7 +149,6 @@ function renderFull(codeResults, docResults) {
       console.log("");
     }
 
-    // Relationships
     console.log("**Relationships**\n");
     const allCalls = [];
     const allRefs = [];
@@ -191,39 +173,30 @@ function renderFull(codeResults, docResults) {
 
     if (allCalls.length > 0) {
       console.log("**calls:**");
-      const display = allCalls.slice(0, 15);
-      for (const c of display) console.log(`- ${c}`);
-      if (allCalls.length > 15) console.log(`- ... and ${allCalls.length - 15} more`);
+      for (const c of allCalls) console.log(`- ${c}`);
       console.log("");
     }
     if (allRefs.length > 0) {
       console.log("**references:**");
-      const display = allRefs.slice(0, 15);
-      for (const c of display) console.log(`- ${c}`);
-      if (allRefs.length > 15) console.log(`- ... and ${allRefs.length - 15} more`);
+      for (const c of allRefs) console.log(`- ${c}`);
       console.log("");
     }
     if (allOther.length > 0) {
       console.log("**other:**");
-      for (const c of allOther.slice(0, 10)) console.log(`- ${c}`);
+      for (const c of allOther) console.log(`- ${c}`);
       console.log("");
     }
 
-    // Usages summary
     for (const r of codeResults) {
       if (r.usages && r.usages.length > 0) {
         console.log(`**Usages of \`${r.name}\`:** ${r.usages.length}`);
-        for (const u of r.usages.slice(0, DISPLAY_CAP)) {
+        for (const u of r.usages) {
           console.log(`  ${u.edgeKind} in ${u.name} (${u.file})`);
-        }
-        if (r.usages.length > DISPLAY_CAP) {
-          console.log(`  … ${r.usages.length - DISPLAY_CAP} more`);
         }
         console.log("");
       }
     }
 
-    // Source code
     console.log("**Source Code**\n");
     for (const r of codeResults) {
       if (r.source) {
