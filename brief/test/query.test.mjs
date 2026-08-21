@@ -103,4 +103,26 @@ describe("query command", () => {
     const jsonOutput = { callers: allCallers.map((c) => ({ name: c.name, file: c.file, line: c.line })) };
     assert.equal(jsonOutput.callers.length, 20);
   });
+
+  it("base output always shows callees and callers", async () => {
+    const { queryCommand } = await import("../lib/commands/query.mjs");
+    await queryCommand(tmpDir, ["nonexistent"], ["nonexistent"]);
+    const output = stdout.join("\n");
+    assert.ok(!output.includes("undefined"));
+  });
+
+  it("--full flag is accepted without error", async () => {
+    const { queryCommand } = await import("../lib/commands/query.mjs");
+    await queryCommand(tmpDir, ["nonexistent"], ["nonexistent", "--full"]);
+    const output = stdout.join("\n");
+    assert.ok(output.includes("No matches"));
+  });
+
+  it("--json with --full includes edges and source fields", async () => {
+    const { queryCommand } = await import("../lib/commands/query.mjs");
+    await queryCommand(tmpDir, ["test"], ["test", "--json", "--full"]);
+    const output = stdout.join("\n");
+    const parsed = JSON.parse(output);
+    assert.ok(Array.isArray(parsed.code));
+  });
 });

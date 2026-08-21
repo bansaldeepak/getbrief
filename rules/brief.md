@@ -57,13 +57,18 @@ brief next todo                     # works for any type
 ## Code + Doc Search
 
 ```bash
-brief query "<symbol or keyword>"          # code symbols + docs in one call
-brief query --callers "<fn>"               # who calls this function
+brief query "<symbol or keyword>"          # code symbols + docs — shows callees & callers
+brief query --full "<symbol>"              # full exploration: source code, all edges, usages, impact
+brief query --full --json "<symbol>"       # structured JSON with everything
 brief query --impact "<fn>"                # blast radius of a change
 brief query --json "<q>"                   # structured JSON output
 ```
 
+**Base output** always shows callees (what it calls) and callers (what calls it) for each match.
+**`--full`** adds: source code, all edge types, usages, impact — equivalent to `codegraph explore`.
+
 Use `brief query` as the **default lookup** — it covers both code and docs.
+Use `brief query --full` when you need deep exploration of a symbol (reviewing, debugging, impact analysis).
 Only use `brief search` when you specifically need doc-only results.
 
 ## Graduated Context

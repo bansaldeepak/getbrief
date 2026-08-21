@@ -115,3 +115,92 @@ export function impact(handle, nodeId) {
     return [];
   }
 }
+
+export function callees(handle, nodeId) {
+  if (!handle) return [];
+  try {
+    const results = handle.getCallees(nodeId);
+    return results.map((r) => ({
+      id: r.node.id,
+      name: r.node.name,
+      kind: r.node.kind,
+      file: r.node.filePath,
+      line: r.node.startLine,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function usages(handle, nodeId) {
+  if (!handle) return [];
+  try {
+    const results = handle.findUsages(nodeId);
+    return results.map((r) => ({
+      id: r.node.id,
+      name: r.node.name,
+      kind: r.node.kind,
+      file: r.node.filePath,
+      line: r.node.startLine,
+      edgeKind: r.edge?.kind || "unknown",
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function edges(handle, nodeId) {
+  if (!handle) return { outgoing: [], incoming: [] };
+  try {
+    const outRaw = handle.getOutgoingEdges(nodeId);
+    const inRaw = handle.getIncomingEdges(nodeId);
+
+    const resolveNode = (id) => {
+      try {
+        const n = handle.getNode(id);
+        return n ? { id: n.id, name: n.name, kind: n.kind, file: n.filePath, line: n.startLine } : { id };
+      } catch {
+        return { id };
+      }
+    };
+
+    const outgoing = outRaw.map((e) => ({
+      kind: e.kind,
+      target: resolveNode(e.target),
+      line: e.line || null,
+    }));
+
+    const incoming = inRaw.map((e) => ({
+      kind: e.kind,
+      source: resolveNode(e.source),
+      line: e.line || null,
+    }));
+
+    return { outgoing, incoming };
+  } catch {
+    return { outgoing: [], incoming: [] };
+  }
+}
+
+export function getNodeDetail(handle, nodeId) {
+  if (!handle) return null;
+  try {
+    const n = handle.getNode(nodeId);
+    if (!n) return null;
+    return {
+      id: n.id,
+      name: n.name,
+      qualifiedName: n.qualifiedName,
+      kind: n.kind,
+      file: n.filePath,
+      startLine: n.startLine,
+      endLine: n.endLine,
+      signature: n.signature || null,
+      isExported: n.isExported || false,
+      isAsync: n.isAsync || false,
+      docstring: n.docstring || null,
+    };
+  } catch {
+    return null;
+  }
+}
