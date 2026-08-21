@@ -1,6 +1,6 @@
 # S-004: brief v0.3 — CLI Command Enhancements
 
-**Status**: in_progress
+**Status**: done
 **Branch**: feature/brief-v03-cli-enhancements
 **Created**: 2026-08-21
 
