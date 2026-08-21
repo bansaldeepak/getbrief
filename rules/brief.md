@@ -30,16 +30,32 @@ brief stats --global                # usage across all projects
 brief story tasks S-001             # task table
 brief story task S-001-T2           # single task content
 
-# Mutations (writes tracker.yaml + .md files)
-brief story create "Feature name" --description="Why"
-brief story task create S-001 "Task title"
-brief story task update S-001-T2 status=completed
+# Create (--body for full content, or omit for template)
+brief story create "Feature name" --body="## Context\n..."
+brief story task create S-001 "Task title" --body="## Description\n..."
+brief todo create "Fix the thing" --body="Because X breaks"
+echo "full content" | brief story create "Title"   # stdin pipe also works
+
+# Read
+brief story show S-001              # full story.md
+brief story task S-001-T2           # full task file
+brief story summary S-001           # summary.md content
+brief todo show TODO-001            # full todo .md
+brief context show <slug>           # full context file
+
+# Update (--body replaces full content below metadata header)
 brief story update S-001 status=done pr=#42
-brief todo create "Fix the thing"
+brief story update S-001 --body="new full content"
+brief story task update S-001-T2 status=completed
+brief story task update S-001-T2 --body="new task content"
+brief story summary update S-001 --body="## What Changed\n..."
 brief todo update TODO-001 status=done "note=Resolution details"
+brief todo update TODO-001 --body="new body"
+brief context update <slug> --body="new content"
 
 # Log (multi-agent safe — one file per entry)
 brief log "What happened" --tag=progress --story=S-001
+brief log "Summary" --body="detailed multi-line content"
 brief log list                      # recent entries
 brief log list --tag=progress       # filter by tag
 

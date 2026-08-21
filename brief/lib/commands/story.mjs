@@ -5,15 +5,17 @@ import { join } from "node:path";
 import { readTracker, writeTracker, nextId } from "../tracker.mjs";
 import { scanFiles } from "../scan.mjs";
 import { table, statusOrder } from "../format.mjs";
+import { readBody } from "../body.mjs";
 
-export function storyCommand(root, action, args, rawArgs) {
+export async function storyCommand(root, action, args, rawArgs) {
   switch (action) {
     case "list": return storyList(root, args);
     case "show": return storyShow(root, args[0]);
+    case "summary": return storySummary(root, args, rawArgs);
     case "tasks": return storyTasks(root, args[0]);
     case "task": return storyTask(root, args, rawArgs);
     case "create": return storyCreate(root, args, rawArgs);
-    case "update": return storyUpdate(root, args);
+    case "update": return storyUpdate(root, args, rawArgs);
     case "help": return storyHelp();
     default:
       console.error(`Unknown story action: ${action}. Run: brief story help`);
@@ -38,6 +40,66 @@ function storyList(root, args) {
   const rows = filtered.map((s) => [s.id, s.title, s.status, s.branch || "", s.current_task || ""]);
   console.log(table(["ID", "Title", "Status", "Branch", "Current Task"], rows));
   console.log(`\n${filtered.length} story(s)${showAll ? "" : " (active only, use --all for full history)"}`);
+}
+
+async function storySummary(root, args, rawArgs) {
+  const action = args[0];
+
+  if (action === "update") {
+    const storyId = args[1];
+    if (!storyId) {
+      console.error("Usage: brief story summary update <S-NNN> --body=<content>");
+      console.error('       echo "content" | brief story summary update <S-NNN>');
+      process.exit(1);
+    }
+    const items = readTracker(root);
+    const item = items.find((i) => i.id === storyId);
+    if (!item?.story) {
+      console.error(`Story not found or has no file: ${storyId}`);
+      process.exit(1);
+    }
+    const summaryPath = item.story.replace("story.md", "summary.md");
+    const fullPath = join(root, summaryPath);
+    if (!existsSync(fullPath)) {
+      console.error(`Summary not found: ${summaryPath}`);
+      process.exit(1);
+    }
+    const body = await readBody(rawArgs);
+    if (!body) {
+      console.error("Error: --body flag or stdin pipe required for update.");
+      process.exit(1);
+    }
+    let content = readFileSync(fullPath, "utf8");
+    const firstNewline = content.indexOf("\n");
+    const header = firstNewline !== -1 ? content.slice(0, firstNewline) : content;
+    content = header + "\n\n" + body + "\n";
+    writeFileSync(fullPath, content);
+    console.log(`✓ Updated summary for ${storyId}`);
+    console.log(`path: ${summaryPath}`);
+    return;
+  }
+
+  // Default: read (brief story summary S-NNN)
+  const storyId = action;
+  if (!storyId) {
+    console.error("Usage: brief story summary <S-NNN>");
+    console.error("       brief story summary update <S-NNN> --body=<content>");
+    process.exit(1);
+  }
+  const items = readTracker(root);
+  const item = items.find((i) => i.id === storyId);
+  if (!item?.story) {
+    console.error(`Story not found or has no file: ${storyId}`);
+    process.exit(1);
+  }
+  const summaryPath = item.story.replace("story.md", "summary.md");
+  const fullPath = join(root, summaryPath);
+  if (!existsSync(fullPath)) {
+    console.error(`Summary not found: ${summaryPath}`);
+    process.exit(1);
+  }
+  console.log(`→ ${summaryPath}`);
+  console.log(readFileSync(fullPath, "utf8"));
 }
 
 function storyShow(root, storyId) {
@@ -107,7 +169,7 @@ function storyTasks(root, storyId) {
   console.log(`\n${rows.length} task(s)`);
 }
 
-function storyTask(root, args, rawArgs) {
+async function storyTask(root, args, rawArgs) {
   // brief story task create S-001 "Task title" [--blocked-by=S-001-T1]
   // brief story task S-001-T2
   // brief story task update S-001-T2 status=completed
@@ -144,13 +206,13 @@ function storyTask(root, args, rawArgs) {
   console.log(readFileSync(filePath, "utf8"));
 }
 
-function storyTaskCreate(root, args, rawArgs) {
+async function storyTaskCreate(root, args, rawArgs) {
   const storyId = args[0];
   const titleParts = args.slice(1).filter((a) => !a.startsWith("--"));
   const title = titleParts.join(" ");
 
   if (!storyId || !title) {
-    console.error("Usage: brief story task create <S-NNN> <title> [--blocked-by=S-NNN-TN] [--priority=P1]");
+    console.error("Usage: brief story task create <S-NNN> <title> [--blocked-by=S-NNN-TN] [--priority=P1] [--body=<content>]");
     process.exit(1);
   }
 
@@ -159,6 +221,8 @@ function storyTaskCreate(root, args, rawArgs) {
     console.error(`No tasks directory found for ${storyId}. Create the story first: brief story create`);
     process.exit(1);
   }
+
+  const body = await readBody(rawArgs);
 
   // Auto-number: find highest existing T-NNN
   const existing = readdirSync(join(root, tasksDir))
@@ -179,7 +243,18 @@ function storyTaskCreate(root, args, rawArgs) {
     if (arg.startsWith("--description=")) description = arg.split("=").slice(1).join("=");
   }
 
-  const content = `# ${taskId}: ${title}
+  let content;
+  if (body) {
+    content = `# ${taskId}: ${title}
+
+**Status:** pending
+**Priority:** ${priority}
+**Blocked By:** ${blockedBy || "—"}
+
+${body}
+`;
+  } else {
+    content = `# ${taskId}: ${title}
 
 **Status:** pending
 **Priority:** ${priority}
@@ -197,6 +272,7 @@ ${description || "<!-- What this task accomplishes -->"}
 
 - [ ] ...
 `;
+  }
 
   writeFileSync(join(root, tasksDir, taskFile), content);
 
@@ -210,15 +286,17 @@ ${description || "<!-- What this task accomplishes -->"}
     }
   }
 
+  const relPath = `${tasksDir}/${taskFile}`;
   console.log(`✓ Created ${taskId}: ${title}`);
-  console.log(`  → ${tasksDir}/${taskFile}`);
+  console.log(`  → ${relPath}`);
+  console.log(`path: ${relPath}`);
 }
 
-function storyTaskUpdate(root, args, rawArgs) {
+async function storyTaskUpdate(root, args, rawArgs) {
   const taskId = args[0];
-  const fields = args.slice(1);
-  if (!taskId || fields.length === 0) {
-    console.error("Usage: brief story task update <S-NNN-TN> status=<value>");
+  const fields = args.slice(1).filter((a) => !a.startsWith("--body"));
+  if (!taskId || (fields.length === 0 && !rawArgs.some((a) => a.startsWith("--body")))) {
+    console.error("Usage: brief story task update <S-NNN-TN> status=<value> [--body=<content>]");
     process.exit(1);
   }
 
@@ -234,6 +312,8 @@ function storyTaskUpdate(root, args, rawArgs) {
     console.error(`Task file not found: ${tasksDir}/${taskFile}`);
     process.exit(1);
   }
+
+  const body = await readBody(rawArgs);
 
   let content = readFileSync(filePath, "utf8");
   const updates = {};
@@ -261,6 +341,17 @@ function storyTaskUpdate(root, args, rawArgs) {
     );
   }
 
+  // Replace full body below metadata header if --body or stdin provided
+  if (body) {
+    const headerEnd = content.search(/\n\n(?![\s]*\*\*)/);
+    if (headerEnd !== -1) {
+      const header = content.slice(0, headerEnd);
+      content = header + "\n\n" + body + "\n";
+    } else {
+      content += "\n" + body + "\n";
+    }
+  }
+
   writeFileSync(filePath, content);
 
   // Update current_task in tracker when task becomes in_progress
@@ -273,15 +364,28 @@ function storyTaskUpdate(root, args, rawArgs) {
     }
   }
 
-  console.log(`✓ Updated ${taskId}: ${JSON.stringify(updates)}`);
+  // Clear current_task and set last_task on completion
+  if (["completed", "done"].includes(updates.status)) {
+    const items = readTracker(root);
+    const storyIdx = items.findIndex((i) => i.id === storyId);
+    if (storyIdx !== -1) {
+      items[storyIdx].current_task = null;
+      items[storyIdx].last_task = taskId;
+      writeTracker(root, items);
+    }
+  }
+
+  const changed = Object.keys(updates).length > 0 ? JSON.stringify(updates) : "";
+  const bodyMsg = body ? " (body updated)" : "";
+  console.log(`✓ Updated ${taskId}: ${changed}${bodyMsg}`);
   console.log(`  → ${tasksDir}/${taskFile}`);
 }
 
-function storyCreate(root, args, rawArgs) {
+async function storyCreate(root, args, rawArgs) {
   const titleParts = args.filter((a) => !a.startsWith("--"));
   const title = titleParts.join(" ");
   if (!title) {
-    console.error("Usage: brief story create <title> [--branch=<name>] [--description=<text>] [--feature=<folder>]");
+    console.error("Usage: brief story create <title> [--branch=<name>] [--description=<text>] [--feature=<folder>] [--body=<content>]");
     process.exit(1);
   }
 
@@ -292,6 +396,8 @@ function storyCreate(root, args, rawArgs) {
     if (arg.startsWith("--description=")) opts.description = arg.split("=").slice(1).join("=");
     if (arg.startsWith("--feature=")) opts.feature = arg.split("=").slice(1).join("=");
   }
+
+  const body = await readBody(rawArgs);
 
   const items = readTracker(root);
   const id = nextId(items, "story", root);
@@ -304,8 +410,19 @@ function storyCreate(root, args, rawArgs) {
   const fullStoryDir = join(root, storyDir);
   mkdirSync(join(fullStoryDir, "tasks"), { recursive: true });
 
-  // Write story.md
-  const storyContent = `# ${id}: ${title}
+  // Write story.md — body replaces entire content below metadata header
+  let storyContent;
+  if (body) {
+    storyContent = `# ${id}: ${title}
+
+**Status**: planned
+**Branch**: ${branch}
+**Created**: ${today}
+
+${body}
+`;
+  } else {
+    storyContent = `# ${id}: ${title}
 
 **Status**: planned
 **Branch**: ${branch}
@@ -325,6 +442,7 @@ ${opts.description || "<!-- Why this work is needed -->"}
 **In scope:** ...
 **Out of scope:** ...
 `;
+  }
   writeFileSync(join(fullStoryDir, "story.md"), storyContent);
 
   // Write summary.md
@@ -364,13 +482,14 @@ ${opts.description || "<!-- Why this work is needed -->"}
   console.log(`  → ${storyDir}/story.md`);
   console.log(`  → ${storyDir}/summary.md`);
   console.log(`  → ${storyDir}/tasks/`);
+  console.log(`path: ${storyDir}/story.md`);
 }
 
-function storyUpdate(root, args) {
+async function storyUpdate(root, args, rawArgs) {
   const id = args[0];
-  const fields = args.slice(1);
-  if (!id || fields.length === 0) {
-    console.error("Usage: brief story update <S-NNN> status=<value> [pr=<url>]");
+  const fields = args.slice(1).filter((a) => !a.startsWith("--body"));
+  if (!id || (fields.length === 0 && !rawArgs.some((a) => a.startsWith("--body")))) {
+    console.error("Usage: brief story update <S-NNN> status=<value> [pr=<url>] [--body=<content>]");
     process.exit(1);
   }
 
@@ -381,14 +500,18 @@ function storyUpdate(root, args) {
     process.exit(1);
   }
 
+  const body = await readBody(rawArgs);
+
   const updates = {};
   for (const f of fields) {
     const [key, ...rest] = f.split("=");
     updates[key] = rest.join("=") === "null" ? null : rest.join("=");
   }
 
-  Object.assign(items[idx], updates);
-  writeTracker(root, items);
+  if (Object.keys(updates).length > 0) {
+    Object.assign(items[idx], updates);
+    writeTracker(root, items);
+  }
 
   // Also update story.md Status field if status changed
   if (updates.status && items[idx].story) {
@@ -396,6 +519,23 @@ function storyUpdate(root, args) {
     if (existsSync(storyPath)) {
       let content = readFileSync(storyPath, "utf8");
       content = content.replace(/(\*\*Status\*\*:\s*)\w+/i, `$1${updates.status}`);
+      writeFileSync(storyPath, content);
+    }
+  }
+
+  // Replace full body below metadata header if --body or stdin provided
+  if (body && items[idx].story) {
+    const storyPath = join(root, items[idx].story);
+    if (existsSync(storyPath)) {
+      let content = readFileSync(storyPath, "utf8");
+      // Metadata header ends after the last **Key**: value line followed by a blank line
+      const headerEnd = content.search(/\n\n(?![\s]*\*\*)/);
+      if (headerEnd !== -1) {
+        const header = content.slice(0, headerEnd);
+        content = header + "\n\n" + body + "\n";
+      } else {
+        content += "\n" + body + "\n";
+      }
       writeFileSync(storyPath, content);
     }
   }
@@ -411,7 +551,9 @@ function storyUpdate(root, args) {
     }
   }
 
-  console.log(`✓ Updated ${id}: ${JSON.stringify(updates)}`);
+  const changed = Object.keys(updates).length > 0 ? JSON.stringify(updates) : "";
+  const bodyMsg = body ? " (body updated)" : "";
+  console.log(`✓ Updated ${id}: ${changed}${bodyMsg}`);
 }
 
 function storyHelp() {

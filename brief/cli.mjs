@@ -124,15 +124,15 @@ const root = findGitRoot();
 // Resource commands
 if (command === "story") {
   const { storyCommand } = await import("./lib/commands/story.mjs");
-  storyCommand(root, args[1], args.slice(2), rawArgs);
+  await storyCommand(root, args[1], args.slice(2), rawArgs);
 
 } else if (["todo", "decision", "research", "audit"].includes(command)) {
   const { itemCommand } = await import("./lib/commands/item.mjs");
-  itemCommand(root, command, args[1], args.slice(2), rawArgs);
+  await itemCommand(root, command, args[1], args.slice(2), rawArgs);
 
 } else if (command === "log") {
   const { logCommand } = await import("./lib/commands/log.mjs");
-  logCommand(root, args[1], args.slice(2), rawArgs);
+  await logCommand(root, args[1], args.slice(2), rawArgs);
 
 } else if (command === "tracker") {
   const { trackerCommand } = await import("./lib/commands/tracker.mjs");
