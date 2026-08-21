@@ -3,7 +3,7 @@ name: project-next-steps-scaffold
 description: "brief CLI — project management tool. Resource-based CLI for stories, TODOs, decisions, research, logs. File-based, multi-agent safe, dual-write to tracker.yaml + .md files."
 type: project
 created: 2026-08-13
-updated: 2026-08-20
+updated: 2026-08-21
 valid_until: 2026-11-01
 importance: 5
 ---
@@ -50,15 +50,26 @@ brief decision create|list|update|show
 brief research create|list|update|show
 brief log add|list|show
 
+# Code + Doc Search (S-003, 2026-08-21)
+brief query "<symbol>"         # unified code + docs — shows callees & callers
+brief query --full "<symbol>"  # full explore: source, all edges, usages, impact
+brief query --json "<q>"       # structured JSON output
+
+# Graduated Context (S-003, 2026-08-21)
+echo "body" | brief context graduate "title"   # save cross-cutting knowledge
+brief context list                             # list all graduated context
+brief context "<query>"                        # search context
+
 # Views
 brief status          # summary counts by type × status
 brief pending         # all open items
 brief active          # all in_progress
-brief search "<q>"    # full-text across types (OR with |, AND with space)
+brief search "<q>"    # doc-only search (OR with |, AND with space)
 brief stats           # usage per project per day
 
 # Setup
-brief init            # scaffold project structure
+brief init            # scaffold project + codegraph index
+brief init --reindex  # force-rebuild codegraph index
 brief migrate         # brief format version upgrades (reserved)
 brief generate        # regenerate PROJECT-TRACKER.md
 ```
@@ -90,8 +101,18 @@ discover → prd → trd → project-plan → implement → pr-review → retro 
                                               commits to same PR after user tests
 ```
 
+### Codegraph Integration (S-003, 2026-08-21)
+
+- `@colbymchenry/codegraph` 1.5.0 bundled as npm dep (no separate brew install needed)
+- `lib/code-index.mjs` wraps JS API: search, callers, callees, usages, edges, impact, getNodeDetail
+- mtime-based cache: reopens DB handle only when `.codegraph/codegraph.db` changes on disk
+- `brief init` creates `.codegraph/` index using bundled binary via `execFileSync`
+- serve.mjs removed — MCP server was dead code (knowledge.db never running)
+
 ### What's NOT implemented yet
 
-- `brief context` command (context graduates to feature/ folder with ID) — deferred
+- Context lifecycle (update/delete commands) — deferred
 - SQLite/knowledge.db indexing of tracker.yaml — deferred (file-based works)
 - `@constraint` anchoring in code — deferred
+- Semantic/vector search layer
+- Auto-reindex on file save
