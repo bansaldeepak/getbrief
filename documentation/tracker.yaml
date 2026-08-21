@@ -86,9 +86,26 @@ items:
     created: 2026-08-20
     link: null
     pr: null
+  - id: TODO-010
+    type: todo
+    title: brief v0.3 — Backlog & Roadmap (7 epics)
+    status: open
+    priority: P1
+    created: 2026-08-21
+    link: null
+    pr: null
   - id: RES-001
     type: research
     title: "RES-001: Bundle codegraph + brief context"
     status: active
+    link: null
+    pr: null
+  - id: S-004
+    type: story
+    title: brief v0.3 — CLI Command Enhancements
+    status: in_progress
+    branch: feature/brief-v03-cli-enhancements
+    current_task: S-004-T1
+    story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md
     link: null
     pr: null
