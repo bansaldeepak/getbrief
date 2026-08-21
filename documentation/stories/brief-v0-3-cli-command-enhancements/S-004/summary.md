@@ -1,13 +1,13 @@
 # S-004: brief v0.3 — CLI Command Enhancements — Summary
 
 ## What Changed
-<!-- Updated after each task is completed -->
 
-## Decisions Made
-<!-- Non-obvious choices and why -->
+- Added body.mjs shared utility
+- All create/update commands accept --body
+- path: output standardized
+- Task completion fixes tracker
 
-## Testing
-<TBD at implementation>
+## Decisions
 
-## Follow-up
-<!-- Deferred items, future improvements -->
+- Body = full content below metadata header
+- Template only used when no body provided

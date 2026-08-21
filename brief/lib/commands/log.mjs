@@ -4,10 +4,11 @@
 import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { table } from "../format.mjs";
+import { readBody } from "../body.mjs";
 
 const LOGS_DIR = "documentation/logs";
 
-export function logCommand(root, action, args, rawArgs) {
+export async function logCommand(root, action, args, rawArgs) {
   switch (action) {
     case "add": return logAdd(root, args, rawArgs);
     case "list": return logList(root, args);
@@ -23,7 +24,7 @@ export function logCommand(root, action, args, rawArgs) {
   }
 }
 
-function logAdd(root, args, rawArgs) {
+async function logAdd(root, args, rawArgs) {
   const messageParts = args.filter((a) => !a.startsWith("--"));
   const message = messageParts.join(" ");
   if (!message) {
@@ -57,7 +58,9 @@ function logAdd(root, args, rawArgs) {
   const ts = now.toISOString().replace(/[:.]/g, "-").slice(0, 23);
   const fileName = `${ts}.md`;
 
-  const content = `---
+  const body = await readBody(rawArgs);
+
+  let content = `---
 date: ${now.toISOString().slice(0, 10)}
 action: ${action}
 nodes: ${nodes}
@@ -67,9 +70,15 @@ note: ${message}
 ---
 `;
 
+  if (body) {
+    content += `\n${body}\n`;
+  }
+
+  const relPath = `${LOGS_DIR}/${fileName}`;
   writeFileSync(join(logsDir, fileName), content);
   console.log(`✓ Logged: ${message}`);
-  console.log(`  → ${LOGS_DIR}/${fileName}`);
+  console.log(`  → ${relPath}`);
+  console.log(`path: ${relPath}`);
 }
 
 function logList(root, args) {

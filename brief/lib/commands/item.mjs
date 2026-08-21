@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { readTracker, writeTracker, nextId, TYPE_CONFIG } from "../tracker.mjs";
 import { scanFiles } from "../scan.mjs";
 import { table, statusOrder } from "../format.mjs";
+import { readBody } from "../body.mjs";
 
 const DONE_STATUSES = ["done", "completed", "dropped", "superseded", "rejected", "clean"];
 
@@ -145,11 +146,11 @@ const FILE_DIRS = {
   audit: "documentation/audit",
 };
 
-export function itemCommand(root, type, action, args, rawArgs) {
+export async function itemCommand(root, type, action, args, rawArgs) {
   switch (action) {
     case "list": return itemList(root, type, args);
     case "create": return itemCreate(root, type, args, rawArgs);
-    case "update": return itemUpdate(root, type, args);
+    case "update": return itemUpdate(root, type, args, rawArgs);
     case "show": return itemShow(root, type, args[0]);
     case "help": return itemHelp(type);
     default:
@@ -194,11 +195,11 @@ function itemList(root, type, args) {
   console.log(`\n${filtered.length} ${type}(s)${showAll ? "" : " (active only, use --all for full history)"}`);
 }
 
-function itemCreate(root, type, args, rawArgs) {
+async function itemCreate(root, type, args, rawArgs) {
   const titleParts = args.filter((a) => !a.startsWith("--"));
   const title = titleParts.join(" ");
   if (!title) {
-    console.error(`Usage: brief ${type} create <title> [--priority=P1] [--link=<url>]`);
+    console.error(`Usage: brief ${type} create <title> [--priority=P1] [--link=<url>] [--body=<content>]`);
     process.exit(1);
   }
 
@@ -208,6 +209,8 @@ function itemCreate(root, type, args, rawArgs) {
     if (arg.startsWith("--link=")) opts.link = arg.split("=").slice(1).join("=");
     if (arg.startsWith("--story=")) opts.story = arg.split("=").slice(1).join("=");
   }
+
+  const body = await readBody(rawArgs);
 
   const items = readTracker(root);
   const id = nextId(items, type, root);
@@ -239,7 +242,11 @@ function itemCreate(root, type, args, rawArgs) {
   const filePath = join(fullDir, fileName);
   const template = TEMPLATES[type];
   if (template) {
-    writeFileSync(filePath, template(id, title, opts, today));
+    let content = template(id, title, opts, today);
+    if (body) {
+      content = content.replace(/<!--[^>]*-->/, body);
+    }
+    writeFileSync(filePath, content);
   }
 
   const relPath = `${dir}/${fileName}`;
@@ -247,16 +254,19 @@ function itemCreate(root, type, args, rawArgs) {
   console.log(`  type: ${type}, status: ${item.status}${item.priority ? `, priority: ${item.priority}` : ""}`);
   console.log(`  → tracker.yaml`);
   console.log(`  → ${relPath}`);
+  console.log(`path: ${relPath}`);
 }
 
-function itemUpdate(root, type, args) {
+async function itemUpdate(root, type, args, rawArgs) {
   const id = args[0];
-  const fields = args.slice(1);
-  if (!id || fields.length === 0) {
-    console.error(`Usage: brief ${type} update <${id || "ID"}> <field=value...>`);
+  const fields = args.slice(1).filter((a) => !a.startsWith("--body"));
+  if (!id || (fields.length === 0 && !rawArgs.some((a) => a.startsWith("--body")))) {
+    console.error(`Usage: brief ${type} update <${id || "ID"}> <field=value...> [--body=<content>]`);
     console.error(`Example: brief ${type} update ${id || "TODO-001"} status=done pr=#42`);
     process.exit(1);
   }
+
+  const body = await readBody(rawArgs);
 
   const items = readTracker(root);
   const idx = items.findIndex((i) => i.id === id);
@@ -271,8 +281,10 @@ function itemUpdate(root, type, args) {
     updates[key] = rest.join("=") === "null" ? null : rest.join("=");
   }
 
-  Object.assign(items[idx], updates);
-  writeTracker(root, items);
+  if (Object.keys(updates).length > 0) {
+    Object.assign(items[idx], updates);
+    writeTracker(root, items);
+  }
 
   // Also update .md file frontmatter if it exists
   const dir = FILE_DIRS[type];
@@ -291,10 +303,20 @@ function itemUpdate(root, type, args) {
       const today = new Date().toISOString().slice(0, 10);
       content = content.trimEnd() + `\n\n### Note (${today})\n\n${updates.note}\n`;
     }
+    // Replace full body below frontmatter if --body or stdin provided
+    if (body) {
+      const fmEnd = content.indexOf("---", content.indexOf("---") + 3);
+      if (fmEnd !== -1) {
+        const header = content.slice(0, fmEnd + 3);
+        content = header + "\n\n" + body + "\n";
+      }
+    }
     writeFileSync(mdPath, content);
   }
 
-  console.log(`✓ Updated ${id}: ${JSON.stringify(updates)}`);
+  const changed = Object.keys(updates).length > 0 ? JSON.stringify(updates) : "";
+  const bodyMsg = body ? " (body updated)" : "";
+  console.log(`✓ Updated ${id}: ${changed}${bodyMsg}`);
   console.log(`  → tracker.yaml`);
   if (existsSync(join(root, dir, `${id}.md`))) {
     console.log(`  → ${dir}/${id}.md`);
