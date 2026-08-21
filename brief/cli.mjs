@@ -194,6 +194,11 @@ if (command === "story") {
     console.log(`\n${results.length} result(s)`);
   }
 
+// Unified query (code + docs)
+} else if (command === "query") {
+  const { queryCommand } = await import("./lib/commands/query.mjs");
+  await queryCommand(root, args.slice(1), rawArgs);
+
 // Next ID query
 } else if (command === "next") {
   const type = args[1] || "story";

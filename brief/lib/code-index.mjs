@@ -65,12 +65,12 @@ export function callers(handle, nodeId) {
   if (!handle) return [];
   try {
     const results = handle.getCallers(nodeId);
-    return results.map((n) => ({
-      id: n.id,
-      name: n.name,
-      kind: n.kind,
-      file: n.filePath,
-      line: n.startLine,
+    return results.map((r) => ({
+      id: r.node.id,
+      name: r.node.name,
+      kind: r.node.kind,
+      file: r.node.filePath,
+      line: r.node.startLine,
     }));
   } catch {
     return [];
