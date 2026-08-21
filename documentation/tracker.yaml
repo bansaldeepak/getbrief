@@ -20,7 +20,7 @@ items:
   - id: S-003
     type: story
     title: Bundle Codegraph + Unified Context Command
-    status: planned
+    status: done
     feature: brief-context-codegraph
     branch: feature/brief-context-codegraph
     category: feat
@@ -29,7 +29,7 @@ items:
     current_task: S-003-T7
     story: documentation/stories/brief-context-codegraph/S-003/story.md
     link: null
-    pr: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/20
   - id: TODO-002
     type: todo
     title: Enrich story create — auto-ID, description param, scaffold all files (story.md, summary.md, tasks/)
