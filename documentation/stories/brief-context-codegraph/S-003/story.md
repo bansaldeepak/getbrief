@@ -1,6 +1,6 @@
 # S-003: Bundle Codegraph + Unified Context Command
 
-**Status**: planned
+**Status**: done
 **Branch**: feature/brief-context-codegraph
 **Created**: 2026-08-20
 

@@ -7,13 +7,30 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 ```
 ~/.agents/
 ├── README.md            # This file
+├── MEMORY.md            # Memory index (points to documentation/memory/)
 ├── WORKFLOW.md          # Shared workflow rules (all providers)
 ├── build.sh            # Syncs WORKFLOW + provider overrides → provider configs
 ├── providers/
 │   ├── claude.md       # Claude-specific additions → ~/.claude/CLAUDE.md
 │   ├── codex.md        # Codex-specific additions → ~/.codex/AGENTS.md
 │   └── gemini.md       # Gemini-specific additions → ~/.gemini/GEMINI.md
-├── custom-skills/      # Skills we wrote — the publishable set (13)
+├── brief/              # Project management + code search CLI (npm link)
+│   ├── cli.mjs         # Entry point — `brief <command>`
+│   ├── lib/
+│   │   ├── code-index.mjs      # Codegraph JS API wrapper (search/callers/edges)
+│   │   ├── context.mjs         # Graduated context (graduate/list/search)
+│   │   ├── commands/query.mjs  # Unified code+docs search
+│   │   ├── commands/context.mjs
+│   │   ├── init.mjs            # Project scaffold + codegraph index
+│   │   └── search.mjs          # Doc-only search
+│   └── test/            # node:test suite (34 tests)
+├── documentation/       # Project tracking (this repo's own work)
+│   ├── PROJECT-TRACKER.md
+│   ├── tracker.yaml
+│   ├── stories/         # Feature folders (PRD, TRD, story, tasks, retro)
+│   ├── memory/          # Agent memory files
+│   └── logs/            # One file per log entry (multi-agent safe)
+├── custom-skills/      # Skills we wrote — the publishable set
 │   ├── coding-standards/    # universal — file size, reuse, testing, types
 │   ├── backend-standards/   # layer contracts, API design, persistence
 │   ├── frontend-standards/  # component ladder, composition, data boundaries
@@ -38,14 +55,16 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   └── shadcn-ui/      # via google-labs-code/stitch-skills
 │                       # provenance tracked in .skill-lock.json
 └── rules/              # Auto-apply rules (glob-matched)
-    └── codegraph.md
+    ├── agent-discipline.md  # verification traps, workflow rules
+    ├── brief.md             # brief CLI reference (auto-loads on docs)
+    └── db-safety.md         # migration + schema safety
 ```
 
 ## How It Works
 
 ### Provider Config Generation
 
-`build.sh` concatenates `WORKFLOW.md` + provider-specific overrides:
+`build.sh` concatenates `WORKFLOW.md` + provider-specific overrides. A **pre-commit hook** runs it automatically on every commit — provider configs are always in sync:
 
 ```bash
 ~/.agents/build.sh
@@ -53,9 +72,32 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 # ✓ ~/.claude/CLAUDE.md
 # ✓ ~/.codex/AGENTS.md
 # ✓ ~/.gemini/GEMINI.md
+# ✓ ~/.claude/rules — N rule(s) linked
+# ✓ ~/.claude/agents — N linked · ~/.codex/agents — N generated
 ```
 
 Each provider gets identical workflow rules + its own tool mappings and memory conventions.
+
+### brief CLI — Project Management + Code Search
+
+`brief` is the unified interface for project tracking and code exploration. Installed globally via `npm link` from `~/.agents/brief/`.
+
+```bash
+# Code + doc search (primary lookup — use this by default)
+brief query "handleSubmit"          # shows callees + callers
+brief query --full "handleSubmit"   # full explore: source, edges, usages, impact
+
+# Project tracking
+brief story list                    # active stories
+brief todo list                     # open TODOs
+brief status                        # summary counts
+
+# Setup (in any project)
+brief init                          # scaffold docs + codegraph index
+brief init --reindex                # force-rebuild codegraph
+```
+
+Bundles `@colbymchenry/codegraph` (code AST analysis) — no separate install needed. See `rules/brief.md` for full command reference.
 
 ### Skills Distribution
 
