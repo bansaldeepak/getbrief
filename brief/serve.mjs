@@ -16,6 +16,7 @@ import { DatabaseSync } from "node:sqlite";
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { execSync } from "node:child_process";
+import { getHandle, nodesInPath } from "./lib/code-index.mjs";
 
 // --- Project root detection ---
 
@@ -40,19 +41,13 @@ function findProjectRoot(startDir) {
 const ROOT = process.env.KNOWLEDGE_ROOT || findProjectRoot(process.cwd());
 
 let kdb = null;
-let cgdb = null;
 let logQuery = null;
 
 if (ROOT) {
   const KNOWLEDGE_DB = join(ROOT, ".project/knowledge.db");
-  const CODEGRAPH_DB = join(ROOT, ".codegraph/codegraph.db");
 
   kdb = new DatabaseSync(KNOWLEDGE_DB);
   kdb.exec("PRAGMA journal_mode=WAL");
-
-  cgdb = existsSync(CODEGRAPH_DB)
-    ? new DatabaseSync(CODEGRAPH_DB, { readOnly: true })
-    : null;
 
   logQuery = kdb.prepare(`
     INSERT INTO query_log (tool, caller, input_json, result_count, duration_ms)
@@ -96,19 +91,16 @@ function knowledgeContext(path) {
     .prepare("SELECT * FROM anchors WHERE file_path LIKE ? || '%'")
     .all(normalized);
 
-  if (cgdb) {
-    const symbols = cgdb
-      .prepare(
-        "SELECT name, file_path FROM nodes WHERE file_path LIKE ? || '%'",
-      )
-      .all(normalized);
+  const cgHandle = getHandle(ROOT);
+  if (cgHandle) {
+    const symbols = nodesInPath(cgHandle, normalized);
 
     for (const sym of symbols) {
       const symAnchors = kdb
         .prepare(
           "SELECT * FROM anchors WHERE symbol_name = ? AND file_path = ?",
         )
-        .all(sym.name, sym.file_path);
+        .all(sym.name, sym.file);
       for (const a of symAnchors) {
         if (!anchors.find((x) => x.id === a.id)) anchors.push(a);
       }

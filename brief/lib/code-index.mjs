@@ -77,6 +77,24 @@ export function callers(handle, nodeId) {
   }
 }
 
+export function nodesInPath(handle, pathPrefix) {
+  if (!handle) return [];
+  try {
+    const files = handle.getFiles();
+    const matching = files.filter((f) => f.path.startsWith(pathPrefix));
+    const nodes = [];
+    for (const file of matching) {
+      const fileNodes = handle.getNodesInFile(file.path);
+      for (const n of fileNodes) {
+        nodes.push({ name: n.name, file: n.filePath });
+      }
+    }
+    return nodes;
+  } catch {
+    return [];
+  }
+}
+
 export function impact(handle, nodeId) {
   if (!handle) return [];
   try {
