@@ -199,6 +199,11 @@ if (command === "story") {
   const { queryCommand } = await import("./lib/commands/query.mjs");
   await queryCommand(root, args.slice(1), rawArgs);
 
+// Context (graduate, list, search)
+} else if (command === "context") {
+  const { contextCommand } = await import("./lib/commands/context.mjs");
+  await contextCommand(root, args.slice(1), rawArgs);
+
 // Next ID query
 } else if (command === "next") {
   const type = args[1] || "story";
