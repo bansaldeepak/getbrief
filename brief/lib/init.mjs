@@ -3,12 +3,14 @@
  * Copies templates, creates directories, initializes tracker.yaml.
  */
 
-import { existsSync, mkdirSync, copyFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, copyFileSync, writeFileSync, readFileSync, appendFileSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "../../templates/project-structure");
+const CODEGRAPH_BIN = join(__dirname, "../node_modules/.bin/codegraph");
 
 const DIRS = [
   "documentation",
@@ -17,6 +19,7 @@ const DIRS = [
   "documentation/todo",
   "documentation/logs",
   "documentation/memory",
+  "documentation/context",
   ".project",
 ];
 
@@ -61,5 +64,52 @@ export function initProject(projectRoot, opts = {}) {
     created.push(".project/.gitignore");
   }
 
+  // Codegraph index
+  const cgResult = initCodegraph(projectRoot, opts);
+  if (cgResult === "created") created.push(".codegraph/");
+  else if (cgResult === "exists") skipped.push(".codegraph/");
+
+  // Ensure .codegraph/ in project .gitignore
+  ensureGitignoreEntry(projectRoot, ".codegraph/");
+
   return { created, skipped };
+}
+
+function initCodegraph(projectRoot, opts = {}) {
+  const codegraphDir = join(projectRoot, ".codegraph");
+
+  if (opts.reindex) {
+    if (existsSync(codegraphDir)) {
+      rmSync(codegraphDir, { recursive: true });
+    }
+  }
+
+  if (!existsSync(codegraphDir)) {
+    try {
+      execFileSync(CODEGRAPH_BIN, ["init", "-i", projectRoot], {
+        stdio: "inherit",
+        timeout: 120000,
+      });
+      return "created";
+    } catch {
+      console.warn("Warning: codegraph init failed (project may have no indexable files).");
+      if (existsSync(codegraphDir)) {
+        rmSync(codegraphDir, { recursive: true });
+      }
+      return "skipped";
+    }
+  }
+  return "exists";
+}
+
+function ensureGitignoreEntry(projectRoot, entry) {
+  const giPath = join(projectRoot, ".gitignore");
+  if (existsSync(giPath)) {
+    const content = readFileSync(giPath, "utf8");
+    if (!content.includes(entry)) {
+      appendFileSync(giPath, `\n${entry}\n`);
+    }
+  } else {
+    writeFileSync(giPath, `${entry}\n`);
+  }
 }

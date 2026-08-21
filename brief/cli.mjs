@@ -194,6 +194,16 @@ if (command === "story") {
     console.log(`\n${results.length} result(s)`);
   }
 
+// Unified query (code + docs)
+} else if (command === "query") {
+  const { queryCommand } = await import("./lib/commands/query.mjs");
+  await queryCommand(root, args.slice(1), rawArgs);
+
+// Context (graduate, list, search)
+} else if (command === "context") {
+  const { contextCommand } = await import("./lib/commands/context.mjs");
+  await contextCommand(root, args.slice(1), rawArgs);
+
 // Next ID query
 } else if (command === "next") {
   const type = args[1] || "story";
@@ -208,8 +218,9 @@ if (command === "story") {
 
 // Init / Generate / Migrate
 } else if (command === "init") {
+  const reindex = rawArgs.includes("--reindex");
   const { initProject } = await import("./lib/init.mjs");
-  const { created, skipped } = initProject(root);
+  const { created, skipped } = initProject(root, { reindex });
   if (created.length) {
     console.log("Created:");
     for (const f of created) console.log(`  + ${f}`);

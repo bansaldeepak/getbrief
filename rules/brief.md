@@ -54,6 +54,35 @@ brief next story                    # print next available ID (e.g. S-112)
 brief next todo                     # works for any type
 ```
 
+## Code + Doc Search
+
+```bash
+brief query "<symbol or keyword>"          # code symbols + docs — shows callees & callers
+brief query --full "<symbol>"              # full exploration: source code, all edges, usages, impact
+brief query --full --json "<symbol>"       # structured JSON with everything
+brief query --impact "<fn>"                # blast radius of a change
+brief query --json "<q>"                   # structured JSON output
+```
+
+**Base output** always shows callees (what it calls) and callers (what calls it) for each match.
+**`--full`** adds: source code, all edge types, usages, impact — equivalent to `codegraph explore`.
+
+Use `brief query` as the **default lookup** — it covers both code and docs.
+Use `brief query --full` when you need deep exploration of a symbol (reviewing, debugging, impact analysis).
+Only use `brief search` when you specifically need doc-only results.
+
+## Graduated Context
+
+```bash
+echo "body" | brief context graduate "title"   # save cross-cutting knowledge
+echo "body" | brief context graduate "title" --source=skill/implement
+brief context list                             # see all graduated context
+brief context "<query>"                        # search graduated context
+```
+
+Graduate context when you discover knowledge that applies across features,
+would be lost if only in conversation, or future agents need to know.
+
 ## If CLI is not available
 
 Fall back to reading files directly:

@@ -3,103 +3,92 @@
 #      brief update <id> <status>
 #      brief generate  (regenerates PROJECT-TRACKER.md)
 
-- id: S-001
-  type: story
-  title: Example story
-  status: done
-  branch: feature/example
-  current_task: null
-  story: documentation/stories/example/S-001/story.md
-  link: null
-  pr: null
-- id: TODO-001
-  type: todo
-  title: Example TODO
-  status: done
-  priority: P1
-  story: null
-  link: null
-  pr: null
-- id: DEC-001
-  type: decision
-  title: Example decision
-  status: active
-  created: 2026-08-19
-  superseded_by: null
-  story: null
-  pr: null
-- id: RES-001
-  type: research
-  title: Example research
-  status: open
-  priority: P2
-  story: null
-  link: null
-  pr: null
-- id: AUD-001
-  type: audit
-  title: Example audit
-  status: open
-  priority: P1
-  findings: null
-  link: null
-  pr: null
-- id: TODO-002
-  type: todo
-  title: Enrich story create — auto-ID, description param, scaffold all files (story.md, summary.md, tasks/)
-  status: done
-  priority: P1
-  link: null
-  pr: null
-- id: TODO-003
-  type: todo
-  title: Add story task create command — auto task number, title, description, blocked-by
-  status: done
-  priority: P1
-  link: null
-  pr: null
-- id: TODO-004
-  type: todo
-  title: Enrich update — status transitions, add comments, update description fields
-  status: done
-  priority: P1
-  link: null
-  pr: null
-  note: Implemented note= append for both item and story update commands
-- id: TODO-005
-  type: todo
-  title: Add brief log command — logs/ folder, one md file per entry, multi-agent safe
-  status: done
-  priority: P2
-  link: null
-  pr: null
-- id: TODO-006
-  type: todo
-  title: Add brief context command — context graduates to feature/ folder with own ID
-  status: open
-  priority: P2
-  link: null
-  pr: null
-- id: TODO-007
-  type: todo
-  title: Add usage tracking — append-only log, brief stats shows queries per project per day
-  status: done
-  priority: P2
-  link: null
-  pr: null
-- id: TODO-008
-  type: todo
-  title: Update SDLC skills to use brief actively for all project operations
-  status: done
-  priority: P1
-  link: null
-  pr: null
-- id: S-002
-  type: story
-  title: Brief CLI — Complete Project Management
-  status: in_progress
-  branch: feature/brief-cli
-  current_task: S-002-T5
-  story: documentation/stories/brief-cli/S-002/story.md
-  link: null
-  pr: null
+items:
+  - id: S-002
+    type: story
+    title: Brief CLI — Complete Project Management
+    status: in_progress
+    feature: brief-cli
+    branch: feature/brief-cli
+    category: feat
+    created: 2026-08-20
+    tasks: 5
+    current_task: S-002-T5
+    story: documentation/stories/brief-cli/S-002/story.md
+    link: null
+    pr: null
+  - id: S-003
+    type: story
+    title: Bundle Codegraph + Unified Context Command
+    status: done
+    feature: brief-context-codegraph
+    branch: feature/brief-context-codegraph
+    category: feat
+    created: 2026-08-20
+    tasks: 7
+    current_task: S-003-T7
+    story: documentation/stories/brief-context-codegraph/S-003/story.md
+    link: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/20
+  - id: TODO-002
+    type: todo
+    title: Enrich story create — auto-ID, description param, scaffold all files (story.md, summary.md, tasks/)
+    status: done
+    priority: P1
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: TODO-003
+    type: todo
+    title: Add story task create command — auto task number, title, description, blocked-by
+    status: done
+    priority: P1
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: TODO-004
+    type: todo
+    title: Enrich update — status transitions, add comments, update description fields
+    status: done
+    priority: P1
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: TODO-005
+    type: todo
+    title: Add brief log command — logs/ folder, one md file per entry, multi-agent safe
+    status: done
+    priority: P2
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: TODO-006
+    type: todo
+    title: Add brief context command — context graduates to feature/ folder with own ID
+    status: open
+    priority: P2
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: TODO-007
+    type: todo
+    title: Add usage tracking — append-only log, brief stats shows queries per project per day
+    status: done
+    priority: P2
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: TODO-008
+    type: todo
+    title: Update SDLC skills to use brief actively for all project operations
+    status: done
+    priority: P1
+    created: 2026-08-20
+    link: null
+    pr: null
+  - id: RES-001
+    type: research
+    title: "RES-001: Bundle codegraph + brief context"
+    status: active
+    link: null
+    pr: null

@@ -23,8 +23,8 @@ brief search "<query>" --memory # memory only
 
 ## Active
 
-- [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands, project
-  structure, skills, and what's deferred.
+- [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands (incl.
+  query/context/codegraph), project structure, and what's deferred.
 - [Standards split](documentation/memory/project_standards-split.md) — why standards are three
   skills, why stack content lives in repos.
 - [Cross-reference drift](documentation/memory/project_cross-reference-drift.md) — stale references
