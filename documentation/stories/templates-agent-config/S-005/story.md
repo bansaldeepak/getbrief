@@ -26,4 +26,4 @@ As an AI agent bootstrapping a new project, I want `brief init` to produce templ
 ## References
 - [Discovery](./discovery.md)
 - [PRD](./prd.md)
-- [TODO-010 Epic 3](../../todo/TODO-010.md)
+- [TODO-010 Epic 3](../../../todo/TODO-010.md)

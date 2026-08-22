@@ -90,12 +90,20 @@ When in planning mode, **follow the lifecycle workflow above**. Planning is stru
 3. Don't skip phases — if PRD doesn't exist yet, create it before jumping to TRD
 4. Exit planning only when the artifact (PRD, TRD, story, tasks) is complete and approved
 
+## Memory Location
+
+Memory lives **in the repo as structured files** — never in provider global config.
+
+**Writing:** Always to `documentation/memory/`, `documentation/decisions/`, `context.md`, `retro.md`.
+**Reading:** Use `brief search` for lookups. Fallback: read `documentation/memory/` files directly.
+**`MEMORY.md`:** Minimal orientation at project root, not a data dump. Keep under ~40 lines.
+
+Full format and strategy: the `project-memory` skill.
+
 ## Memory Checkpoints (Mandatory)
 
-Memory lives **in the repo as structured files** (`memory/`, `decisions/`, `context.md`, `retro.md`) —
-never in provider global config. Knowledge graph (`.project/knowledge.db`) is the primary read path
-when available; files are always the source of truth. Capture at three gates; if nothing's notable,
-say "No new memory at this checkpoint" so a skipped gate stays visible:
+Capture at three gates; if nothing's notable, say "No new memory at this checkpoint" so a skipped
+gate stays visible:
 
 - **Post-planning** (PRD + TRD 🔒 approved) — decisions, scope boundaries, rejected alternatives, constraints
 - **Post-implementation** (tasks done, qa green) — gotchas, patterns that emerged, surprises
