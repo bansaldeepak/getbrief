@@ -1,10 +1,23 @@
 # Project Memory
 
 Memory is stored in `memory/` as individual markdown files with frontmatter.
-The knowledge graph (`.project/knowledge.db`) is the **primary read path** — use
-`knowledge_search` and `knowledge_context` MCP tools instead of reading files directly.
 
-If the knowledge graph is unavailable, fall back to reading `memory/*.md` files.
+## How to access
+
+**Primary** — use `brief` CLI:
+```bash
+brief search "<query>" --memory # search memory files specifically
+brief status                    # summary of project state
+```
+
+**Broader search** — across all documentation:
+```bash
+brief search "<query>"          # searches everything (stories, todos, decisions, memory)
+```
+
+**Fallback** — read files directly:
+- `documentation/memory/*.md` — individual memory files
+- This file (`MEMORY.md`) — lightweight index
 
 ## Index
 

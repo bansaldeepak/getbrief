@@ -33,14 +33,14 @@ follow these rules when working in this codebase.
 ## Project Structure
 
 ```
+MEMORY.md              # memory index (brief search is primary read path)
 documentation/
-  stories/         # feature folders (PRD, TRD, story, tasks)
-  decisions/       # DEC-NNN.md files (symlinks or copies from tracker)
-  TODOS.md         # generated list of open TODOs (optional)
-tracker.yaml       # structured source of truth for all items
-PROJECT-TRACKER.md # generated — active items only
-MEMORY.md          # memory index (knowledge graph is primary read path)
-memory/            # individual memory files
-.project/
-  knowledge.db     # local knowledge graph (not committed)
+  tracker.yaml         # structured source of truth for all items
+  PROJECT-TRACKER.md   # generated — active items only
+  stories/             # feature folders (PRD, TRD, story, tasks)
+  decisions/           # DEC-NNN.md files
+  todo/                # TODO-NNN.md files
+  logs/                # one file per log entry
+  memory/              # agent memory files
+  context/             # graduated cross-cutting knowledge
 ```

@@ -20,7 +20,7 @@ const DIRS = [
   "documentation/logs",
   "documentation/memory",
   "documentation/context",
-  ".project",
+  ".claude",
 ];
 
 const FILES = [
@@ -28,6 +28,7 @@ const FILES = [
   { src: "MEMORY.md", dest: "MEMORY.md" },
   { src: "AGENTS.md", dest: "AGENTS.md" },
   { src: "PROJECT-TRACKER.md", dest: "documentation/PROJECT-TRACKER.md" },
+  { src: "CLAUDE.md", dest: ".claude/CLAUDE.md" },
 ];
 
 export function initProject(projectRoot, opts = {}) {
@@ -57,12 +58,6 @@ export function initProject(projectRoot, opts = {}) {
     }
   }
 
-  // Create .gitignore for .project/ (knowledge.db is local-only)
-  const gitignorePath = join(projectRoot, ".project/.gitignore");
-  if (!existsSync(gitignorePath)) {
-    writeFileSync(gitignorePath, "knowledge.db\n");
-    created.push(".project/.gitignore");
-  }
 
   // Codegraph index
   const cgResult = initCodegraph(projectRoot, opts);
