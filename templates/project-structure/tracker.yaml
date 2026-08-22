@@ -5,9 +5,9 @@
 # Status values: open | in_progress | done | dropped | superseded (decisions only)
 # Priority values: P0 (critical) | P1 (important) | P2 (nice-to-have)
 #
-# CLI: knowledge-graph create <type> <title>
-#      knowledge-graph update <id> <status>
-#      knowledge-graph generate  (regenerates PROJECT-TRACKER.md from this file)
+# CLI: brief story create <title>
+#      brief todo create <title>
+#      brief tracker generate  (regenerates PROJECT-TRACKER.md from this file)
 
 # --- Stories ---
 # Lifecycle: planned → in_progress → done
