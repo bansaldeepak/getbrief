@@ -1,6 +1,6 @@
 # S-005: Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical
 
-**Status**: planned
+**Status**: in_progress
 **Branch**: feature/templates-agent-config
 **Created**: 2026-08-22
 

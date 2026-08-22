@@ -46,7 +46,7 @@ items:
   - id: S-005
     type: story
     title: Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical
-    status: planned
+    status: in_progress
     feature: templates-agent-config
     branch: feature/templates-agent-config
     category: feat
@@ -56,6 +56,7 @@ items:
     story: documentation/stories/templates-agent-config/S-005/story.md
     link: null
     pr: null
+    last_task: S-005-T4
   - id: TODO-002
     type: todo
     title: Enrich story create — auto-ID, description param, scaffold all files (story.md, summary.md, tasks/)
