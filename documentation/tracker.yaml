@@ -30,6 +30,32 @@ items:
     story: documentation/stories/brief-context-codegraph/S-003/story.md
     link: null
     pr: https://github.com/bansaldeepak/agents-setup/pull/20
+  - id: S-004
+    type: story
+    title: brief v0.3 — CLI Command Enhancements
+    status: done
+    feature: brief-v0-3-cli-command-enhancements
+    branch: feature/brief-v03-cli-enhancements
+    category: feat
+    created: 2026-08-21
+    tasks: 6
+    current_task: null
+    story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md
+    link: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/21
+  - id: S-005
+    type: story
+    title: Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical
+    status: planned
+    feature: templates-agent-config
+    branch: feature/templates-agent-config
+    category: feat
+    created: 2026-08-22
+    tasks: 4
+    current_task: null
+    story: documentation/stories/templates-agent-config/S-005/story.md
+    link: null
+    pr: null
   - id: TODO-002
     type: todo
     title: Enrich story create — auto-ID, description param, scaffold all files (story.md, summary.md, tasks/)
@@ -94,19 +120,17 @@ items:
     created: 2026-08-21
     link: null
     pr: null
+  - id: TODO-011
+    type: todo
+    title: brief story create should detect existing feature folders or accept --folder/--id flags
+    status: open
+    priority: P1
+    created: 2026-08-22
+    link: null
+    pr: null
   - id: RES-001
     type: research
     title: "RES-001: Bundle codegraph + brief context"
     status: active
     link: null
     pr: null
-  - id: S-004
-    type: story
-    title: brief v0.3 — CLI Command Enhancements
-    status: done
-    branch: feature/brief-v03-cli-enhancements
-    current_task: null
-    story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md
-    link: null
-    pr: https://github.com/bansaldeepak/agents-setup/pull/21
-    last_task: S-004-T6
