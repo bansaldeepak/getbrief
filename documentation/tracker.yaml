@@ -43,6 +43,58 @@ items:
     story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md
     link: null
     pr: https://github.com/bansaldeepak/agents-setup/pull/21
+  - id: S-007
+    type: story
+    title: Harness & Core Rules Restructure
+    status: planned
+    feature: skills-cleanup-consolidation
+    branch: feature/skills-cleanup-consolidation
+    category: feat
+    created: 2026-08-22
+    tasks: 3
+    current_task: null
+    story: documentation/stories/skills-cleanup-consolidation/S-007/story.md
+    link: null
+    pr: null
+  - id: S-008
+    type: story
+    title: Brief CLI Enhancements
+    status: planned
+    feature: skills-cleanup-consolidation
+    branch: feature/skills-cleanup-consolidation
+    category: feat
+    created: 2026-08-22
+    tasks: 4
+    current_task: null
+    story: documentation/stories/skills-cleanup-consolidation/S-008/story.md
+    link: null
+    pr: null
+  - id: S-009
+    type: story
+    title: SDLC Enrichment
+    status: planned
+    feature: skills-cleanup-consolidation
+    branch: feature/skills-cleanup-consolidation
+    category: feat
+    created: 2026-08-22
+    tasks: 5
+    current_task: null
+    story: documentation/stories/skills-cleanup-consolidation/S-009/story.md
+    link: null
+    pr: null
+  - id: S-010
+    type: story
+    title: Rule Templates + Init
+    status: planned
+    feature: skills-cleanup-consolidation
+    branch: feature/skills-cleanup-consolidation
+    category: feat
+    created: 2026-08-22
+    tasks: 3
+    current_task: null
+    story: documentation/stories/skills-cleanup-consolidation/S-010/story.md
+    link: null
+    pr: null
   - id: S-005
     type: story
     title: Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical
@@ -56,7 +108,6 @@ items:
     story: documentation/stories/templates-agent-config/S-005/story.md
     link: null
     pr: null
-    last_task: S-005-T4
   - id: TODO-002
     type: todo
     title: Enrich story create — auto-ID, description param, scaffold all files (story.md, summary.md, tasks/)
