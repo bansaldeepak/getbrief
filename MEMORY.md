@@ -23,6 +23,7 @@ brief search "<query>" --memory # memory only
 
 ## Active
 
+- [Skills cleanup decisions](documentation/memory/project_skills-cleanup-decisions.md) — D8 no-rename, item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
 - [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands (incl.
   query/context/codegraph), project structure, and what's deferred.
 - [Standards split](documentation/memory/project_standards-split.md) — why standards are three

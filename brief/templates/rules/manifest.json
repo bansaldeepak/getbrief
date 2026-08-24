@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "templates": [
+    {
+      "id": "backend-standards",
+      "name": "Backend Standards",
+      "description": "Framework-specific backend architecture rules (layers, modules, API design)",
+      "detect": ["package.json:express|fastify|hono|koa", "Cargo.toml", "go.mod"],
+      "paths": ["**/server/**", "**/api/**", "**/routes/**"],
+      "file": "backend-standards.md"
+    },
+    {
+      "id": "frontend-standards",
+      "name": "Frontend Standards",
+      "description": "Component architecture, ownership ladder, data-fetching boundaries",
+      "detect": ["package.json:react|vue|svelte|solid"],
+      "paths": ["**/components/**", "**/pages/**", "**/hooks/**"],
+      "file": "frontend-standards.md"
+    },
+    {
+      "id": "coding-style",
+      "name": "Coding Style",
+      "description": "Project-specific conventions — refined by retro findings over time",
+      "detect": ["*"],
+      "paths": [],
+      "file": "coding-style.md"
+    },
+    {
+      "id": "deployment",
+      "name": "Deployment",
+      "description": "Deploy commands, env vars, CI/CD, infrastructure specifics",
+      "detect": [".github/workflows", "Dockerfile", "fly.toml", "wrangler.jsonc"],
+      "paths": [],
+      "file": "deployment.md"
+    },
+    {
+      "id": "observability-wiring",
+      "name": "Observability Wiring",
+      "description": "Provider-specific instrumentation (Sentry, PostHog, OTel config)",
+      "detect": ["package.json:@sentry|posthog|@opentelemetry"],
+      "paths": [],
+      "file": "observability-wiring.md"
+    },
+    {
+      "id": "git-workflow",
+      "name": "Git Workflow",
+      "description": "Project-specific branch naming, PR conventions, CI checks",
+      "detect": [".git", ".github"],
+      "paths": [],
+      "file": "git-workflow.md"
+    },
+    {
+      "id": "product-analytics",
+      "name": "Product Analytics",
+      "description": "Event taxonomy, naming conventions, tracked outcomes, tooling",
+      "detect": ["package.json:posthog|amplitude|mixpanel|segment"],
+      "paths": [],
+      "file": "product-analytics.md"
+    }
+  ]
+}

@@ -48,6 +48,36 @@ Use the `researcher` agent to:
 
 **Output**: "Current Architecture" section with Mermaid diagram.
 
+### TRD Structure
+
+Every TRD must include these sections. Aligned with what `/gstack plan-eng-review` checks.
+
+**Required Sections (always include):**
+
+| # | Section | Satisfies (Eng Review) |
+|---|---------|------------------------|
+| 1 | Architecture Decisions | §1 Architecture |
+| 2 | Error Handling & Failure Modes | §1 Architecture, §2 Error/Rescue |
+| 3 | Testing Strategy | §3 Test Review |
+| 4 | Rollback Plan | §9 Deployment |
+| 5 | Dependencies | §1 Architecture |
+| 6 | Verification | §3 Test Review |
+
+**Conditional Sections (include when relevant):**
+
+| # | Section | When | Satisfies |
+|---|---------|------|-----------|
+| 7 | Security & Threat Model | Auth/data/APIs involved | §3 Security |
+| 8 | Observability Plan | System has runtime behavior | §8 Observability |
+| 9 | Performance | Data/traffic/latency matters | §4 Performance |
+| 10 | Long-Term Trajectory | Architecture is hard to undo | §10 Long-Term |
+
+**Required Outputs (eng review expects these):**
+- Error/Rescue Registry — maps every known error → handler → user message
+- Failure Modes — each failure with trigger, impact, mitigation
+- Coverage Diagram — visual map of test coverage
+- Implementation Task List — ordered tasks with dependencies
+
 ### Phase 3: Draft TRD
 
 Write the TRD in this format. Save to `documentation/stories/<feature-name>/TRD.md`:
@@ -127,6 +157,20 @@ CREATE TABLE ...
 <Which existing patterns to follow, or new patterns being introduced>
 - Pattern: <name> — Used for: <what> — Reference: <existing example in codebase>
 
+## Error Handling & Failure Modes
+
+### Exception Table
+
+| Error | Handler | User-Visible Result |
+|-------|---------|---------------------|
+| <what can go wrong> | <how it's caught> | <what user sees> |
+
+### Failure Modes
+
+| Failure | Trigger | Impact | Mitigation |
+|---------|---------|--------|------------|
+| <mode> | <condition> | <blast radius> | <how prevented/recovered> |
+
 ## Performance Considerations
 
 - **Expected load**: <requests/sec, data volume, concurrent users>
@@ -141,6 +185,13 @@ CREATE TABLE ...
 - **Input validation**: <attack surface changes>
 - **OWASP top 10 relevance**: <which apply>
 
+## Observability Plan (conditional — when system has runtime behavior)
+
+- **Logging**: <what state transitions to log, correlation ID strategy>
+- **Metrics**: <counters/gauges/histograms to emit>
+- **Alerts**: <what triggers a page, thresholds>
+- **Runbooks**: <where to find them, or draft inline>
+
 ## Dependencies
 
 | Dependency | Type | Risk | Mitigation |
@@ -154,6 +205,28 @@ CREATE TABLE ...
 | Unit | <services, utils> | Mock dependencies |
 | Integration | <API endpoints, DB queries> | Real DB, test fixtures |
 | E2E | <user flows> | If applicable |
+
+### Coverage Diagram
+
+<ASCII or Mermaid diagram showing which components/paths are covered by tests>
+
+## Verification (beyond tests)
+
+- **Integration checks**: <how to verify with real systems>
+- **Smoke test scenarios**: <post-deploy quick checks>
+- **Manual verification**: <what a human checks, if applicable>
+
+## Rollback Plan
+
+| Story/Task | Revert Strategy | Data Implications | User Impact |
+|------------|----------------|-------------------|-------------|
+| <scope> | <git revert / flag off / migration down> | <state created?> | <during rollback> |
+
+## Long-Term Trajectory (conditional — when architecture is hard to undo)
+
+- **Tech debt introduced**: <acknowledged trade-offs>
+- **Reversibility**: <1-5 scale, where 5 = easily reversible>
+- **Path dependency**: <what future options this closes/opens>
 
 ## Open Technical Questions
 

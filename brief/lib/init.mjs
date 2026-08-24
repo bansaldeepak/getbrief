@@ -10,6 +10,7 @@ import { execFileSync } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "../../templates/project-structure");
+const RULES_TEMPLATES_DIR = join(__dirname, "../templates/rules");
 const CODEGRAPH_BIN = join(__dirname, "../node_modules/.bin/codegraph");
 
 const DIRS = [
@@ -59,6 +60,11 @@ export function initProject(projectRoot, opts = {}) {
   }
 
 
+  // Rule templates
+  const rulesResult = copyRuleTemplates(projectRoot);
+  created.push(...rulesResult.created);
+  skipped.push(...rulesResult.skipped);
+
   // Codegraph index
   const cgResult = initCodegraph(projectRoot, opts);
   if (cgResult === "created") created.push(".codegraph/");
@@ -66,6 +72,37 @@ export function initProject(projectRoot, opts = {}) {
 
   // Ensure .codegraph/ in project .gitignore
   ensureGitignoreEntry(projectRoot, ".codegraph/");
+
+  return { created, skipped };
+}
+
+function copyRuleTemplates(projectRoot) {
+  const created = [];
+  const skipped = [];
+  const manifestPath = join(RULES_TEMPLATES_DIR, "manifest.json");
+
+  if (!existsSync(manifestPath)) {
+    return { created, skipped };
+  }
+
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  const rulesDir = join(projectRoot, ".claude", "rules");
+  mkdirSync(rulesDir, { recursive: true });
+
+  for (const template of manifest.templates) {
+    const src = join(RULES_TEMPLATES_DIR, template.file);
+    const dest = join(rulesDir, template.file);
+
+    if (existsSync(dest)) {
+      skipped.push(`.claude/rules/${template.file}`);
+      continue;
+    }
+
+    if (existsSync(src)) {
+      copyFileSync(src, dest);
+      created.push(`.claude/rules/${template.file}`);
+    }
+  }
 
   return { created, skipped };
 }

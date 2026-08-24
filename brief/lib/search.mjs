@@ -1,6 +1,6 @@
 // File-based search — greps source files directly.
 // No database dependency. Works reliably with just committed files.
-// Searches: tracker.yaml, PROJECT-TRACKER.md, memory/, decisions/, retros
+// Searches: tracker.yaml, memory/, decisions/, logs/, stories/, todo/, research/, audit/, retros
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -21,10 +21,13 @@ export function searchFiles(projectRoot, query) {
   searchDir(projectRoot, "documentation/decisions", "decision", terms, matchMode, results);
   searchDir(projectRoot, "documentation/todo", "todo", terms, matchMode, results, /^TODO-\d+/i);
   searchDir(projectRoot, "documentation", "todo", terms, matchMode, results, /^TODO-\d+/i);
+  searchDir(projectRoot, "documentation/logs", "log", terms, matchMode, results);
   searchDir(projectRoot, "documentation/research", "research", terms, matchMode, results, /^RES-\d+/i);
   searchDir(projectRoot, "documentation", "research", terms, matchMode, results, /^RES-\d+/i);
   searchDir(projectRoot, "documentation/audit", "audit", terms, matchMode, results, /^AUD-\d+/i);
   searchDir(projectRoot, "documentation", "audit", terms, matchMode, results, /^AUD-\d+/i);
+  searchLegacyLog(projectRoot, terms, matchMode, results);
+  searchStories(projectRoot, terms, matchMode, results);
   searchRetros(projectRoot, terms, matchMode, results);
   searchLegacyTodos(projectRoot, terms, matchMode, results);
 
@@ -128,11 +131,12 @@ function searchDir(root, dirPath, sourceLabel, terms, mode, results, fileFilter)
     if (!matchesTerms(content, terms, mode)) continue;
 
     const descMatch = content.match(/description:\s*["']?(.+?)["']?\s*$/m);
+    const noteMatch = content.match(/^note:\s*(.+)/m);
     const idMatch = content.match(/^id:\s*(.+)/m);
     const titleMatch = content.match(/^title:\s*(.+)/m) || content.match(/^#\s+(.+)/m);
     const statusMatch = content.match(/^status:\s*(.+)/m);
 
-    let brief = descMatch ? descMatch[1].trim() : extractBrief(content);
+    let brief = descMatch ? descMatch[1].trim() : (noteMatch ? noteMatch[1].trim() : extractBrief(content));
     const id = idMatch ? idMatch[1].trim() : (titleMatch ? titleMatch[1].trim() : file.replace(".md", ""));
     const title = titleMatch ? titleMatch[1].trim() : null;
     if (title && title !== id) brief = brief || title;
@@ -144,6 +148,83 @@ function searchDir(root, dirPath, sourceLabel, terms, mode, results, fileFilter)
       brief: brief || null,
       status: statusMatch ? statusMatch[1].trim() : null,
     });
+  }
+}
+
+function searchStories(root, terms, mode, results) {
+  const storiesDir = join(root, "documentation/stories");
+  if (!existsSync(storiesDir)) return;
+
+  let features;
+  try { features = readdirSync(storiesDir); } catch { return; }
+
+  for (const feature of features) {
+    const featureDir = join(storiesDir, feature);
+    let entries;
+    try { entries = readdirSync(featureDir); } catch { continue; }
+
+    // Feature-level docs (PRD.md, TRD.md, discovery.md)
+    for (const file of entries.filter(f => f.endsWith(".md"))) {
+      const filePath = join(featureDir, file);
+      const relPath = `documentation/stories/${feature}/${file}`;
+      const content = readFileSync(filePath, "utf8");
+      if (!matchesTerms(content, terms, mode)) continue;
+
+      const titleMatch = content.match(/^#\s+(.+)/m);
+      results.push({
+        type: "story",
+        file: relPath,
+        id: feature,
+        brief: titleMatch ? titleMatch[1].trim() : file.replace(".md", ""),
+        status: null,
+      });
+    }
+
+    // Story-level dirs (S-001, S-002, etc.)
+    for (const story of entries.filter(f => /^S-\d+$/i.test(f))) {
+      const storyDir = join(featureDir, story);
+      let storyFiles;
+      try { storyFiles = readdirSync(storyDir); } catch { continue; }
+
+      for (const file of storyFiles.filter(f => f.endsWith(".md") && f !== "retro.md")) {
+        const filePath = join(storyDir, file);
+        const relPath = `documentation/stories/${feature}/${story}/${file}`;
+        const content = readFileSync(filePath, "utf8");
+        if (!matchesTerms(content, terms, mode)) continue;
+
+        const titleMatch = content.match(/^#\s+(.+)/m) || content.match(/^title:\s*(.+)/m);
+        results.push({
+          type: "story",
+          file: relPath,
+          id: story,
+          brief: titleMatch ? titleMatch[1].trim() : file.replace(".md", ""),
+          status: null,
+        });
+      }
+
+      // Tasks inside story
+      const tasksDir = join(storyDir, "tasks");
+      if (!existsSync(tasksDir)) continue;
+      let taskFiles;
+      try { taskFiles = readdirSync(tasksDir).filter(f => f.endsWith(".md")); } catch { continue; }
+
+      for (const file of taskFiles) {
+        const filePath = join(tasksDir, file);
+        const relPath = `documentation/stories/${feature}/${story}/tasks/${file}`;
+        const content = readFileSync(filePath, "utf8");
+        if (!matchesTerms(content, terms, mode)) continue;
+
+        const titleMatch = content.match(/^#\s+(.+)/m);
+        const statusMatch = content.match(/Status:\s*(\w+)/i);
+        results.push({
+          type: "task",
+          file: relPath,
+          id: `${story}-${file.replace(".md", "")}`,
+          brief: titleMatch ? titleMatch[1].trim() : file.replace(".md", ""),
+          status: statusMatch ? statusMatch[1].trim() : null,
+        });
+      }
+    }
   }
 }
 
@@ -211,6 +292,27 @@ function searchRetros(root, terms, mode, results) {
         });
       }
     }
+  }
+}
+
+function searchLegacyLog(root, terms, mode, results) {
+  const path = join(root, "documentation/log.md");
+  if (!existsSync(path)) return;
+
+  const content = readFileSync(path, "utf8");
+  const entries = content.split(/^(?=##\s)/m);
+
+  for (const entry of entries) {
+    if (!entry.trim() || !matchesTerms(entry, terms, mode)) continue;
+    const titleMatch = entry.match(/^##\s+(.+)/m);
+    const dateMatch = entry.match(/\d{4}-\d{2}-\d{2}/);
+    results.push({
+      type: "log",
+      file: "documentation/log.md",
+      id: dateMatch ? dateMatch[0] : null,
+      brief: titleMatch ? titleMatch[1].trim() : entry.trim().slice(0, 80),
+      status: null,
+    });
   }
 }
 

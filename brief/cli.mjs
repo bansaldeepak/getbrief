@@ -71,6 +71,8 @@ Resource Commands:
   decision <action>    Manage decisions
   research <action>    Manage research items
   audit <action>       Manage audits
+  bug <action>         Manage bugs
+  memory <action>      Manage memory entries
   log <action>         Project log entries (multi-agent safe)
   tracker <action>     Rebuild/inspect tracker.yaml
 
@@ -126,7 +128,7 @@ if (command === "story") {
   const { storyCommand } = await import("./lib/commands/story.mjs");
   await storyCommand(root, args[1], args.slice(2), rawArgs);
 
-} else if (["todo", "decision", "research", "audit"].includes(command)) {
+} else if (["todo", "decision", "research", "audit", "bug", "memory"].includes(command)) {
   const { itemCommand } = await import("./lib/commands/item.mjs");
   await itemCommand(root, command, args[1], args.slice(2), rawArgs);
 
@@ -209,7 +211,7 @@ if (command === "story") {
   const type = args[1] || "story";
   const { readTracker, nextId, TYPE_CONFIG } = await import("./lib/tracker.mjs");
   if (!TYPE_CONFIG[type]) {
-    console.error(`Unknown type: ${type}. Valid: story, todo, decision, research, audit`);
+    console.error(`Unknown type: ${type}. Valid: story, todo, decision, research, audit, bug, memory`);
     process.exit(1);
   }
   const items = readTracker(root);

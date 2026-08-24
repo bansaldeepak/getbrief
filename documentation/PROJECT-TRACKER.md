@@ -8,7 +8,11 @@
 | ID | Title | Status | Branch | Current Task |
 |----|-------|--------|--------|---------------|
 | S-002 | Brief CLI — Complete Project Management | in_progress | feature/brief-cli | S-002-T5 |
-| S-005 | Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical | planned | feature/templates-agent-config | — |
+| S-007 | Harness & Core Rules Restructure | planned | feature/skills-cleanup-consolidation | — |
+| S-008 | Brief CLI Enhancements | planned | feature/skills-cleanup-consolidation | — |
+| S-009 | SDLC Enrichment | planned | feature/skills-cleanup-consolidation | — |
+| S-010 | Rule Templates + Init | planned | feature/skills-cleanup-consolidation | — |
+| S-005 | Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical | in_progress | feature/templates-agent-config | — |
 
 ## TODOs
 

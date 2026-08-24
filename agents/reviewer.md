@@ -14,8 +14,6 @@ disallowedTools:
   - Agent
   - WebFetch
   - WebSearch
-skills:
-  - coding-standards
 maxTurns: 25
 ---
 
@@ -70,5 +68,4 @@ Return findings in this exact format:
 - Categorize severity honestly — don't inflate minor issues
 - Always include positive observations — not just problems
 - If the code is clean, say so — don't manufacture issues
-- Apply coding-standards skill for standards compliance checks
 - Use Bash only for `git diff`, `git log`, `git blame` — never for modification
