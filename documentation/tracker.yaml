@@ -84,6 +84,7 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-009/story.md
     link: null
     pr: null
+    last_task: S-009-T5
   - id: S-010
     type: story
     title: Rule Templates + Init
