@@ -56,6 +56,7 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-007/story.md
     link: null
     pr: null
+    last_task: S-007-T3
   - id: S-008
     type: story
     title: Brief CLI Enhancements
