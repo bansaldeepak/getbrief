@@ -53,6 +53,18 @@ brief todo update TODO-001 status=done "note=Resolution details"
 brief todo update TODO-001 --body="new body"
 brief context update <slug> --body="new content"
 
+# Bug tracking
+brief bug create "Description" --severity=critical --body="## Steps\n..."
+brief bug list                      # open bugs
+brief bug show BUG-001              # full bug file
+brief bug update BUG-001 status=done
+
+# Memory management
+brief memory create "Key insight" --memtype=feedback --body="Details"
+brief memory list                   # active memories
+brief memory show MEM-001           # full memory file
+brief memory update MEM-001 status=stale
+
 # Log (multi-agent safe — one file per entry)
 brief log "What happened" --tag=progress --story=S-001
 brief log "Summary" --body="detailed multi-line content"
