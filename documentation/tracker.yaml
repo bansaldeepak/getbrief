@@ -70,6 +70,7 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-008/story.md
     link: null
     pr: null
+    last_task: S-008-T4
   - id: S-009
     type: story
     title: SDLC Enrichment
