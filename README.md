@@ -35,8 +35,7 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   │   ├── prd/  trd/  discover/  project-plan/
 │   │   └── pr-review/  retro/  decision-doc/  memory-review/
 │   ├── brief/               # project management CLI router
-│   ├── project-memory/      # memory management skill
-│   └── pre-mortem/          # risk analysis (pre-implementation)
+│   └── project-memory/      # memory management skill
 ├── agents/             # Subagent definitions — one source, two formats
 │   ├── qa.md  reviewer.md  researcher.md  self-improving.md
 ├── scripts/

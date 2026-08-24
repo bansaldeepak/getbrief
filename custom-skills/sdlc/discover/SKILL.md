@@ -118,6 +118,24 @@ For each top opportunity, list assumptions across four categories:
 - **High Impact, Low Risk** → Monitor but proceed
 - **Low Impact** → Ignore for now
 
+### Phase 3b: Pre-Mortem (Stress-Test the Top Opportunity)
+
+Before investing in experiments, stress-test the leading direction:
+
+> "Imagine we built this and shipped it. Six months later, it's considered a failure. What went wrong?"
+
+Evaluate from 4 angles:
+1. **Technical** — What could be harder than it looks? What breaks under load, edge cases, or real data?
+2. **Product** — What if users don't adopt it? What if it solves the wrong problem?
+3. **Process** — What if we underestimate scope? What dependencies could block us?
+4. **External** — What market/regulatory/competitive changes could make this irrelevant?
+
+For each risk, categorize:
+- **Must-mitigate** — address in PRD scope or constraints (feeds into Risk Table)
+- **Acceptable** — acknowledged, won't derail the initiative
+
+Surface the must-mitigate risks in the Discovery Plan output. These become constraints that the PRD must address.
+
 ### Phase 4: Design Experiments (for High-Risk Assumptions)
 
 For each high-risk assumption, propose a lightweight experiment:

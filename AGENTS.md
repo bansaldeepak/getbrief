@@ -16,7 +16,7 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-rev
 entry points by scope, the gstack plan-review gates, and what follows each phase. Don't restate it
 here or in a phase file; read it.
 
-Off-graph: `/sdlc decision-doc` for any non-obvious choice, `/pre-mortem` before high-risk work.
+Off-graph: `/sdlc decision-doc` for any non-obvious choice, `/sdlc bug` for bugs (includes risk assessment).
 
 ## Story-Based Execution
 

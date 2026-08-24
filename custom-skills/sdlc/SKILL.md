@@ -86,7 +86,7 @@ and before `trd`; `/gstack plan-eng-review` on the TRD after `trd` and before `p
 ### Off-graph, any time
 
 `decision-doc` when a fork in the road gets resolved. `memory-review` when memory needs curating.
-`/pre-mortem` before high-risk work — it auto-applies and isn't routed here.
+Risk assessment is built into `/sdlc bug` (Phase 3) — no standalone pre-mortem needed.
 
 ## After a Phase
 
