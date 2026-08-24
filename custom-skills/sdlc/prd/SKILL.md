@@ -55,6 +55,31 @@ If `/sdlc discover` was run, reference its output. Otherwise, read relevant code
 
 If no discovery was done and the problem seems complex, suggest running `/sdlc discover` first.
 
+### PRD Structure
+
+Every PRD must include these sections. Sections marked "conditional" can be omitted with a one-line justification.
+
+**Required Sections (always include):**
+
+| # | Section | Content | Satisfies (CEO Review) |
+|---|---------|---------|------------------------|
+| 1 | Executive Summary | 2-3 sentences, stakeholder-readable | — |
+| 2 | Problem | Who has it, what they do today, what breaks | — |
+| 3 | Success Metrics | Measurable outcomes with targets + how measured | §8 Observability |
+| 4 | Risk Table | Likelihood × Impact × Mitigation | §3 Security, §10 Long-Term |
+| 5 | Scope Modes | Must/Should/Nice + Out-of-scope with rationale | — |
+
+**Conditional Sections (include when relevant):**
+
+| # | Section | When to include | Satisfies |
+|---|---------|-----------------|-----------|
+| 6 | User Experience | When UI/UX exists | §11 Design & UX |
+| 7 | Performance Requirements | When measurable perf matters | §7 Performance |
+| 8 | Deployment & Rollout | When rollout has risk | §9 Deployment |
+| 9 | Stakeholder Impact | When >1 team or user type | — |
+
+**What the PRD does NOT cover (TRD owns these):** Architecture, error handling strategy, data flow details, code quality patterns, test strategy. The PRD states *what* must work; the TRD states *how*.
+
 ### Phase 2: Draft PRD
 
 Write the PRD in this exact format. Save to `documentation/stories/<feature-name>/PRD.md`:
@@ -66,6 +91,10 @@ Write the PRD in this exact format. Save to `documentation/stories/<feature-name
 **Date**: <today>
 **Status**: Draft | 🔒 Approved | Superseded
 **Discovery**: <link to discovery summary if exists, or "N/A">
+
+## Executive Summary
+
+<2-3 sentences. A stakeholder who reads ONLY this should understand what we're building and why.>
 
 ## Problem
 
@@ -126,6 +155,24 @@ Write the PRD in this exact format. Save to `documentation/stories/<feature-name
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
 | <risk> | H/M/L | H/M/L | <plan> |
+
+## Performance Requirements (conditional — when measurable perf matters)
+
+| Metric | Target | Degradation Threshold |
+|--------|--------|-----------------------|
+| <metric> | <target> | <when to alert> |
+
+## Deployment & Rollout (conditional — when rollout has risk)
+
+- **Phasing**: <all-at-once | percentage rollout | feature flag>
+- **Rollback criteria**: <what triggers rollback>
+- **Migration path**: <what happens to existing users/data>
+
+## Stakeholder Impact (conditional — when >1 team or user type)
+
+| Stakeholder | Impact | Communication |
+|-------------|--------|---------------|
+| <who> | <what changes for them> | <how/when they learn> |
 
 ## Open Questions
 
