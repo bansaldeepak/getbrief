@@ -137,6 +137,35 @@ _Filled when complete:_
 - Items spawned: <!-- TODO-NNN, TODO-NNN -->
 - PR: <!-- #NNN -->
 `,
+  bug: (id, title, opts, today) => `---
+id: ${id}
+title: ${title}
+priority: ${opts.priority || "P1"}
+severity: ${opts.severity || "major"}
+status: open
+created: ${today}
+story: null
+escalated_to: null
+---
+
+## What's Broken
+
+${title}
+
+## Steps to Reproduce
+
+<!-- 1. Do X  2. Observe Y  3. Expected Z -->
+
+## Root Cause
+
+<!-- Filled during investigation -->
+
+## Fix
+
+_Filled when done:_
+- Fixed by: <!-- commit SHA or S-NNN -->
+- PR: <!-- #NNN -->
+`,
 };
 
 const FILE_DIRS = {
@@ -144,6 +173,7 @@ const FILE_DIRS = {
   decision: "documentation/decisions",
   research: "documentation/research",
   audit: "documentation/audit",
+  bug: "documentation/bugs",
 };
 
 export async function itemCommand(root, type, action, args, rawArgs) {
@@ -206,6 +236,7 @@ async function itemCreate(root, type, args, rawArgs) {
   const opts = {};
   for (const arg of rawArgs) {
     if (arg.startsWith("--priority=")) opts.priority = arg.split("=")[1];
+    if (arg.startsWith("--severity=")) opts.severity = arg.split("=")[1];
     if (arg.startsWith("--link=")) opts.link = arg.split("=").slice(1).join("=");
     if (arg.startsWith("--story=")) opts.story = arg.split("=").slice(1).join("=");
   }

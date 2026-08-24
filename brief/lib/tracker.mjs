@@ -17,6 +17,7 @@ const TYPE_CONFIG = {
   decision: { prefix: "DEC", defaultStatus: "active", hasPriority: false },
   research: { prefix: "RES", defaultStatus: "open", hasPriority: true },
   audit: { prefix: "AUD", defaultStatus: "open", hasPriority: true },
+  bug: { prefix: "BUG", defaultStatus: "open", hasPriority: true },
 };
 
 // --- Read/Write ---
