@@ -166,6 +166,19 @@ _Filled when done:_
 - Fixed by: <!-- commit SHA or S-NNN -->
 - PR: <!-- #NNN -->
 `,
+  memory: (id, title, opts, today) => `---
+name: ${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}
+description: ${title}
+metadata:
+  type: ${opts.memtype || "project"}
+created: ${today}
+updated: ${today}
+valid_until: ${opts.valid_until || "permanent"}
+importance: ${opts.importance || "3"}
+---
+
+${title}
+`,
 };
 
 const FILE_DIRS = {
@@ -174,6 +187,7 @@ const FILE_DIRS = {
   research: "documentation/research",
   audit: "documentation/audit",
   bug: "documentation/bugs",
+  memory: "documentation/memory",
 };
 
 export async function itemCommand(root, type, action, args, rawArgs) {
@@ -237,6 +251,9 @@ async function itemCreate(root, type, args, rawArgs) {
   for (const arg of rawArgs) {
     if (arg.startsWith("--priority=")) opts.priority = arg.split("=")[1];
     if (arg.startsWith("--severity=")) opts.severity = arg.split("=")[1];
+    if (arg.startsWith("--memtype=")) opts.memtype = arg.split("=")[1];
+    if (arg.startsWith("--valid-until=")) opts.valid_until = arg.split("=").slice(1).join("=");
+    if (arg.startsWith("--importance=")) opts.importance = arg.split("=")[1];
     if (arg.startsWith("--link=")) opts.link = arg.split("=").slice(1).join("=");
     if (arg.startsWith("--story=")) opts.story = arg.split("=").slice(1).join("=");
   }
@@ -269,7 +286,8 @@ async function itemCreate(root, type, args, rawArgs) {
   const fullDir = join(root, dir);
   if (!existsSync(fullDir)) mkdirSync(fullDir, { recursive: true });
 
-  const fileName = `${id}.md`;
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const fileName = type === "memory" ? `${slug}.md` : `${id}.md`;
   const filePath = join(fullDir, fileName);
   const template = TEMPLATES[type];
   if (template) {
