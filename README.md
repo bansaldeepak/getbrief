@@ -31,14 +31,12 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   ├── memory/          # Agent memory files
 │   └── logs/            # One file per log entry (multi-agent safe)
 ├── custom-skills/      # Skills we wrote — the publishable set
-│   ├── coding-standards/    # universal — file size, reuse, testing, types
-│   ├── backend-standards/   # layer contracts, API design, persistence
-│   ├── frontend-standards/  # component ladder, composition, data boundaries
-│   ├── observability/       # signals, abstraction, redaction, flush semantics
 │   ├── sdlc/                # router — owns the lifecycle graph
 │   │   ├── prd/  trd/  discover/  project-plan/
 │   │   └── pr-review/  retro/  decision-doc/  memory-review/
-│   └── ...                  # db-safety, project-memory, documentation-standards, …
+│   ├── brief/               # project management CLI router
+│   ├── project-memory/      # memory management skill
+│   └── pre-mortem/          # risk analysis (pre-implementation)
 ├── agents/             # Subagent definitions — one source, two formats
 │   ├── qa.md  reviewer.md  researcher.md  self-improving.md
 ├── scripts/
@@ -55,9 +53,11 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   └── shadcn-ui/      # via google-labs-code/stitch-skills
 │                       # provenance tracked in .skill-lock.json
 └── rules/              # Auto-apply rules (glob-matched)
-    ├── agent-discipline.md  # verification traps, workflow rules
     ├── brief.md             # brief CLI reference (auto-loads on docs)
-    └── db-safety.md         # migration + schema safety
+    ├── coding-standards.md  # modularity, naming, type safety, error handling
+    ├── documentation-standards.md  # doc modularity, ordering, diagrams
+    ├── git-workflow.md      # branch naming, push safety, commit convention
+    └── observability.md     # 4 signals, abstraction, failure isolation
 ```
 
 ## How It Works
