@@ -32,82 +32,31 @@ Off-graph: `/sdlc decision-doc` for any non-obvious choice, `/pre-mortem` before
 - **Before merge**: `/sdlc retro` — captures learnings, updates docs/status, commits to same PR
 - **After merge**: `self-improving` agent curates memory from retro findings
 
-## Project Tracker
+## Documentation & References
 
-Every project has `documentation/PROJECT-TRACKER.md`. One row per story. Updated on start/completion.
-
-## Git Branch & Push Safety
-
-**Never commit, push, or open a PR on your own — a human approves each one, every time.** Silence is
-not approval; approval for the last commit is not approval for this one; approval to commit is not
-approval to push. What to report at each gate: `/sdlc implement`.
-
-Never commit or push to `main` — all changes via PR. Check `git branch --show-current` *before the
-first file write* in any lifecycle phase (`prd`, `trd`, `project-plan`, `implement`) — not just
-before committing. If on `main`, STOP and branch first. Branch names: `feature|fix|chore|hotfix/<name>`,
-pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
-Full procedure and per-phase trigger points: `sdlc`'s "Branch Check" section.
-
-## Commit Convention
-
-```
-type(scope): subject
-
-Task: S-NNN-T<N>
-```
-
-Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`, `perf`, `ci`. Task ID in body, not subject.
-
-## Documentation-First Workflow
-
-Application docs updated BEFORE stories or code. Schema docs, API docs, flow docs — committed separately before implementation. Stories reference docs (don't repeat them).
-
-**Doc sync on commit**: If a change affects how future code should be written → grep docs, skills, READMEs and update all references.
-
-## Repo-Local References Only
-
-Every file referenced in project documentation must exist inside the repo. Never reference global paths. Copy external files into `documentation/stories/<feature>/` before referencing.
-
-## Web Fetching — llms.txt First
-
-1. Fetch `https://<domain>/llms.txt` first
-2. Use it to find exact doc pages needed
-3. Fallback to homepage if 404
+- Docs updated BEFORE stories or code. **Doc sync on commit**: grep docs, skills, READMEs and update all references.
+- Every file referenced in documentation must exist inside the repo. Never reference global paths.
+- Web fetching: try `https://<domain>/llms.txt` first, then find exact doc pages, fallback to homepage.
 
 ## Safe Code Modifications
 
 - Change only what was asked — ambiguous scope → ask first
 - Never repo-wide auto-fix (`eslint --fix`, `prettier --write`)
-- Preserve over delete — comment out with `// TODO: remove after verification` if unsure
 - Propose before broad-blast-radius changes
 
 ## Plan Mode
 
-When in planning mode, **follow the lifecycle workflow above**. Planning is structured — not freestyling:
+Planning is structured via the lifecycle workflow. Follow the phase's skill exactly. Don't skip
+phases. Exit planning only when the artifact is complete and approved.
 
-1. Identify which lifecycle phase applies (discover / prd / trd / project-plan)
-2. Follow that phase's skill exactly
-3. Don't skip phases — if PRD doesn't exist yet, create it before jumping to TRD
-4. Exit planning only when the artifact (PRD, TRD, story, tasks) is complete and approved
+## Memory
 
-## Memory Location
+Memory lives **in the repo** — never in provider global config. Full format: `project-memory` skill.
 
-Memory lives **in the repo as structured files** — never in provider global config.
-
-**Writing:** Always to `documentation/memory/`, `documentation/decisions/`, `context.md`, `retro.md`.
-**Reading:** Use `brief search` for lookups. Fallback: read `documentation/memory/` files directly.
-**`MEMORY.md`:** Minimal orientation at project root, not a data dump. Keep under ~40 lines.
-
-Full format and strategy: the `project-memory` skill.
-
-## Memory Checkpoints (Mandatory)
-
-Capture at three gates; if nothing's notable, say "No new memory at this checkpoint" so a skipped
-gate stays visible:
-
-- **Post-planning** (PRD + TRD 🔒 approved) — decisions, scope boundaries, rejected alternatives, constraints
-- **Post-implementation** (tasks done, qa green) — gotchas, patterns that emerged, surprises
-- **Post-ship** (merged / deployed) — what worked, what didn't, perf, user-feedback context
+Mandatory checkpoints (if nothing's notable, say so explicitly):
+- **Post-planning** — decisions, scope boundaries, rejected alternatives
+- **Post-implementation** — gotchas, patterns that emerged, surprises
+- **Post-ship** — what worked, what didn't, user-feedback context
 
 ## Critical Thinking
 
@@ -117,3 +66,26 @@ gate stays visible:
 - Highlight risks user may have overlooked
 - Verify blast radius before changing shared code — grep all usages
 - Challenge scope — push back if task grows beyond definition
+
+## First-Principles Process
+
+Apply in order. Most people jump to step 4 or 5.
+
+1. **Question the requirement** — Who imposed it? Is it actually necessary? Are we solving a symptom?
+2. **Delete** — What can be removed entirely? Best code is code that doesn't exist.
+3. **Simplify** — Can two things become one? Can configurable become hardcoded?
+4. **Accelerate** — Only after 1-3. Measure, then optimize the bottleneck.
+5. **Automate** — Only after 1-4. Automating a broken process just makes it fail faster.
+
+Never optimize before simplifying. Never automate before optimizing. Prefer deleting over adding.
+
+## Verification Discipline
+
+Hard-won from past bugs. Internalize these.
+
+- **Absence ≠ proof** — A grep returning nothing proves the pattern wasn't found, not that the thing doesn't exist
+- **Unfailable checks look like passing ones** — Every guard needs a negative test proving it goes red
+- **Task claims are unverified** — Check every assertion about code against the actual codebase before implementing
+- **Trace before attributing** — Measure localises a symptom; trace the call path before blaming a component
+- **Ask fix-now-vs-defer** — Don't silently punt when testing surfaces a gap in the story's blast radius
+- **Self-contained specs for handoff** — Inline code context, schema, decisions. A link is not context.
