@@ -1,8 +1,8 @@
 ---
 name: sdlc
-description: "Router for the software lifecycle skills — discovery, PRD, TRD, planning, implementation, code review, retrospective, decision records, and memory curation. Invoke for any of: /sdlc, /discover, /prd, /trd, /project-plan, /implement, /pr-review, /retro, /decision-doc, /memory-review, or whenever work is starting on a feature, a plan or requirements are needed, a story's tasks are being worked through, a commit or push needs approval, a non-obvious choice needs recording, a branch is ready for review, or a story just merged."
+description: "Router for the software lifecycle skills — discovery, PRD, TRD, planning, implementation, code review, retrospective, decision records, memory curation, and bug handling. Invoke for any of: /sdlc, /discover, /prd, /trd, /project-plan, /implement, /pr-review, /retro, /decision-doc, /memory-review, /sdlc bug, or whenever work is starting on a feature, a plan or requirements are needed, a story's tasks are being worked through, a commit or push needs approval, a non-obvious choice needs recording, a branch is ready for review, or a story just merged."
 user_invocable: true
-argument-hint: "[discover|prd|trd|project-plan|pr-review|retro|decision-doc|memory-review]"
+argument-hint: "[discover|prd|trd|project-plan|pr-review|retro|decision-doc|memory-review|bug]"
 model: opus
 ---
 
@@ -27,6 +27,7 @@ table, or answer from memory — the table below is an index, not a substitute.
 | `retro` | `~/.agents/custom-skills/sdlc/retro/SKILL.md` | User tested build, before merge |
 | `decision-doc` | `~/.agents/custom-skills/sdlc/decision-doc/SKILL.md` | A non-obvious choice was made, any time |
 | `memory-review` | `~/.agents/custom-skills/sdlc/memory-review/SKILL.md` | Memory needs flushing or curating, any time |
+| `bug` | `~/.agents/custom-skills/sdlc/bug/SKILL.md` | A bug needs structured handling (triage + fix + close) |
 
 Invoked with no argument: infer the phase from the lifecycle position below, name your choice, and
 proceed. If two phases are equally plausible, ask rather than guess.
@@ -76,7 +77,8 @@ and before `trd`; `/gstack plan-eng-review` on the TRD after `trd` and before `p
 
 | Scope | Start at |
 |-------|----------|
-| Bug or under 30 minutes | Skip to implementation → `qa` → `pr-review` |
+| Bug | `bug` — dedicated mini-workflow with risk assessment |
+| Under 30 minutes | Skip to `implement` → `qa` → `pr-review` |
 | Clear-scope feature | `prd` |
 | Ambiguous problem | `discover` |
 | Architecture unchanged | Skip `trd` |
