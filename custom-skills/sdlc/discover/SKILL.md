@@ -51,6 +51,47 @@ Then read relevant code, docs, analytics, and user-facing flows to understand th
 - Known pain points or friction (include any from tracker/retros)
 - Existing workarounds users employ
 
+### Phase 1b: Mode Detection
+
+Auto-detect the work type from the user's description:
+
+| Mode | Signal | Adjusts |
+|------|--------|---------|
+| `greenfield` | "new", "build", "add" — no prior art exists | Focus on scope boundaries, MVP definition |
+| `bug` | "broken", "fails", "error" — something that worked now doesn't | Focus on reproduction, root cause, blast radius |
+| `optimization` | "slow", "expensive", "timeout" — working but poorly | Focus on measurement, targets, constraints |
+| `refactor` | "messy", "hard to change", "coupled" — working but structurally wrong | Focus on what's wrong structurally, what "done" looks like |
+
+State the detected mode explicitly: "This sounds like a **greenfield** problem — is that right?"
+Adjust follow-up emphasis based on mode, but always ask all 5 forcing questions.
+
+### Phase 1c: Forcing Questions
+
+Ask ONE at a time. Wait for the answer before asking the next. Do not batch.
+
+1. **"Who specifically is affected? Name the user type and their workflow."**
+   - Reject: "users", "people", "everyone" — push for a specific role/persona
+
+2. **"What do they do today without this? What breaks or is painful?"**
+   - Reject: "it's hard", "not great" — push for the concrete current workaround
+
+3. **"How will you know this worked? What measurable outcome changes?"**
+   - Reject: "it'll be better", "faster" — push for a number, metric, or observable behavior
+
+4. **"What's the smallest version that delivers value? What can wait?"**
+   - Reject: "all of it is needed" — push: what would you ship if you had one day?
+
+5. **"What have you already tried or ruled out? Why didn't it work?"**
+   - Accept: "nothing yet" — that's a valid answer. Don't push.
+
+#### Push Rule
+
+If any answer contains vague language without specifics ("users", "better", "improve", "faster", "easier"), push ONCE:
+
+> "Can you be more specific? Which users, what specifically is better, how do you measure improvement?"
+
+Push only once per question. If the second answer is still vague, accept it and move on — note the vagueness as a risk in the discovery output.
+
 ### Phase 2: Brainstorm (Multi-Perspective)
 
 Generate ideas from three lenses:
