@@ -1,6 +1,6 @@
 # S-002: Brief CLI — Complete Project Management
 
-**Status**: in_progress
+**Status**: done
 **Branch**: feature/brief-cli
 **Created**: 2026-08-20
 
