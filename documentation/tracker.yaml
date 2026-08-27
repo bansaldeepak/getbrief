@@ -33,7 +33,7 @@ items:
   - id: S-011
     type: story
     title: Brief Project Setup & Scoped Skills Architecture
-    status: planned
+    status: done
     feature: brief-project-setup
     branch: feature/brief-project-setup
     category: feat
@@ -42,7 +42,7 @@ items:
     current_task: S-011-T2
     story: documentation/stories/brief-project-setup/S-011/story.md
     link: null
-    pr: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/24
     last_task: S-011-T1
   - id: S-004
     type: story

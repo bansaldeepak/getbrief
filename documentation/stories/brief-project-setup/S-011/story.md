@@ -1,6 +1,6 @@
 # S-011: Brief Project Setup & Scoped Skills Architecture
 
-**Status**: planned
+**Status**: done
 **Branch**: feature/brief-project-setup
 **Created**: 2026-08-25
 

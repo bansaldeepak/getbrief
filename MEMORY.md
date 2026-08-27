@@ -18,8 +18,8 @@ brief search "<query>" --memory # memory only
   descriptions; `CLAUDE.md` and `rules/` load in full. Decides where any new rule belongs.
 - [Session log formats](documentation/memory/reference_session-log-formats.md) — where Claude and
   Codex record branch and token usage.
-- [Skills CLI, local sources](documentation/memory/reference_skills-cli-local-sources.md) — it
-  copies local paths instead of symlinking, which is why `setup.sh` still owns `custom-skills/`.
+- [Skills CLI, local sources](documentation/memory/reference_skills-cli-local-sources.md) — brief
+  init symlinks directly; skills CLI copies (used only for remote/third-party skills).
 
 ## Active
 
@@ -39,6 +39,8 @@ brief search "<query>" --memory # memory only
   after PR + user tests, before merge. Token usage removed from all skills.
 - [Status normalization](documentation/memory/feedback_status-normalization.md) — only first word of
   status field matters; complex prose after it is ignored.
+- [Init patterns](documentation/memory/feedback_init-patterns.md) — atomic manifest, recursive
+  mtime, marker merge, SKIP_DIRS, line-level gitignore match.
 
 ## Conventions
 
