@@ -1,7 +1,7 @@
 # S-011: Brief Project Setup & Scoped Skills Architecture -- Summary
 
 ## What Changed
-<Updated after each task is completed>
+- **T1**: Relocated 12 skills from `custom-skills/` to `brief/skills/brief/`. Created `/sdlc` thin alias at `brief/skills/sdlc/`. Merged brief + sdlc routers into single `/brief` router with relative paths. Renamed: project-plan→plan, decision-doc→decision, project-memory→memory. Updated all `/sdlc` refs to `/brief`. Global symlinks updated.
 
 ## Decisions Made
 - One story (S-011) with 8 tasks, matching TRD's implementation order
