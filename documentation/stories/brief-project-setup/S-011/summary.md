@@ -5,6 +5,7 @@
 - **T2**: Created `lib/detect.mjs` with `findAgentDirs()` and `detectStack()`. Pure read-only detection: agent directories, languages (codegraph + extension fallback), frameworks/testing from manifests, runtime inference, CI detection. 30 unit tests passing.
 - **T3**: Created `lib/symlink.mjs` with `createLink()`, `verifyLink()`, `fallbackCopy()`, `removeStale()`. Idempotent symlink management with EPERM copy fallback. 16 unit tests passing.
 - **T4**: Rewrote `lib/init.mjs` as async interactive installer. Full flow: scaffold → detect → prompt → symlinks → filtered rules → manifest → gitignore → codegraph. `--non-interactive` flag for CI. Idempotent. 19 integration tests passing.
+- **T5**: Created `lib/rules-gen.mjs` with `generateRuleSkeletons()`. Per-agent format: Claude (frontmatter+markers), Codex (AGENTS.md section), Gemini (plain md). Exports `MARKER_OPEN`/`MARKER_CLOSE` for T6. 13 unit tests passing.
 
 ## Decisions Made
 - One story (S-011) with 8 tasks, matching TRD's implementation order
