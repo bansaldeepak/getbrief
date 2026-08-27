@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, copyFileSync, writeFileSync, readFileSync, appendFileSync, rmSync, renameSync } from "node:fs";
+import { existsSync, mkdirSync, copyFileSync, writeFileSync, readFileSync, appendFileSync, rmSync, renameSync, lstatSync, readlinkSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -69,6 +69,18 @@ export async function initProject(projectRoot, opts = {}) {
     if (proceed === "n" || proceed === "no") {
       console.log("Aborted. No changes made beyond documentation scaffold.");
       return { created: scaffold.created, skipped: scaffold.skipped };
+    }
+  }
+
+  // 5b. Migrate old symlinks (custom-skills/ → brief/skills/brief/)
+  const migration = migrateOldSymlinks(projectRoot);
+  if (migration.migrated.length || migration.removed.length) {
+    console.log("Migrated old symlinks:");
+    for (const m of migration.migrated) {
+      console.log(`  ↻ ${m.path} (updated to new location)`);
+    }
+    for (const r of migration.removed) {
+      console.log(`  ✗ ${r.path} (removed — now a sub-skill of /brief)`);
     }
   }
 
@@ -327,4 +339,47 @@ function ask(question, defaultAnswer = "Y") {
       resolve(answer.trim().toLowerCase() || defaultAnswer.toLowerCase());
     });
   });
+}
+
+const OLD_PATH_PATTERN = /custom-skills/;
+const OLD_SYMLINKS_TO_REMOVE = ["sdlc", "project-memory"];
+
+function migrateOldSymlinks(projectRoot) {
+  const migrated = [];
+  const removed = [];
+
+  const linksToCheck = [
+    { dir: ".claude/skills", name: "brief" },
+    { dir: ".claude/skills", name: "sdlc" },
+    { dir: ".claude/skills", name: "project-memory" },
+    { dir: ".agents/skills", name: "brief" },
+    { dir: ".agents/skills", name: "sdlc" },
+    { dir: ".agents/skills", name: "project-memory" },
+  ];
+
+  for (const { dir, name } of linksToCheck) {
+    const linkPath = join(projectRoot, dir, name);
+    const target = safeLinkTarget(linkPath);
+    if (!target) continue;
+
+    if (!OLD_PATH_PATTERN.test(target)) continue;
+
+    rmSync(linkPath);
+
+    if (OLD_SYMLINKS_TO_REMOVE.includes(name)) {
+      removed.push({ path: `${dir}/${name}`, oldTarget: target, action: "removed" });
+    } else {
+      migrated.push({ path: `${dir}/${name}`, oldTarget: target, action: "migrated" });
+    }
+  }
+
+  return { migrated, removed };
+}
+
+function safeLinkTarget(p) {
+  try {
+    const stat = lstatSync(p);
+    if (stat.isSymbolicLink()) return readlinkSync(p);
+    return null;
+  } catch { return null; }
 }
