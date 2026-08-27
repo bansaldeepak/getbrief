@@ -185,20 +185,21 @@ describe("init.mjs — gitignore", () => {
     rmSync(tmpDir, { recursive: true });
   });
 
-  it("adds all expected entries to .gitignore", async () => {
+  it("adds entries to scoped .gitignore files (not root)", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const content = readFileSync(join(tmpDir, ".gitignore"), "utf8");
-    assert.ok(content.includes(".agents/skills/brief"));
-    assert.ok(content.includes(".claude/skills/brief"));
-    assert.ok(content.includes(".agents/brief-manifest.json"));
-    assert.ok(content.includes(".codegraph/"));
+    const agentsGi = readFileSync(join(tmpDir, ".agents", ".gitignore"), "utf8");
+    const claudeGi = readFileSync(join(tmpDir, ".claude", ".gitignore"), "utf8");
+    assert.ok(agentsGi.includes("skills/brief"));
+    assert.ok(agentsGi.includes("brief-manifest.json"));
+    assert.ok(claudeGi.includes("skills/brief"));
+    assert.ok(!existsSync(join(tmpDir, ".gitignore")));
   });
 
   it("does not duplicate entries on re-run", async () => {
     await initProject(tmpDir, { nonInteractive: true });
     await initProject(tmpDir, { nonInteractive: true });
-    const content = readFileSync(join(tmpDir, ".gitignore"), "utf8");
-    const count = content.split(".agents/skills/brief").length - 1;
+    const agentsGi = readFileSync(join(tmpDir, ".agents", ".gitignore"), "utf8");
+    const count = agentsGi.split("skills/brief").length - 1;
     assert.equal(count, 1);
   });
 });

@@ -102,12 +102,13 @@ export async function initProject(projectRoot, opts = {}) {
   // 8. Write manifest
   writeManifest(projectRoot, detection, symlinkResults.entries, rulesResult.installed);
 
-  // 9. Update .gitignore
-  ensureGitignoreEntries(projectRoot, [
-    ".agents/skills/brief",
-    ".claude/skills/brief",
-    ".agents/brief-manifest.json",
-    ".codegraph/",
+  // 9. Scoped .gitignore files (inside managed dirs, not root)
+  ensureGitignoreEntries(join(projectRoot, ".agents"), [
+    "skills/brief",
+    "brief-manifest.json",
+  ]);
+  ensureGitignoreEntries(join(projectRoot, ".claude"), [
+    "skills/brief",
   ]);
 
   // 10. Codegraph (non-critical)
@@ -270,8 +271,9 @@ function writeManifest(projectRoot, detection, symlinkEntries, rulesInstalled) {
   renameSync(tmpPath, manifestPath);
 }
 
-function ensureGitignoreEntries(projectRoot, entries) {
-  const giPath = join(projectRoot, ".gitignore");
+function ensureGitignoreEntries(dir, entries) {
+  mkdirSync(dir, { recursive: true });
+  const giPath = join(dir, ".gitignore");
   let content = "";
   if (existsSync(giPath)) {
     content = readFileSync(giPath, "utf8");
@@ -300,6 +302,7 @@ function initCodegraph(projectRoot, opts = {}) {
         stdio: "pipe",
         timeout: 120000,
       });
+      ensureGitignoreEntries(codegraphDir, ["*", "!.gitignore"]);
       return "created";
     } catch {
       if (existsSync(codegraphDir)) {
