@@ -2,7 +2,7 @@
 id: TODO-006
 title: Add brief context command — context graduates to feature/ folder with own ID
 priority: P2
-status: open
+status: done
 created: 2026-08-20
 story: null
 link: null

@@ -7,13 +7,13 @@ items:
   - id: S-002
     type: story
     title: Brief CLI — Complete Project Management
-    status: in_progress
+    status: done
     feature: brief-cli
     branch: feature/brief-cli
     category: feat
     created: 2026-08-20
     tasks: 5
-    current_task: S-002-T5
+    current_task: null
     story: documentation/stories/brief-cli/S-002/story.md
     link: null
     pr: null
@@ -30,6 +30,20 @@ items:
     story: documentation/stories/brief-context-codegraph/S-003/story.md
     link: null
     pr: https://github.com/bansaldeepak/agents-setup/pull/20
+  - id: S-011
+    type: story
+    title: Brief Project Setup & Scoped Skills Architecture
+    status: done
+    feature: brief-project-setup
+    branch: feature/brief-project-setup
+    category: feat
+    created: 2026-08-25
+    tasks: 8
+    current_task: S-011-T2
+    story: documentation/stories/brief-project-setup/S-011/story.md
+    link: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/24
+    last_task: S-011-T1
   - id: S-004
     type: story
     title: brief v0.3 — CLI Command Enhancements
@@ -46,7 +60,7 @@ items:
   - id: S-007
     type: story
     title: Harness & Core Rules Restructure
-    status: planned
+    status: done
     feature: skills-cleanup-consolidation
     branch: feature/skills-cleanup-consolidation
     category: feat
@@ -56,11 +70,10 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-007/story.md
     link: null
     pr: null
-    last_task: S-007-T3
   - id: S-008
     type: story
     title: Brief CLI Enhancements
-    status: planned
+    status: done
     feature: skills-cleanup-consolidation
     branch: feature/skills-cleanup-consolidation
     category: feat
@@ -70,11 +83,10 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-008/story.md
     link: null
     pr: null
-    last_task: S-008-T4
   - id: S-009
     type: story
     title: SDLC Enrichment
-    status: planned
+    status: done
     feature: skills-cleanup-consolidation
     branch: feature/skills-cleanup-consolidation
     category: feat
@@ -84,11 +96,10 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-009/story.md
     link: null
     pr: null
-    last_task: S-009-T5
   - id: S-010
     type: story
     title: Rule Templates + Init
-    status: planned
+    status: done
     feature: skills-cleanup-consolidation
     branch: feature/skills-cleanup-consolidation
     category: feat
@@ -98,11 +109,10 @@ items:
     story: documentation/stories/skills-cleanup-consolidation/S-010/story.md
     link: null
     pr: null
-    last_task: S-010-T1
   - id: S-005
     type: story
     title: Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical
-    status: in_progress
+    status: done
     feature: templates-agent-config
     branch: feature/templates-agent-config
     category: feat
@@ -147,7 +157,7 @@ items:
   - id: TODO-006
     type: todo
     title: Add brief context command — context graduates to feature/ folder with own ID
-    status: open
+    status: done
     priority: P2
     created: 2026-08-20
     link: null
@@ -179,9 +189,25 @@ items:
   - id: TODO-011
     type: todo
     title: brief story create should detect existing feature folders or accept --folder/--id flags
-    status: open
+    status: done
     priority: P1
     created: 2026-08-22
+    link: null
+    pr: null
+  - id: TODO-012
+    type: todo
+    title: Verify Gemini .agents/rules/ compatibility with live test
+    status: open
+    priority: P2
+    created: 2026-08-25
+    link: null
+    pr: null
+  - id: TODO-013
+    type: todo
+    title: brief update + brief uninstall commands (Phase 2)
+    status: open
+    priority: P3
+    created: 2026-08-25
     link: null
     pr: null
   - id: RES-001

@@ -3,7 +3,7 @@ name: project-next-steps-scaffold
 description: "brief CLI — project management tool. Resource-based CLI for stories, TODOs, decisions, research, logs. File-based, multi-agent safe, dual-write to tracker.yaml + .md files."
 type: project
 created: 2026-08-13
-updated: 2026-08-21
+updated: 2026-08-27
 valid_until: 2026-11-01
 importance: 5
 ---
@@ -67,11 +67,14 @@ brief active          # all in_progress
 brief search "<q>"    # doc-only search (OR with |, AND with space)
 brief stats           # usage per project per day
 
-# Setup
-brief init            # scaffold project + codegraph index
-brief init --reindex  # force-rebuild codegraph index
-brief migrate         # brief format version upgrades (reserved)
-brief generate        # regenerate PROJECT-TRACKER.md
+# Setup (S-011, 2026-08-27 — interactive multi-agent installer)
+brief init                   # interactive: detect → prompt → symlink → rules → codegraph
+brief init --non-interactive # CI/scripted: no prompts, scaffold everything detected
+brief init --reindex         # force-rebuild codegraph index
+brief doctor                 # verify symlinks, manifest, rules health
+brief doctor --json          # structured output for automation
+brief migrate                # brief format version upgrades (reserved)
+brief generate               # regenerate PROJECT-TRACKER.md
 ```
 
 ### Skills & Rules
@@ -109,6 +112,27 @@ discover → prd → trd → project-plan → implement → pr-review → retro 
 - `brief init` creates `.codegraph/` index using bundled binary via `execFileSync`
 - serve.mjs removed — MCP server was dead code (knowledge.db never running)
 
+### Init Architecture (S-011, 2026-08-27)
+
+`brief init` is now an interactive multi-agent installer:
+
+```
+scaffold docs → detect stack → filter rules → prompt user → migrate old symlinks
+  → create symlinks → copy rules → write manifest → update .gitignore → codegraph
+```
+
+Key components:
+- `lib/detect.mjs` — `findAgentDirs()` + `detectStack()` (codegraph or extension scan)
+- `lib/symlink.mjs` — cross-platform symlinks with EPERM→copy fallback
+- `lib/init.mjs` — full interactive flow, `--non-interactive` for CI
+- `lib/rules-gen.mjs` — per-agent rule format scaffolder with marker-based merge
+- `lib/markers.mjs` — `<!-- brief:auto section="X" -->` parse + idempotent merge
+- `lib/doctor.mjs` — health check: manifest, symlinks, rules, stale copies
+
+Manifest: `.agents/brief-manifest.json` (gitignored) — records mode, detection, symlinks, rules.
+Migration: detects old `custom-skills/` symlinks, removes stale ones (`sdlc`, `project-memory`).
+Skills path: always `~/.agents/brief/skills/brief/` — single-level symlinks into projects.
+
 ### What's NOT implemented yet
 
 - Context lifecycle (update/delete commands) — deferred
@@ -116,3 +140,5 @@ discover → prd → trd → project-plan → implement → pr-review → retro 
 - `@constraint` anchoring in code — deferred
 - Semantic/vector search layer
 - Auto-reindex on file save
+- Rule content fill (markers are scaffolded empty; agent fills via `/brief init` skill)
+- Dockerfile/fly.toml/wrangler.jsonc detection (not in DetectionResult yet)

@@ -2,7 +2,7 @@
 id: TODO-011
 title: brief story create should detect existing feature folders or accept --folder/--id flags
 priority: P1
-status: open
+status: done
 created: 2026-08-22
 story: null
 link: null

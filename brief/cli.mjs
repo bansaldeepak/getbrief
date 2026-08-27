@@ -5,6 +5,7 @@
 import { existsSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { execSync } from "node:child_process";
+import { homedir } from "node:os";
 
 const startTime = Date.now();
 
@@ -98,6 +99,7 @@ Utilities:
 
 Project Setup:
   init                 Scaffold canonical project structure
+  doctor [--json]      Check project health (symlinks, manifest, rules)
   migrate              Check/apply brief format upgrades
 
 MCP Server:
@@ -221,8 +223,9 @@ if (command === "story") {
 // Init / Generate / Migrate
 } else if (command === "init") {
   const reindex = rawArgs.includes("--reindex");
+  const nonInteractive = rawArgs.includes("--non-interactive");
   const { initProject } = await import("./lib/init.mjs");
-  const { created, skipped } = initProject(root, { reindex });
+  const { created, skipped } = await initProject(root, { reindex, nonInteractive });
   if (created.length) {
     console.log("Created:");
     for (const f of created) console.log(`  + ${f}`);
@@ -247,6 +250,13 @@ if (command === "story") {
     console.log("Nothing to migrate — no new items found.");
   }
 
+} else if (command === "doctor") {
+  const json = rawArgs.includes("--json");
+  const { runDoctor, printDoctorResult } = await import("./lib/doctor.mjs");
+  const result = runDoctor(root, { json });
+  printDoctorResult(root, result, json);
+  process.exit(result.exitCode || 0);
+
 // MCP Server
 } else if (command === "serve") {
   const dbRoot = findProjectRoot(process.cwd());
@@ -265,7 +275,7 @@ if (command === "story") {
 
   if (rawArgs.includes("--write")) {
     const { readFileSync, writeFileSync } = await import("node:fs");
-    const claudeJson = join(process.env.HOME, ".claude.json");
+    const claudeJson = join(homedir(), ".claude.json");
     const existing = existsSync(claudeJson)
       ? JSON.parse(readFileSync(claudeJson, "utf8"))
       : {};
