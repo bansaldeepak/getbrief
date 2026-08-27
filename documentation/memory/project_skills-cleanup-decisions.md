@@ -3,7 +3,7 @@ name: skills-cleanup-decisions
 description: Key architectural decisions for skills cleanup epic — no rename (D8), item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
 type: project
 created: 2026-08-22
-updated: 2026-08-22
+updated: 2026-08-27
 valid_until: 2026-12-01
 importance: 5
 ---
@@ -11,10 +11,10 @@ importance: 5
 Decisions from discovery + PRD + TRD + eng review (2026-08-22):
 
 **Foundation:**
-- D8: AGENTS.md stays as-is — NO rename to HARNESS.md (zero functional value, high risk from @ import breakage)
-- first-principles + agent-discipline merge INTO AGENTS.md (always loaded)
+- D8: ~~AGENTS.md stays as-is~~ → SUPERSEDED (2026-08-27): renamed to HARNESS.md during repo extraction. Context changed — brief is now its own project, HARNESS.md is a template that gets injected into user projects.
+- first-principles + agent-discipline merge INTO HARNESS.md (always loaded)
 - Git branching rules extract to separate `rules/git-workflow.md`
-- Target AGENTS.md: <100 lines after consolidation
+- Target HARNESS.md: <100 lines after consolidation
 - coding-standards becomes lean global rule; backend/frontend go project-local as templates
 
 **Brief CLI:**

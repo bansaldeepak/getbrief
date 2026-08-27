@@ -13,7 +13,8 @@ importance: 5
 ### What it is
 
 `brief` is a project management CLI that agents use as their primary interface for tracking work.
-Installed globally via `npm link` from `~/.agents/brief/`. Available in PATH at `~/.vite-plus/bin/brief`.
+Installed globally via `npm link` from `~/Work/Arcitae/brief/`. Available in PATH at `~/.vite-plus/bin/brief`.
+Standalone repo (extracted from `~/.agents` on 2026-08-27). Old `~/.agents` path deprecated.
 
 ### Architecture
 

@@ -1,6 +1,6 @@
-# Memory — ~/.agents
+# Memory — brief
 
-Unified agent configuration for Claude Code, Codex and Gemini. One source, generated per provider.
+Project management CLI + multi-agent installer. Standalone repo at `~/Work/Arcitae/brief/`.
 
 ## How to access
 
@@ -23,9 +23,12 @@ brief search "<query>" --memory # memory only
 
 ## Active
 
-- [Skills cleanup decisions](documentation/memory/project_skills-cleanup-decisions.md) — D8 no-rename, item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
+- [Repo extraction](documentation/memory/project_repo-extraction.md) — brief is standalone at
+  ~/Work/Arcitae/brief. BRIEF_SKILLS_PATH and harness injection pattern are next.
 - [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands (incl.
   query/context/codegraph), project structure, and what's deferred.
+- [Skills cleanup decisions](documentation/memory/project_skills-cleanup-decisions.md) — D8
+  superseded (renamed to HARNESS.md), item.mjs delegation, enrichment aligned to gstack reviews
 - [Standards split](documentation/memory/project_standards-split.md) — why standards are three
   skills, why stack content lives in repos.
 - [Cross-reference drift](documentation/memory/project_cross-reference-drift.md) — stale references
@@ -44,6 +47,7 @@ brief search "<query>" --memory # memory only
 
 ## Conventions
 
-- Edit `AGENTS.md` or `providers/*.md`, never the generated `~/.claude/CLAUDE.md`.
+- Edit `HARNESS.md` or `providers/*.md`, never the generated `~/.claude/CLAUDE.md`.
 - `agents/*.md` is the source for both hosts; the Codex `.toml` is generated — never hand-edited.
 - Renaming or deleting a skill is a repo-wide event: grep every consuming project, not just this one.
+- `BRIEF_SKILLS_PATH` in `lib/init.mjs` still points to `~/.agents/brief/skills/brief/` — needs updating in next story.

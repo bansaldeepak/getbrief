@@ -1,6 +1,6 @@
 ---
 name: skills-cli-local-sources
-description: "brief init creates single-level symlinks from projects into ~/.agents/brief/skills/brief/. Falls back to copy on EPERM. Old custom-skills/ path is deprecated."
+description: "brief lives at ~/Work/Arcitae/brief (standalone repo). init creates symlinks into BRIEF_SKILLS_PATH. Old ~/.agents path deprecated."
 type: reference
 created: 2026-07-29
 updated: 2026-08-27
@@ -8,15 +8,21 @@ valid_until: 2027-02-27
 importance: 4
 ---
 
-## Current Architecture (S-011, 2026-08-27)
+## Current Architecture (2026-08-27)
+
+**Brief repo location**: `/Users/db/Work/Arcitae/brief/` (standalone project, npm-linked to PATH)
+**Old location**: `~/.agents/brief/` (deprecated — agents repo can be deleted)
 
 `brief init` creates symlinks directly — no setup.sh, no skills CLI for local paths:
 
 | Agent | Link created by init | Target |
 |-------|---------------------|--------|
-| Claude | `.claude/skills/brief` → | `~/.agents/brief/skills/brief/` |
-| Codex | `.agents/skills/brief` → | `~/.agents/brief/skills/brief/` |
+| Claude | `.claude/skills/brief` → | `BRIEF_SKILLS_PATH` (currently `~/.agents/brief/skills/brief/`) |
+| Codex | `.agents/skills/brief` → | `BRIEF_SKILLS_PATH` |
 | Gemini | (reads `.agents/rules/` directly) | N/A |
+
+**Note**: `BRIEF_SKILLS_PATH` in `lib/init.mjs` still resolves via `homedir()/.agents/brief/skills/brief`.
+This needs updating in the next story to point to the actual brief install location.
 
 **Fallback**: if symlink fails (EPERM on some Windows/network mounts), `lib/symlink.mjs` copies
 the entire directory tree and logs a warning. `brief doctor` detects stale copies via recursive
