@@ -188,8 +188,8 @@ describe("init.mjs — gitignore", () => {
   it("adds all expected entries to .gitignore", async () => {
     await initProject(tmpDir, { nonInteractive: true });
     const content = readFileSync(join(tmpDir, ".gitignore"), "utf8");
-    assert.ok(content.includes(".agents/skills/"));
-    assert.ok(content.includes(".claude/skills/"));
+    assert.ok(content.includes(".agents/skills/brief"));
+    assert.ok(content.includes(".claude/skills/brief"));
     assert.ok(content.includes(".agents/brief-manifest.json"));
     assert.ok(content.includes(".codegraph/"));
   });
@@ -198,7 +198,7 @@ describe("init.mjs — gitignore", () => {
     await initProject(tmpDir, { nonInteractive: true });
     await initProject(tmpDir, { nonInteractive: true });
     const content = readFileSync(join(tmpDir, ".gitignore"), "utf8");
-    const count = content.split(".agents/skills/").length - 1;
+    const count = content.split(".agents/skills/brief").length - 1;
     assert.equal(count, 1);
   });
 });

@@ -104,8 +104,8 @@ export async function initProject(projectRoot, opts = {}) {
 
   // 9. Update .gitignore
   ensureGitignoreEntries(projectRoot, [
-    ".agents/skills/",
-    ".claude/skills/",
+    ".agents/skills/brief",
+    ".claude/skills/brief",
     ".agents/brief-manifest.json",
     ".codegraph/",
   ]);
