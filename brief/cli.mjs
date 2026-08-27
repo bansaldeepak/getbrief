@@ -98,6 +98,7 @@ Utilities:
 
 Project Setup:
   init                 Scaffold canonical project structure
+  doctor [--json]      Check project health (symlinks, manifest, rules)
   migrate              Check/apply brief format upgrades
 
 MCP Server:
@@ -247,6 +248,13 @@ if (command === "story") {
   } else {
     console.log("Nothing to migrate — no new items found.");
   }
+
+} else if (command === "doctor") {
+  const json = rawArgs.includes("--json");
+  const { runDoctor, printDoctorResult } = await import("./lib/doctor.mjs");
+  const result = runDoctor(root, { json });
+  printDoctorResult(root, result, json);
+  process.exit(result.exitCode || 0);
 
 // MCP Server
 } else if (command === "serve") {
