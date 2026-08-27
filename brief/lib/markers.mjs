@@ -9,7 +9,7 @@ export function parseMarkers(content) {
   let inCodeBlock = false;
 
   while (i < lines.length) {
-    if (lines[i].startsWith("```")) {
+    if (/^ {0,3}```/.test(lines[i])) {
       inCodeBlock = !inCodeBlock;
       i++;
       continue;
@@ -26,7 +26,7 @@ export function parseMarkers(content) {
       i++;
       let found = false;
       while (i < lines.length) {
-        if (lines[i].startsWith("```")) { inCodeBlock = !inCodeBlock; i++; continue; }
+        if (/^ {0,3}```/.test(lines[i])) { inCodeBlock = !inCodeBlock; i++; continue; }
         if (inCodeBlock) { i++; continue; }
         if (CLOSE_RE.test(lines[i])) {
           sections.push({ type: "auto", id: sectionId, content: lines.slice(startLine + 1, i).join("\n") });

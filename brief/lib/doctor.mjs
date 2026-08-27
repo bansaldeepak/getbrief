@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 import { verifyLink } from "./symlink.mjs";
@@ -9,11 +9,7 @@ export function runDoctor(projectRoot, opts = {}) {
 
   const manifestPath = join(projectRoot, ".agents", "brief-manifest.json");
   if (!existsSync(manifestPath)) {
-    if (json) {
-      return { healthy: false, error: "manifest-missing", message: "Run `brief init` first.", checks: [], summary: { pass: 0, fail: 1 }, exitCode: 1 };
-    }
-    console.error("✗ brief-manifest.json not found. Run `brief init` first.");
-    return { healthy: false, checks: [], summary: { pass: 0, fail: 1 }, exitCode: 1 };
+    return { healthy: false, error: "manifest-missing", message: "Run `brief init` first.", checks: [], summary: { pass: 0, fail: 1 }, exitCode: 1 };
   }
 
   let manifest;
@@ -21,11 +17,7 @@ export function runDoctor(projectRoot, opts = {}) {
     manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
     checks.push({ type: "manifest", status: "pass" });
   } catch {
-    if (json) {
-      return { healthy: false, error: "manifest-invalid", message: "Delete .agents/brief-manifest.json and re-run init.", checks: [], summary: { pass: 0, fail: 1 }, exitCode: 1 };
-    }
-    console.error("✗ Manifest corrupted. Delete .agents/brief-manifest.json and re-run `brief init`.");
-    return { healthy: false, checks: [], summary: { pass: 0, fail: 1 }, exitCode: 1 };
+    return { healthy: false, error: "manifest-invalid", message: "Delete .agents/brief-manifest.json and re-run init.", checks: [], summary: { pass: 0, fail: 1 }, exitCode: 1 };
   }
 
   for (const link of manifest.symlinks || []) {
@@ -52,8 +44,8 @@ export function runDoctor(projectRoot, opts = {}) {
       const copyPath = join(projectRoot, link.source);
       const sourcePath = link.target.replace(/^~/, homedir());
       if (existsSync(copyPath) && existsSync(sourcePath)) {
-        const copyMtime = statSync(copyPath).mtimeMs;
-        const sourceMtime = statSync(sourcePath).mtimeMs;
+        const copyMtime = newestFileMtime(copyPath);
+        const sourceMtime = newestFileMtime(sourcePath);
         if (sourceMtime > copyMtime) {
           checks.push({ type: "stale-copy", path: link.source, status: "fail", reason: "source-newer" });
         }
@@ -70,11 +62,14 @@ export function runDoctor(projectRoot, opts = {}) {
 
 export function printDoctorResult(projectRoot, result, json) {
   if (json) {
-    console.log(JSON.stringify({ healthy: result.healthy, checks: result.checks, summary: result.summary }, null, 2));
+    console.log(JSON.stringify({ healthy: result.healthy, error: result.error, message: result.message, checks: result.checks, summary: result.summary }, null, 2));
     return;
   }
 
-  if (result.error) return;
+  if (result.error) {
+    console.error(`✗ ${result.message}`);
+    return;
+  }
 
   console.log("\nbrief doctor");
   console.log("─".repeat(50));
@@ -96,4 +91,24 @@ export function printDoctorResult(projectRoot, result, json) {
     console.log("Fix: run `brief init` to repair");
   }
   console.log("─".repeat(50));
+}
+
+function newestFileMtime(dirPath) {
+  let newest = 0;
+  try {
+    const entries = readdirSync(dirPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = join(dirPath, entry.name);
+      if (entry.isFile()) {
+        const mt = statSync(full).mtimeMs;
+        if (mt > newest) newest = mt;
+      } else if (entry.isDirectory()) {
+        const sub = newestFileMtime(full);
+        if (sub > newest) newest = sub;
+      }
+    }
+  } catch {
+    // unreadable directory
+  }
+  return newest;
 }

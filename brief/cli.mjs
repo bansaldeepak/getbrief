@@ -5,6 +5,7 @@
 import { existsSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { execSync } from "node:child_process";
+import { homedir } from "node:os";
 
 const startTime = Date.now();
 
@@ -274,7 +275,7 @@ if (command === "story") {
 
   if (rawArgs.includes("--write")) {
     const { readFileSync, writeFileSync } = await import("node:fs");
-    const claudeJson = join(process.env.HOME, ".claude.json");
+    const claudeJson = join(homedir(), ".claude.json");
     const existing = existsSync(claudeJson)
       ? JSON.parse(readFileSync(claudeJson, "utf8"))
       : {};

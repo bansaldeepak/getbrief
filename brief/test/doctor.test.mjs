@@ -198,9 +198,9 @@ describe("runDoctor — stale copy", () => {
     mkdirSync(copyDir, { recursive: true });
     writeFileSync(join(copyDir, "SKILL.md"), "# Old content");
 
-    // Backdate the copy
+    // Backdate the copy's file so source is newer
     const pastTime = new Date("2020-01-01");
-    utimesSync(copyDir, pastTime, pastTime);
+    utimesSync(join(copyDir, "SKILL.md"), pastTime, pastTime);
 
     const manifest = {
       version: "1.0.0",

@@ -9,10 +9,15 @@ import { detectStack } from "./detect.mjs";
 import { createLink } from "./symlink.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+// Resolves to ~/.agents/templates/project-structure (sibling of brief package)
 const TEMPLATES_DIR = join(__dirname, "../../templates/project-structure");
 const RULES_TEMPLATES_DIR = join(__dirname, "../templates/rules");
 const CODEGRAPH_BIN = join(__dirname, "../node_modules/.bin/codegraph");
 const BRIEF_SKILLS_PATH = join(homedir(), ".agents", "brief", "skills", "brief");
+
+if (!existsSync(TEMPLATES_DIR)) {
+  console.warn(`Warning: templates directory not found at ${TEMPLATES_DIR}. Scaffold files will be skipped.`);
+}
 
 const DIRS = [
   "documentation",
@@ -195,6 +200,7 @@ function matchesDetection(detectPatterns, detection) {
       // File existence checks (Cargo.toml, go.mod, etc.)
       if (file === "Cargo.toml" && detection.runtime === "rust") return true;
       if (file === "go.mod" && detection.runtime === "go") return true;
+      // Deferred: detect these via filesystem check in future (not part of DetectionResult yet)
       if (file === "Dockerfile" || file === "fly.toml" || file === "wrangler.jsonc") continue;
       if (file === ".github/workflows" && detection.hasCI) return true;
       continue;
@@ -271,7 +277,8 @@ function ensureGitignoreEntries(projectRoot, entries) {
     content = readFileSync(giPath, "utf8");
   }
 
-  const missing = entries.filter(e => !content.includes(e));
+  const lines = content.split("\n").map(l => l.trim());
+  const missing = entries.filter(e => !lines.includes(e));
   if (missing.length) {
     const suffix = (content && !content.endsWith("\n") ? "\n" : "") + missing.join("\n") + "\n";
     appendFileSync(giPath, suffix);
@@ -341,7 +348,7 @@ function ask(question, defaultAnswer = "Y") {
   });
 }
 
-const OLD_PATH_PATTERN = /custom-skills/;
+const OLD_PATH_PATTERN = /[/\\]custom-skills[/\\]/;
 const OLD_SYMLINKS_TO_REMOVE = ["sdlc", "project-memory"];
 
 function migrateOldSymlinks(projectRoot) {

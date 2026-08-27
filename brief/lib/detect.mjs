@@ -33,6 +33,8 @@ const EXT_TO_LANG = {
   ".rb": "ruby",
 };
 
+const SKIP_DIRS = new Set(["node_modules", "dist", "build", "vendor", ".next", ".nuxt", "coverage"]);
+
 function isDir(path) {
   try {
     return statSync(path).isDirectory();
@@ -98,7 +100,7 @@ function scanExtensions(projectRoot) {
       if (entry.isFile()) {
         const lang = EXT_TO_LANG[extname(entry.name)];
         if (lang) langs.add(lang);
-      } else if (entry.isDirectory() && !entry.name.startsWith("node_modules")) {
+      } else if (entry.isDirectory() && !SKIP_DIRS.has(entry.name)) {
         const subEntries = safeReaddir(join(projectRoot, entry.name));
         for (const sub of subEntries) {
           if (sub.isFile()) {
