@@ -221,8 +221,9 @@ if (command === "story") {
 // Init / Generate / Migrate
 } else if (command === "init") {
   const reindex = rawArgs.includes("--reindex");
+  const nonInteractive = rawArgs.includes("--non-interactive");
   const { initProject } = await import("./lib/init.mjs");
-  const { created, skipped } = initProject(root, { reindex });
+  const { created, skipped } = await initProject(root, { reindex, nonInteractive });
   if (created.length) {
     console.log("Created:");
     for (const f of created) console.log(`  + ${f}`);
