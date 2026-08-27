@@ -7,6 +7,7 @@
 - **T4**: Rewrote `lib/init.mjs` as async interactive installer. Full flow: scaffold → detect → prompt → symlinks → filtered rules → manifest → gitignore → codegraph. `--non-interactive` flag for CI. Idempotent. 19 integration tests passing.
 - **T5**: Created `lib/rules-gen.mjs` with `generateRuleSkeletons()`. Per-agent format: Claude (frontmatter+markers), Codex (AGENTS.md section), Gemini (plain md). Exports `MARKER_OPEN`/`MARKER_CLOSE` for T6. 13 unit tests passing.
 - **T6**: Created `lib/markers.mjs` (parseMarkers + mergeContent) and `skills/brief/init/SKILL.md`. Marker parser handles code-block escaping, nested/unclosed errors. Skill instructs agent to read code and fill rule skeletons. 13 unit tests passing.
+- **T7**: Created `lib/doctor.mjs` with `runDoctor()` + `printDoctorResult()`. Checks manifest, symlinks, rules, stale copies. Exit 0/1, `--json` flag. Added `doctor` route to cli.mjs. 9 unit tests passing.
 
 ## Decisions Made
 - One story (S-011) with 8 tasks, matching TRD's implementation order
