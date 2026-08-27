@@ -1,12 +1,12 @@
 #!/bin/bash
-# Build provider-specific config files from shared AGENTS.md + provider overrides.
-# Run after editing AGENTS.md or providers/*.md
+# Build provider-specific config files from shared HARNESS.md + provider overrides.
+# Run after editing HARNESS.md or providers/*.md
 # Can be triggered via git hook (pre-commit) in this repo.
 
 set -euo pipefail
 
-AGENTS_DIR="$HOME/.agents"
-SHARED="$AGENTS_DIR/AGENTS.md"
+AGENTS_DIR="$(cd "$(dirname "$0")" && pwd)"
+SHARED="$AGENTS_DIR/HARNESS.md"
 
 if [ ! -f "$SHARED" ]; then
   echo "ERROR: $SHARED not found"
@@ -64,4 +64,4 @@ done
 echo "✓ ~/.claude/agents — $agent_count linked · ~/.codex/agents — $agent_count generated"
 
 echo ""
-echo "All provider configs + rules + agents synced from ~/.agents/"
+echo "All provider configs + rules + agents synced from $AGENTS_DIR/"
