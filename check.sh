@@ -1,5 +1,5 @@
 #!/bin/bash
-# ~/.agents/check.sh — Verify every provider dir is in sync with ~/.agents/ source.
+# Verify every provider dir is in sync with brief source.
 #
 # Read-only: never writes, links, or deletes anything. Exits non-zero on any
 # drift so it can gate a pre-commit hook or CI. To fix what this reports, run
@@ -8,8 +8,8 @@
 # was never distributed, or a stale link left behind when a rule was deleted.
 set -uo pipefail   # NOT -e — collect every failure, don't stop at the first.
 
-AGENTS_DIR="$HOME/.agents"
-SHARED="$AGENTS_DIR/AGENTS.md"
+AGENTS_DIR="$(cd "$(dirname "$0")" && pwd)"
+SHARED="$AGENTS_DIR/HARNESS.md"
 RULE_HOSTS=(claude codex)   # MUST match build.sh's RULE_HOSTS.
 
 fail=0
@@ -32,7 +32,7 @@ check_config() {
   if diff -q <(cat "$SHARED" "$AGENTS_DIR/providers/$override") "$out" >/dev/null 2>&1; then
     note "✓ $label"
   else
-    note "✗ $label drifted from source — edit AGENTS.md / providers/$override, then build.sh"; fail=1
+    note "✗ $label drifted from source — edit HARNESS.md / providers/$override, then build.sh"; fail=1
   fi
 }
 check_config "~/.claude/CLAUDE.md" claude.md "$HOME/.claude/CLAUDE.md"
@@ -134,7 +134,7 @@ fi
 
 echo ""
 if [ "$fail" -ne 0 ]; then
-  echo "OUT OF SYNC — run ~/.agents/build.sh, then re-run this check."
+  echo "OUT OF SYNC — run build.sh, then re-run this check."
   exit 1
 fi
-echo "In sync. All provider configs + rules + agents match ~/.agents/ source."
+echo "In sync. All provider configs + rules + agents match source."
