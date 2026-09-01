@@ -16,13 +16,20 @@ describe("detectHarnessState", () => {
     rmSync(tmp, { recursive: true });
   });
 
-  it("row 1 — neither AGENTS.md nor CLAUDE.md exist", () => {
-    const state = detectHarnessState(tmp);
+  it("row 1 — neither file exists, Codex detected → creates both", () => {
+    const state = detectHarnessState(tmp, { codexDetected: true });
     assert.equal(state.matrixRow, 1);
     assert.equal(state.agentsExists, false);
     assert.equal(state.claudeExists, false);
-    assert.equal(state.claudeImportsAgents, false);
-    assert.ok(state.actions.length > 0);
+    assert.ok(state.actions.some(a => a.includes("AGENTS.md")));
+  });
+
+  it("row 5 — neither file exists, no Codex → Claude-only path", () => {
+    const state = detectHarnessState(tmp);
+    assert.equal(state.matrixRow, 5);
+    assert.equal(state.agentsExists, false);
+    assert.equal(state.claudeExists, false);
+    assert.ok(state.actions.some(a => a.includes("CLAUDE.md")));
   });
 
   it("row 2 — AGENTS.md exists, no CLAUDE.md", () => {
@@ -90,8 +97,8 @@ describe("applyHarness", () => {
     rmSync(tmp, { recursive: true });
   });
 
-  it("row 1 — creates both files from scratch", () => {
-    const state = detectHarnessState(tmp);
+  it("row 1 — Codex detected, creates AGENTS.md + CLAUDE.md", () => {
+    const state = detectHarnessState(tmp, { codexDetected: true });
     const result = applyHarness(tmp, state);
 
     assert.ok(existsSync(join(tmp, ".brief", "HARNESS.md")));
@@ -107,6 +114,21 @@ describe("applyHarness", () => {
 
     assert.ok(result.copied.includes(".brief/HARNESS.md"));
     assert.ok(result.injected.length >= 2);
+  });
+
+  it("no Codex, no files — creates CLAUDE.md with harness import, no AGENTS.md", () => {
+    const state = detectHarnessState(tmp);
+    const result = applyHarness(tmp, state);
+
+    assert.ok(existsSync(join(tmp, ".brief", "HARNESS.md")));
+    assert.ok(!existsSync(join(tmp, "AGENTS.md")));
+    assert.ok(existsSync(join(tmp, ".claude", "CLAUDE.md")));
+
+    const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
+    assert.ok(claude.includes("@../.brief/HARNESS.md"));
+    assert.ok(claude.includes("<!-- brief:auto section=\"harness\""));
+
+    assert.ok(result.injected.some(s => s.includes("CLAUDE.md")));
   });
 
   it("row 2 — adds marker to existing AGENTS.md, creates CLAUDE.md", () => {
@@ -183,10 +205,10 @@ describe("applyHarness", () => {
   });
 
   it("idempotent — running twice produces no duplication", () => {
-    const state1 = detectHarnessState(tmp);
+    const state1 = detectHarnessState(tmp, { codexDetected: true });
     applyHarness(tmp, state1);
 
-    const state2 = detectHarnessState(tmp);
+    const state2 = detectHarnessState(tmp, { codexDetected: true });
     applyHarness(tmp, state2);
 
     const agents = readFileSync(join(tmp, "AGENTS.md"), "utf8");
@@ -194,8 +216,20 @@ describe("applyHarness", () => {
     assert.equal(markerCount, 1);
   });
 
+  it("idempotent — Claude-only path, no duplication", () => {
+    const state1 = detectHarnessState(tmp);
+    applyHarness(tmp, state1);
+
+    const state2 = detectHarnessState(tmp);
+    applyHarness(tmp, state2);
+
+    const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
+    const markerCount = (claude.match(/<!-- brief:auto section="harness"/g) || []).length;
+    assert.equal(markerCount, 1);
+  });
+
   it("AGENTS.md skeleton includes project structure when template exists", () => {
-    const state = detectHarnessState(tmp);
+    const state = detectHarnessState(tmp, { codexDetected: true });
     applyHarness(tmp, state);
 
     const agents = readFileSync(join(tmp, "AGENTS.md"), "utf8");
