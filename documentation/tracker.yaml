@@ -216,3 +216,19 @@ items:
     status: active
     link: null
     pr: null
+  - id: TODO-014
+    type: todo
+    title: Delete rules-gen.mjs dead code
+    status: open
+    priority: P1
+    link: null
+    pr: null
+  - id: S-012
+    type: story
+    title: Harness Injection & Init Rework
+    status: planned
+    branch: feature/harness-injection
+    current_task: null
+    story: documentation/stories/harness-injection/S-012/story.md
+    link: null
+    pr: null
