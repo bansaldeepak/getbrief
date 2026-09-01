@@ -34,10 +34,10 @@ describe("findAgentDirs", () => {
     assert.equal(result.codex, true);
   });
 
-  it("detects AGENTS.md as codex indicator", () => {
+  it("does not detect AGENTS.md as codex indicator", () => {
     writeFileSync(join(tmp, "AGENTS.md"), "# Agents");
     const result = findAgentDirs(tmp);
-    assert.equal(result.codex, true);
+    assert.equal(result.codex, false);
   });
 
   it("detects .gemini/ directory", () => {
@@ -60,7 +60,7 @@ describe("findAgentDirs", () => {
 
   it("detects multiple agents simultaneously", () => {
     mkdirSync(join(tmp, ".claude"));
-    writeFileSync(join(tmp, "AGENTS.md"), "");
+    mkdirSync(join(tmp, ".codex"));
     mkdirSync(join(tmp, ".gemini"));
     const result = findAgentDirs(tmp);
     assert.deepEqual(result, { claude: true, codex: true, gemini: true });
