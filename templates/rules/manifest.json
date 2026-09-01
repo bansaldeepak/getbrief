@@ -56,6 +56,34 @@
       "detect": ["package.json:posthog|amplitude|mixpanel|segment"],
       "paths": [],
       "file": "product-analytics.md"
+    },
+    {
+      "id": "critical-thinking",
+      "name": "Critical Thinking",
+      "description": "Why → What → How reasoning framework, scope challenges, risk highlighting",
+      "detect": ["*"],
+      "file": "critical-thinking.md"
+    },
+    {
+      "id": "first-principles",
+      "name": "First-Principles Process",
+      "description": "Question → Delete → Simplify → Accelerate → Automate (in that order)",
+      "detect": ["*"],
+      "file": "first-principles.md"
+    },
+    {
+      "id": "verification-discipline",
+      "name": "Verification Discipline",
+      "description": "Absence ≠ proof, unfailable checks, trace before attributing",
+      "detect": ["*"],
+      "file": "verification-discipline.md"
+    },
+    {
+      "id": "safe-modifications",
+      "name": "Safe Modifications",
+      "description": "Change only what was asked, never repo-wide auto-fix, propose before broad changes",
+      "detect": ["*"],
+      "file": "safe-modifications.md"
     }
   ]
 }

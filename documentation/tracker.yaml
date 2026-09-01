@@ -216,3 +216,37 @@ items:
     status: active
     link: null
     pr: null
+  - id: TODO-014
+    type: todo
+    title: Delete rules-gen.mjs dead code
+    status: open
+    priority: P1
+    link: null
+    pr: null
+  - id: S-012
+    type: story
+    title: Harness Injection & Init Rework
+    status: done
+    branch: feature/harness-injection
+    current_task: null
+    story: documentation/stories/harness-injection/S-012/story.md
+    link: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/26
+  - id: MEM-001
+    type: memory
+    title: Design pivots mid-impl need immediate test updates
+    status: active
+    link: null
+    pr: null
+  - id: MEM-002
+    type: memory
+    title: Grep all callers when removing a return field
+    status: active
+    link: null
+    pr: null
+  - id: MEM-003
+    type: memory
+    title: Test template injection for heading duplication
+    status: active
+    link: null
+    pr: null

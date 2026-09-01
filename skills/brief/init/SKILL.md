@@ -1,7 +1,7 @@
 ---
 name: brief-init
 description: "Reads project code, infers conventions, fills rule skeletons with real content using marker-based merge. Run after `brief init` to populate rules with project-specific conventions."
-user_invocable: false
+user_invocable: true
 model: sonnet
 ---
 
@@ -16,10 +16,10 @@ your code and fills those markers with real conventions.
 
 ### Step 1: Verify Brief is Installed
 
-Check `.agents/brief-manifest.json` exists. If not: tell the user to run `brief init` first.
+Check `.brief/brief-manifest.json` exists. If not: tell the user to run `brief init` first.
 
 ```bash
-cat .agents/brief-manifest.json
+cat .brief/brief-manifest.json
 ```
 
 ### Step 2: Understand What's Present

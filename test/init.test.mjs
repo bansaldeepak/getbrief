@@ -1,12 +1,14 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, existsSync, readFileSync, rmSync, mkdirSync, lstatSync, readlinkSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir, homedir } from "node:os";
+import { join, dirname } from "node:path";
+import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { initProject } from "../lib/init.mjs";
 
-const BRIEF_SKILLS_PATH = join(homedir(), ".agents", "brief", "skills", "brief");
+const __testDirname = dirname(fileURLToPath(import.meta.url));
+const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
 
 describe("init.mjs — scaffold", () => {
   let tmpDir;
@@ -100,12 +102,12 @@ describe("init.mjs — manifest", () => {
     rmSync(tmpDir, { recursive: true });
   });
 
-  it("writes .agents/brief-manifest.json", async () => {
+  it("writes .brief/brief-manifest.json", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const manifestPath = join(tmpDir, ".agents", "brief-manifest.json");
+    const manifestPath = join(tmpDir, ".brief", "brief-manifest.json");
     assert.ok(existsSync(manifestPath));
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-    assert.equal(manifest.version, "1.0.0");
+    assert.equal(manifest.version, "0.2.0");
     assert.ok(manifest.installed_at);
     assert.ok(manifest.detection);
     assert.ok(Array.isArray(manifest.symlinks));
@@ -118,7 +120,7 @@ describe("init.mjs — manifest", () => {
       devDependencies: { vitest: "^1.0.0" },
     }));
     await initProject(tmpDir, { nonInteractive: true });
-    const manifest = JSON.parse(readFileSync(join(tmpDir, ".agents", "brief-manifest.json"), "utf8"));
+    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief", "brief-manifest.json"), "utf8"));
     assert.ok(manifest.detection.frameworks.includes("hono"));
     assert.ok(manifest.detection.testing.includes("vitest"));
     assert.equal(manifest.detection.runtime, "node");
@@ -126,7 +128,7 @@ describe("init.mjs — manifest", () => {
 
   it("manifest mode is symlink when symlinks succeed", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const manifest = JSON.parse(readFileSync(join(tmpDir, ".agents", "brief-manifest.json"), "utf8"));
+    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief", "brief-manifest.json"), "utf8"));
     assert.equal(manifest.mode, "symlink");
   });
 });
@@ -189,8 +191,9 @@ describe("init.mjs — gitignore", () => {
     await initProject(tmpDir, { nonInteractive: true });
     const agentsGi = readFileSync(join(tmpDir, ".agents", ".gitignore"), "utf8");
     const claudeGi = readFileSync(join(tmpDir, ".claude", ".gitignore"), "utf8");
+    const briefGi = readFileSync(join(tmpDir, ".brief", ".gitignore"), "utf8");
     assert.ok(agentsGi.includes("skills/brief"));
-    assert.ok(agentsGi.includes("brief-manifest.json"));
+    assert.ok(briefGi.includes("brief-manifest.json"));
     assert.ok(claudeGi.includes("skills/brief"));
     assert.ok(!existsSync(join(tmpDir, ".gitignore")));
   });

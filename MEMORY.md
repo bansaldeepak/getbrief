@@ -24,30 +24,17 @@ brief search "<query>" --memory # memory only
 ## Active
 
 - [Repo extraction](documentation/memory/project_repo-extraction.md) — brief is standalone at
-  ~/Work/Arcitae/brief. BRIEF_SKILLS_PATH and harness injection pattern are next.
+  ~/Work/Arcitae/brief. BRIEF_SKILLS_PATH fixed; harness injection complete.
 - [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands (incl.
   query/context/codegraph), project structure, and what's deferred.
 - [Skills cleanup decisions](documentation/memory/project_skills-cleanup-decisions.md) — D8
-  superseded (renamed to HARNESS.md), item.mjs delegation, enrichment aligned to gstack reviews
-- [Standards split](documentation/memory/project_standards-split.md) — why standards are three
-  skills, why stack content lives in repos.
-- [Cross-reference drift](documentation/memory/project_cross-reference-drift.md) — stale references
-  are the dominant failure mode; nothing checks for them.
-- [Memory mechanisms](documentation/memory/project_memory-mechanisms.md) — three memory systems
-  coexist unreconciled.
+  superseded, item.mjs delegation, enrichment aligned to gstack reviews
 
 ## Feedback
 
-- [Lifecycle: retro position](documentation/memory/feedback_lifecycle-retro-position.md) — retro
-  after PR + user tests, before merge. Token usage removed from all skills.
-- [Status normalization](documentation/memory/feedback_status-normalization.md) — only first word of
-  status field matters; complex prose after it is ignored.
-- [Init patterns](documentation/memory/feedback_init-patterns.md) — atomic manifest, recursive
-  mtime, marker merge, SKIP_DIRS, line-level gitignore match.
-
-## Conventions
-
-- Edit `HARNESS.md` or `providers/*.md`, never the generated `~/.claude/CLAUDE.md`.
-- `agents/*.md` is the source for both hosts; the Codex `.toml` is generated — never hand-edited.
-- Renaming or deleting a skill is a repo-wide event: grep every consuming project, not just this one.
-- `BRIEF_SKILLS_PATH` in `lib/init.mjs` still points to `~/.agents/brief/skills/brief/` — needs updating in next story.
+- [Design pivots → immediate test updates](documentation/memory/design-pivots-mid-impl-need-immediate-test-updates.md) — when design changes mid-impl, update tests first
+- [Grep callers before removing return fields](documentation/memory/grep-all-callers-when-removing-a-return-field.md) — prevents vestigial fields in final commit
+- [Test template injection for heading duplication](documentation/memory/test-template-injection-for-heading-duplication.md) — prefix + template h1 can create doubles
+- [Lifecycle: retro position](documentation/memory/feedback_lifecycle-retro-position.md) — retro after PR + user tests, before merge
+- [Status normalization](documentation/memory/feedback_status-normalization.md) — only first word of status field matters
+- [Init patterns](documentation/memory/feedback_init-patterns.md) — atomic manifest, recursive mtime, marker merge
