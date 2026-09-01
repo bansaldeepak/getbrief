@@ -16,10 +16,10 @@ your code and fills those markers with real conventions.
 
 ### Step 1: Verify Brief is Installed
 
-Check `.agents/brief-manifest.json` exists. If not: tell the user to run `brief init` first.
+Check `.brief/brief-manifest.json` exists. If not: tell the user to run `brief init` first.
 
 ```bash
-cat .agents/brief-manifest.json
+cat .brief/brief-manifest.json
 ```
 
 ### Step 2: Understand What's Present

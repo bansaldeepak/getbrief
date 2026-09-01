@@ -1,6 +1,6 @@
 # S-012: Harness Injection & Init Rework
 
-**Status**: planned
+**Status**: done
 **Branch**: feature/harness-injection
 **Created**: 2026-09-01
 
@@ -14,15 +14,15 @@ After `brief init`, agents in any initialized project immediately know how to us
 As a developer using brief, I want `brief init` to automatically inject workflow instructions into my project's agent config files, so that agents can use /brief phases without manual setup.
 
 ## Acceptance Criteria
-- [ ] `brief init` in empty project creates .brief/HARNESS.md + markers in AGENTS.md + CLAUDE.md
-- [ ] `brief init` in project with existing AGENTS.md preserves content, adds inline marker
-- [ ] `brief init` is idempotent (re-run doesn't duplicate)
-- [ ] BRIEF_SKILLS_PATH resolves from import.meta.url, not homedir()
-- [ ] Codex detection uses .codex/ only (AGENTS.md presence decoupled)
-- [ ] Philosophy rules installed to .claude/rules/
-- [ ] This repo self-migrated: .brief/HARNESS.md exists, root HARNESS.md removed
-- [ ] All existing tests pass (regressions updated)
-- [ ] New tests cover all 5 injection matrix rows + error paths
+- [x] `brief init` in empty project creates .brief/HARNESS.md + inline marker in AGENTS.md (no separate CLAUDE.md marker)
+- [x] `brief init` in project with existing AGENTS.md preserves content, injects inline marker with HARNESS content
+- [x] `brief init` is idempotent (re-run doesn't duplicate markers or content)
+- [x] BRIEF_SKILLS_PATH resolves from import.meta.url (../skills/brief), not homedir()
+- [x] Codex detection uses .codex/ only (AGENTS.md presence decoupled from Codex flag)
+- [x] Philosophy rules (critical-thinking, first-principles, verification-discipline) installed to .claude/rules/
+- [x] This repo self-migrated: HARNESS injected inline into AGENTS.md via markers, root HARNESS.md removed
+- [x] All existing tests pass with regression updates (detect.test.mjs, init.test.mjs updated)
+- [x] New tests cover all 5 injection matrix rows + error paths + heading duplication assertion
 
 ## Scope
 **In scope:** HARNESS injection, BRIEF_SKILLS_PATH fix, Codex detection decoupling, philosophy rules, self-migration
