@@ -102,9 +102,9 @@ describe("init.mjs — manifest", () => {
     rmSync(tmpDir, { recursive: true });
   });
 
-  it("writes .agents/brief-manifest.json", async () => {
+  it("writes .brief/brief-manifest.json", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const manifestPath = join(tmpDir, ".agents", "brief-manifest.json");
+    const manifestPath = join(tmpDir, ".brief", "brief-manifest.json");
     assert.ok(existsSync(manifestPath));
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
     assert.equal(manifest.version, "1.0.0");
@@ -120,7 +120,7 @@ describe("init.mjs — manifest", () => {
       devDependencies: { vitest: "^1.0.0" },
     }));
     await initProject(tmpDir, { nonInteractive: true });
-    const manifest = JSON.parse(readFileSync(join(tmpDir, ".agents", "brief-manifest.json"), "utf8"));
+    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief", "brief-manifest.json"), "utf8"));
     assert.ok(manifest.detection.frameworks.includes("hono"));
     assert.ok(manifest.detection.testing.includes("vitest"));
     assert.equal(manifest.detection.runtime, "node");
@@ -128,7 +128,7 @@ describe("init.mjs — manifest", () => {
 
   it("manifest mode is symlink when symlinks succeed", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const manifest = JSON.parse(readFileSync(join(tmpDir, ".agents", "brief-manifest.json"), "utf8"));
+    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief", "brief-manifest.json"), "utf8"));
     assert.equal(manifest.mode, "symlink");
   });
 });
@@ -191,8 +191,9 @@ describe("init.mjs — gitignore", () => {
     await initProject(tmpDir, { nonInteractive: true });
     const agentsGi = readFileSync(join(tmpDir, ".agents", ".gitignore"), "utf8");
     const claudeGi = readFileSync(join(tmpDir, ".claude", ".gitignore"), "utf8");
+    const briefGi = readFileSync(join(tmpDir, ".brief", ".gitignore"), "utf8");
     assert.ok(agentsGi.includes("skills/brief"));
-    assert.ok(agentsGi.includes("brief-manifest.json"));
+    assert.ok(briefGi.includes("brief-manifest.json"));
     assert.ok(claudeGi.includes("skills/brief"));
     assert.ok(!existsSync(join(tmpDir, ".gitignore")));
   });

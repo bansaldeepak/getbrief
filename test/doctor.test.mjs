@@ -1,15 +1,17 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, mkdirSync, rmSync, symlinkSync, utimesSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir, homedir } from "node:os";
+import { join, dirname } from "node:path";
+import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 import { runDoctor } from "../lib/doctor.mjs";
 
-const BRIEF_SKILLS_PATH = join(homedir(), ".agents", "brief", "skills", "brief");
+const __testDirname = dirname(fileURLToPath(import.meta.url));
+const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
 
 function writeManifest(dir, manifest) {
-  mkdirSync(join(dir, ".agents"), { recursive: true });
-  writeFileSync(join(dir, ".agents", "brief-manifest.json"), JSON.stringify(manifest, null, 2));
+  mkdirSync(join(dir, ".brief"), { recursive: true });
+  writeFileSync(join(dir, ".brief", "brief-manifest.json"), JSON.stringify(manifest, null, 2));
 }
 
 function setupHealthyProject(dir) {
@@ -104,8 +106,8 @@ describe("runDoctor — corrupt manifest", () => {
   });
 
   it("returns manifest-invalid error", () => {
-    mkdirSync(join(tmp, ".agents"), { recursive: true });
-    writeFileSync(join(tmp, ".agents", "brief-manifest.json"), "not { valid json !!!");
+    mkdirSync(join(tmp, ".brief"), { recursive: true });
+    writeFileSync(join(tmp, ".brief", "brief-manifest.json"), "not { valid json !!!");
     const result = runDoctor(tmp, { json: true });
     assert.equal(result.healthy, false);
     assert.equal(result.error, "manifest-invalid");
