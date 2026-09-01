@@ -1,7 +1,7 @@
 ---
 name: brief-init
 description: "Reads project code, infers conventions, fills rule skeletons with real content using marker-based merge. Run after `brief init` to populate rules with project-specific conventions."
-user_invocable: false
+user_invocable: true
 model: sonnet
 ---
 
