@@ -112,6 +112,20 @@ describe("parseMarkers", () => {
     assert.throws(() => parseMarkers(content), /Unclosed marker for section "open" starting at line 1/);
   });
 
+  it("parses markers with version attribute", () => {
+    const content = [
+      '<!-- brief:auto section="harness" version="0.2.0" generated="2026-01-01T00:00:00Z" -->',
+      "## Brief Workflow",
+      "<!-- /brief:auto -->",
+    ].join("\n");
+
+    const sections = parseMarkers(content);
+    assert.equal(sections.length, 1);
+    assert.equal(sections[0].type, "auto");
+    assert.equal(sections[0].id, "harness");
+    assert.ok(sections[0].content.includes("## Brief Workflow"));
+  });
+
   it("handles duplicate section IDs (both parsed)", () => {
     const content = [
       '<!-- brief:auto section="dup" -->',
@@ -174,6 +188,24 @@ describe("mergeContent", () => {
     const result = mergeContent(sections, { test: "updated" });
     assert.ok(result.includes("generated="));
     assert.match(result, /generated="\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it("includes version attribute when provided", () => {
+    const sections = [
+      { type: "auto", id: "test", content: "content" },
+    ];
+
+    const result = mergeContent(sections, { test: "updated" }, { version: "1.2.3" });
+    assert.ok(result.includes('version="1.2.3"'));
+  });
+
+  it("omits version attribute when not provided", () => {
+    const sections = [
+      { type: "auto", id: "test", content: "content" },
+    ];
+
+    const result = mergeContent(sections, { test: "updated" });
+    assert.ok(!result.includes("version="));
   });
 
   it("handles mix of replace, keep, and append", () => {

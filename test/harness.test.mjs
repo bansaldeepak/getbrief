@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { detectHarnessState, applyHarness } from "../lib/harness.mjs";
+import { detectHarnessState, applyHarness, VERSION } from "../lib/harness.mjs";
 
 describe("detectHarnessState", () => {
   let tmp;
@@ -20,7 +20,6 @@ describe("detectHarnessState", () => {
     const state = detectHarnessState(tmp, { codexDetected: true });
     assert.equal(state.matrixRow, 1);
     assert.equal(state.agentsExists, false);
-    assert.equal(state.claudeExists, false);
     assert.ok(state.actions.some(a => a.includes("AGENTS.md")));
   });
 
@@ -101,32 +100,29 @@ describe("applyHarness", () => {
     const state = detectHarnessState(tmp, { codexDetected: true });
     const result = applyHarness(tmp, state);
 
-    assert.ok(existsSync(join(tmp, ".brief", "HARNESS.md")));
     assert.ok(existsSync(join(tmp, "AGENTS.md")));
     assert.ok(existsSync(join(tmp, ".claude", "CLAUDE.md")));
 
     const agents = readFileSync(join(tmp, "AGENTS.md"), "utf8");
     assert.ok(agents.includes("<!-- brief:auto section=\"harness\""));
-    assert.ok(agents.includes("## Brief Workflow"));
+    assert.ok(agents.includes("# Brief Workflow"));
 
     const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
     assert.equal(claude, "@../AGENTS.md\n");
 
-    assert.ok(result.copied.includes(".brief/HARNESS.md"));
     assert.ok(result.injected.length >= 2);
   });
 
-  it("no Codex, no files — creates CLAUDE.md with harness import, no AGENTS.md", () => {
+  it("no Codex, no files — creates CLAUDE.md with inline harness, no AGENTS.md", () => {
     const state = detectHarnessState(tmp);
     const result = applyHarness(tmp, state);
 
-    assert.ok(existsSync(join(tmp, ".brief", "HARNESS.md")));
     assert.ok(!existsSync(join(tmp, "AGENTS.md")));
     assert.ok(existsSync(join(tmp, ".claude", "CLAUDE.md")));
 
     const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
-    assert.ok(claude.includes("@../.brief/HARNESS.md"));
     assert.ok(claude.includes("<!-- brief:auto section=\"harness\""));
+    assert.ok(claude.includes("# Brief Workflow"));
 
     assert.ok(result.injected.some(s => s.includes("CLAUDE.md")));
   });
@@ -161,7 +157,7 @@ describe("applyHarness", () => {
     assert.ok(result.skipped.some(s => s.includes("CLAUDE.md")));
   });
 
-  it("row 4 — injects into both files", () => {
+  it("row 4 — injects inline into both files", () => {
     writeFileSync(join(tmp, "AGENTS.md"), "# Agents\n");
     mkdirSync(join(tmp, ".claude"), { recursive: true });
     writeFileSync(join(tmp, ".claude", "CLAUDE.md"), "# My project\n");
@@ -171,15 +167,16 @@ describe("applyHarness", () => {
 
     const agents = readFileSync(join(tmp, "AGENTS.md"), "utf8");
     assert.ok(agents.includes("<!-- brief:auto section=\"harness\""));
+    assert.ok(agents.includes("# Brief Workflow"));
 
     const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
     assert.ok(claude.includes("<!-- brief:auto section=\"harness\""));
-    assert.ok(claude.includes("@../.brief/HARNESS.md"));
+    assert.ok(claude.includes("# Brief Workflow"));
 
     assert.equal(result.injected.length, 2);
   });
 
-  it("row 5 — only injects import marker into CLAUDE.md", () => {
+  it("row 5 — only injects inline into existing CLAUDE.md", () => {
     mkdirSync(join(tmp, ".claude"), { recursive: true });
     writeFileSync(join(tmp, ".claude", "CLAUDE.md"), "# My project\n");
 
@@ -189,19 +186,18 @@ describe("applyHarness", () => {
     assert.ok(!existsSync(join(tmp, "AGENTS.md")));
 
     const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
-    assert.ok(claude.includes("@../.brief/HARNESS.md"));
+    assert.ok(claude.includes("# Brief Workflow"));
+    assert.ok(claude.includes("<!-- brief:auto section=\"harness\""));
 
     assert.ok(result.injected.some(s => s.includes("CLAUDE.md")));
   });
 
-  it(".brief/HARNESS.md matches template content", () => {
-    const state = detectHarnessState(tmp);
+  it("markers include version attribute", () => {
+    const state = detectHarnessState(tmp, { codexDetected: true });
     applyHarness(tmp, state);
 
-    const copied = readFileSync(join(tmp, ".brief", "HARNESS.md"), "utf8");
-    assert.ok(copied.includes("# Brief Workflow"));
-    assert.ok(copied.includes("Full Lifecycle Workflow"));
-    assert.ok(copied.includes("Story-Based Execution"));
+    const agents = readFileSync(join(tmp, "AGENTS.md"), "utf8");
+    assert.ok(agents.includes(`version="${VERSION}"`));
   });
 
   it("idempotent — running twice produces no duplication", () => {

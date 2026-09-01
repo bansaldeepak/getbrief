@@ -107,7 +107,7 @@ describe("init.mjs — manifest", () => {
     const manifestPath = join(tmpDir, ".brief", "brief-manifest.json");
     assert.ok(existsSync(manifestPath));
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-    assert.equal(manifest.version, "1.0.0");
+    assert.equal(manifest.version, "0.2.0");
     assert.ok(manifest.installed_at);
     assert.ok(manifest.detection);
     assert.ok(Array.isArray(manifest.symlinks));
