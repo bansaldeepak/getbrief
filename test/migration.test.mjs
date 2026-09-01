@@ -1,12 +1,14 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, mkdirSync, rmSync, symlinkSync, existsSync, lstatSync, readlinkSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { tmpdir, homedir } from "node:os";
+import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { initProject } from "../lib/init.mjs";
 
-const BRIEF_SKILLS_PATH = join(homedir(), ".agents", "brief", "skills", "brief");
+const __testDirname = dirname(fileURLToPath(import.meta.url));
+const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
 const OLD_CUSTOM_SKILLS = join(homedir(), ".agents", "custom-skills", "brief");
 
 describe("migration — old custom-skills/ symlinks", () => {

@@ -1,12 +1,14 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync, existsSync, readFileSync, rmSync, mkdirSync, lstatSync, readlinkSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir, homedir } from "node:os";
+import { join, dirname } from "node:path";
+import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { initProject } from "../lib/init.mjs";
 
-const BRIEF_SKILLS_PATH = join(homedir(), ".agents", "brief", "skills", "brief");
+const __testDirname = dirname(fileURLToPath(import.meta.url));
+const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
 
 describe("init.mjs — scaffold", () => {
   let tmpDir;
