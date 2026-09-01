@@ -137,6 +137,8 @@ describe("applyHarness", () => {
     assert.ok(agents.includes("<!-- brief:auto section=\"harness\""));
 
     assert.ok(existsSync(join(tmp, ".claude", "CLAUDE.md")));
+    const claude = readFileSync(join(tmp, ".claude", "CLAUDE.md"), "utf8");
+    assert.equal(claude, "@../AGENTS.md\n");
     assert.ok(result.injected.some(s => s.includes("AGENTS.md")));
   });
 
