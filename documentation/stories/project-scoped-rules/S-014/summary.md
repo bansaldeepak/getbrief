@@ -2,6 +2,7 @@
 
 ## What Changed
 - T-001: Created templates/rules/techstack.md (4 sections: stack, runtime, aliases, structure) + manifest entry (12th template, detect:["*"])
+- T-002: Created skills/brief/scaffold-module/SKILL.md (generic module scaffold, reads techstack.md, language fallbacks) + router entry in skills/brief/SKILL.md
 
 ## Decisions Made
 - Single-pass regex for escape handling (avoids ordering bugs with sequential .replace)
