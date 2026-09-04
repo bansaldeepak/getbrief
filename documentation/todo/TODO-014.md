@@ -1,8 +1,8 @@
 ---
 id: TODO-014
 title: Delete rules-gen.mjs dead code
-priority: P1
-status: open
+priority: P3
+status: deferred
 created: 2026-09-01
 story: null
 link: null
@@ -32,7 +32,4 @@ Harness injection feature (S-011) ships first — it establishes harness.mjs as 
 
 ## Resolution
 
-_Filled when done:_
-- Resolved by: <!-- S-NNN / inline fix -->
-- PR: <!-- #NNN -->
-- Date: <!-- YYYY-MM-DD -->
+**Deferred:** CEO review (S-014) decided to keep rules-gen.mjs for structured rule output across providers. Revisit when cross-provider rule generation ships.
