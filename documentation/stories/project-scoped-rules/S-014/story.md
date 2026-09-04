@@ -1,6 +1,6 @@
 # S-014: Project-Scoped Rules & Smart Init
 
-**Status**: planned
+**Status**: completed
 **Branch**: feature/project-scoped-rules
 **Created**: 2026-09-04
 
