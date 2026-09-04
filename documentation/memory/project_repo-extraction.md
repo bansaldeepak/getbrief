@@ -21,7 +21,7 @@ Brief is now a standalone project at `/Users/db/Work/Arcitae/brief/` (was nested
 | `brief/skills/` | `skills/` |
 | `brief/templates/rules/` | `templates/rules/` |
 | `templates/project-structure/` | `templates/project-structure/` |
-| `templates/project-skills/` | `templates/project-skills/` |
+| `templates/project-skills/` | removed (S-014: relocated to rules/ and skills/) |
 | `agents/` | `agents/` |
 | `rules/` | `rules/` |
 | `scripts/` | `scripts/` |
