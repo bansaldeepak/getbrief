@@ -84,6 +84,14 @@
       "description": "Change only what was asked, never repo-wide auto-fix, propose before broad changes",
       "detect": ["*"],
       "file": "safe-modifications.md"
+    },
+    {
+      "id": "techstack",
+      "name": "Tech Stack",
+      "description": "Tech stack, runtime config, path aliases, and directory structure",
+      "detect": ["*"],
+      "paths": [],
+      "file": "techstack.md"
     }
   ]
 }
