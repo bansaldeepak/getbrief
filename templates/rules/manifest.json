@@ -5,7 +5,7 @@
       "id": "backend-standards",
       "name": "Backend Standards",
       "description": "Framework-specific backend architecture rules (layers, modules, API design)",
-      "detect": ["package.json:express|fastify|hono|koa", "Cargo.toml", "go.mod"],
+      "detect": ["package.json:express|fastify|hono|koa", "pyproject.toml:django|flask|fastapi", "Cargo.toml", "go.mod"],
       "paths": ["**/server/**", "**/api/**", "**/routes/**"],
       "file": "backend-standards.md"
     },
@@ -13,7 +13,7 @@
       "id": "frontend-standards",
       "name": "Frontend Standards",
       "description": "Component architecture, ownership ladder, data-fetching boundaries",
-      "detect": ["package.json:react|vue|svelte|solid"],
+      "detect": ["package.json:react|vue|svelte|solid|next|nuxt|@remix-run/react"],
       "paths": ["**/components/**", "**/pages/**", "**/hooks/**"],
       "file": "frontend-standards.md"
     },
@@ -29,7 +29,7 @@
       "id": "deployment",
       "name": "Deployment",
       "description": "Deploy commands, env vars, CI/CD, infrastructure specifics",
-      "detect": [".github/workflows", "Dockerfile", "fly.toml", "wrangler.jsonc"],
+      "detect": [".github/workflows", "Dockerfile", "fly.toml", "wrangler.toml", "wrangler.jsonc", "vercel.json"],
       "paths": [],
       "file": "deployment.md"
     },
