@@ -152,6 +152,8 @@ CREATE TABLE ...
 
 **Record every non-obvious technical decision here.** These become the project's technical memory.
 
+**⚠️ CRITICAL: This table is the source of truth.** If you write an expanded section below that contradicts a table row, update the table row first. Before finalizing the TRD, verify each "Chosen:" line in the expanded sections matches its corresponding table row exactly. The table row wins any conflicts.
+
 ### Design Patterns
 
 <Which existing patterns to follow, or new patterns being introduced>
@@ -244,6 +246,10 @@ CREATE TABLE ...
 ```
 
 ### Phase 4: Review & Approval
+
+Before presenting to the user, **verify consistency**:
+- Run: `grep -n "Chosen:" TRD.md` and verify each "Chosen:" line in the expanded sections matches its corresponding table row exactly
+- If any contradiction exists, fix the table row (the table wins) and re-write the expanded section to match
 
 Present the TRD to the user. Highlight:
 - Architecture decisions that have long-term implications

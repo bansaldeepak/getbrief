@@ -18,6 +18,7 @@ description: Project-specific coding conventions. Refined by retro findings.
 - Named exports only — no default exports, no classes
 - Early return / throw on error; no silent swallowing
 - No barrel `index.mjs` — import each module directly
+- Exported functions: audit every object param for null guards on properties that internal callers previously guaranteed (e.g., `detection.frameworks ?? []`)
 <!-- /brief:auto -->
 
 ## Imports

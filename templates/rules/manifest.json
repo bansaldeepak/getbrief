@@ -1,4 +1,5 @@
 {
+  "_comment": "IMPORTANT: When adding frameworks to detect patterns (e.g., 'package.json:@remix-run/react'), verify the framework name is ALSO in lib/detect.mjs FRAMEWORK_PATTERNS. Manifest and detect.mjs are coupled; missing either entry creates a silently dead detection rule.",
   "version": "1.0",
   "templates": [
     {
