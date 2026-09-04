@@ -46,8 +46,9 @@ that base path to resolve the file.
 | `setup` | Run `brief init` to scaffold documentation structure in a project |
 | `migrate` | One-time data conversion from legacy formats to brief format |
 | `verify` | Run `brief status` + queries to confirm everything works — report gaps |
+| `scaffold-module` | Scaffold a new module directory with conventional file structure |
 
-For `setup`, `migrate`, and `verify`: follow the instructions inline below (no separate file).
+For `setup`, `migrate`, and `verify`: follow the instructions inline below (no separate file). For `scaffold-module`: read `scaffold-module/SKILL.md` and follow it.
 
 Invoked with no argument: infer the phase from the lifecycle position below, name your choice, and
 proceed. If two phases are equally plausible, ask rather than guess.
