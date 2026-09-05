@@ -1,6 +1,6 @@
 ---
 name: retro
-description: "Retrospective after story completion and merge. Captures learnings, updates skills/memory, and feeds improvements back into the workflow. Auto-invoked after story merge."
+description: "Retrospective before merge. Captures learnings, updates skills/memory, runs self-improving agent, and feeds improvements back into the workflow. Retro complete = all done before merge."
 user_invocable: true
 model: opus
 ---
@@ -96,13 +96,6 @@ For each proposed change, explain what and why.
 
 Memory updates (non-destructive) can proceed automatically.
 
-### Phase 4.5: Flush Context and Curate Memory
-
-Run `/brief memory-review`. It flushes this feature's context to `context.md` and curates what remains —
-format and locations are defined in `project-memory`, so don't duplicate them here.
-
-Commit the flush separately: `docs(context): flush <feature> implementation context`
-
 ### Phase 5: Update Project Tracker
 
 If `brief` CLI is installed:
@@ -156,9 +149,18 @@ Save to the story folder as `retro.md`:
 - <specific advice for the next piece of work>
 ```
 
+### Phase 7: Self-Improving — Memory Curation (Final Step)
+
+Run `/brief memory-review`. This flushes the feature's context to `context.md` and invokes the
+`self-improving` agent to review, promote, and prune memory entries.
+
+Commit the curation separately: `docs(context): flush <feature> implementation context`
+
+**Retro is complete when this phase finishes.** No further steps remain before merge.
+
 ## Rules
 
-- Auto-invoke after every story merge — don't skip
+- Auto-invoke after user confirms build works — don't skip
 - Be honest about what didn't work — sanitized retros are useless
 - Every "what didn't go well" must have a concrete learning
 - Learnings must be actionable — "we should do better" is not a learning

@@ -23,8 +23,7 @@ discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-rev
 - **Legacy compat**: If story has `tasks.md` or `tasks/index.md`, continue that format. New stories use individual `tasks/T-NNN.md` files (status lives in each task file).
 - **PR opened**: `/brief pr-review` → wait for human approval
 - **User tests**: Human verifies the build works
-- **Before merge**: `/brief retro` — captures learnings, updates docs/status, commits to same PR
-- **After merge**: `self-improving` agent curates memory from retro findings
+- **Before merge**: `/brief retro` — captures learnings, updates docs/status, curates memory, commits to same PR. Retro's final step runs the `self-improving` agent — retro complete = all done.
 
 ## Plan Mode
 
