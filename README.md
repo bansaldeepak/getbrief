@@ -46,7 +46,7 @@ Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini C
 │   ├── memory-reset-counter.sh# SessionStart counter reset (hook)
 │   └── record-session.sh      # optional SessionStart hook → .sessions.jsonl
 ├── templates/          # Copied into repos on purpose — never linked
-│   └── project-skills/ # Stack-specific skills (see its README)
+│   └── rules/          # Rule templates installed by brief init (see manifest.json)
 ├── skills/             # Third-party skills, owned by the `skills` CLI
 │   ├── gstack/         # via garrytan/gstack — routed, in use
 │   └── shadcn-ui/      # via google-labs-code/stitch-skills

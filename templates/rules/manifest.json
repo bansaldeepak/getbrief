@@ -1,11 +1,12 @@
 {
+  "_comment": "IMPORTANT: When adding frameworks to detect patterns (e.g., 'package.json:@remix-run/react'), verify the framework name is ALSO in lib/detect.mjs FRAMEWORK_PATTERNS. Manifest and detect.mjs are coupled; missing either entry creates a silently dead detection rule.",
   "version": "1.0",
   "templates": [
     {
       "id": "backend-standards",
       "name": "Backend Standards",
       "description": "Framework-specific backend architecture rules (layers, modules, API design)",
-      "detect": ["package.json:express|fastify|hono|koa", "Cargo.toml", "go.mod"],
+      "detect": ["package.json:express|fastify|hono|koa", "pyproject.toml:django|flask|fastapi", "Cargo.toml", "go.mod"],
       "paths": ["**/server/**", "**/api/**", "**/routes/**"],
       "file": "backend-standards.md"
     },
@@ -13,7 +14,7 @@
       "id": "frontend-standards",
       "name": "Frontend Standards",
       "description": "Component architecture, ownership ladder, data-fetching boundaries",
-      "detect": ["package.json:react|vue|svelte|solid"],
+      "detect": ["package.json:react|vue|svelte|solid|next|nuxt|@remix-run/react"],
       "paths": ["**/components/**", "**/pages/**", "**/hooks/**"],
       "file": "frontend-standards.md"
     },
@@ -29,7 +30,7 @@
       "id": "deployment",
       "name": "Deployment",
       "description": "Deploy commands, env vars, CI/CD, infrastructure specifics",
-      "detect": [".github/workflows", "Dockerfile", "fly.toml", "wrangler.jsonc"],
+      "detect": [".github/workflows", "Dockerfile", "fly.toml", "wrangler.toml", "wrangler.jsonc", "vercel.json"],
       "paths": [],
       "file": "deployment.md"
     },
@@ -84,6 +85,14 @@
       "description": "Change only what was asked, never repo-wide auto-fix, propose before broad changes",
       "detect": ["*"],
       "file": "safe-modifications.md"
+    },
+    {
+      "id": "techstack",
+      "name": "Tech Stack",
+      "description": "Tech stack, runtime config, path aliases, and directory structure",
+      "detect": ["*"],
+      "paths": [],
+      "file": "techstack.md"
     }
   ]
 }

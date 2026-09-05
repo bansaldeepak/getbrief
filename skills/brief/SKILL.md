@@ -46,8 +46,9 @@ that base path to resolve the file.
 | `setup` | Run `brief init` to scaffold documentation structure in a project |
 | `migrate` | One-time data conversion from legacy formats to brief format |
 | `verify` | Run `brief status` + queries to confirm everything works — report gaps |
+| `scaffold-module` | Scaffold a new module directory with conventional file structure |
 
-For `setup`, `migrate`, and `verify`: follow the instructions inline below (no separate file).
+For `setup`, `migrate`, and `verify`: follow the instructions inline below (no separate file). For `scaffold-module`: read `scaffold-module/SKILL.md` and follow it.
 
 Invoked with no argument: infer the phase from the lifecycle position below, name your choice, and
 proceed. If two phases are equally plausible, ask rather than guess.
@@ -127,6 +128,8 @@ Announce the next phase and why, then wait if the transition crosses a 🔒 gate
 
 Run in a project directory to scaffold the brief structure.
 
+### Step 1 — Run the CLI
+
 ```bash
 brief init
 ```
@@ -136,9 +139,42 @@ This creates:
 - `documentation/tracker.yaml` — item registry
 - `documentation/PROJECT-TRACKER.md` — generated markdown view
 - `MEMORY.md` — memory index at project root
-- `AGENTS.md` — agent instructions
+- `AGENTS.md` — agent instructions with harness marker
+- `.claude/rules/` — rule templates matched by detected stack
 
-**Post-setup checklist:**
+### Step 2 — Fill rule template markers
+
+After `brief init` copies rule templates, scan installed rules for empty `<!-- brief:auto -->` sections
+and fill them with project-specific content.
+
+```bash
+grep -rl "brief:auto" .claude/rules/ 2>/dev/null
+```
+
+For each file with markers:
+
+1. **Read the file** — identify empty `<!-- brief:auto section="..." -->` blocks (contain only example comments)
+2. **Read the project** — scan relevant source files, configs, and conventions to determine what belongs in each section
+3. **Fill the section** — write concise, accurate content between the markers. Rules should be terse (bullet points, not paragraphs). Only state conventions that actually exist in the project — don't invent aspirational rules.
+4. **Show the user** — print the filled content for each file and ask for confirmation before writing
+
+**Section fill guidance by template:**
+
+| Template | How to fill |
+|----------|-------------|
+| `techstack.md` | `stack`: list runtime + frameworks detected. `runtime`: config files, env handling. `aliases`: read tsconfig/import maps. `structure`: scan top-level dirs for patterns. |
+| `coding-style.md` | `naming`: grep for naming conventions in existing code. `patterns`: identify common patterns (error handling, async, etc). `imports`: check import style. `testing`: identify test runner and conventions. |
+| `backend-standards.md` | `architecture-layers`: scan for routing/service/repo layers. `api-design`: check route patterns. `error-handling`: check error middleware. `database-access`: check ORM usage. |
+| `frontend-standards.md` | `component-architecture`: scan component directory structure. `state-management`: check for stores/context/hooks. `data-fetching`: check loader/query patterns. `styling`: check CSS approach. |
+| `deployment.md` | Read CI configs, Dockerfiles, wrangler.toml, vercel.json. Fill deploy commands, env var handling, infrastructure details. |
+| `git-workflow.md` | Read existing branch names, commit messages, CI checks. Fill branch naming, PR conventions, release process. |
+| Other templates | Read the relevant source files and fill each section with observed conventions. |
+
+**Skip a section** if there's nothing meaningful to fill — leave the example comment in place. Don't fill
+sections with generic boilerplate.
+
+### Step 3 — Post-setup checklist
+
 1. Confirm `brief status` returns counts
 2. If project has existing stories in `documentation/stories/`, run `/brief migrate`
 3. Add `documentation/logs/` to `.gitignore` if appropriate

@@ -5,7 +5,7 @@ import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
-import { initProject } from "../lib/init.mjs";
+import { initProject, matchesDetection, filterRelevantRules } from "../lib/init.mjs";
 
 const __testDirname = dirname(fileURLToPath(import.meta.url));
 const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
@@ -239,5 +239,47 @@ describe("init.mjs — codegraph", () => {
     await initProject(tmpDir, { nonInteractive: true });
     const { skipped } = await initProject(tmpDir, { nonInteractive: true });
     assert.ok(skipped.includes(".codegraph/"));
+  });
+});
+
+describe("matchesDetection with projectRoot", () => {
+  let tmp;
+  beforeEach(() => { tmp = mkdtempSync(join(tmpdir(), "brief-init-")); });
+  afterEach(() => { rmSync(tmp, { recursive: true }); });
+
+  it("matches Dockerfile when file exists", () => {
+    writeFileSync(join(tmp, "Dockerfile"), "FROM node:20");
+    assert.equal(matchesDetection(["Dockerfile"], {}, tmp), true);
+  });
+
+  it("returns false for Dockerfile when file missing", () => {
+    assert.equal(matchesDetection(["Dockerfile"], {}, tmp), false);
+  });
+
+  it("matches fly.toml when file exists", () => {
+    writeFileSync(join(tmp, "fly.toml"), "app = 'test'");
+    assert.equal(matchesDetection(["fly.toml"], {}, tmp), true);
+  });
+
+  it("matches wrangler.toml when file exists", () => {
+    writeFileSync(join(tmp, "wrangler.toml"), "name = 'test'");
+    assert.equal(matchesDetection(["wrangler.toml"], {}, tmp), true);
+  });
+
+  it("matches wrangler.jsonc when file exists", () => {
+    writeFileSync(join(tmp, "wrangler.jsonc"), "{}");
+    assert.equal(matchesDetection(["wrangler.jsonc"], {}, tmp), true);
+  });
+
+  it("matches vercel.json when file exists", () => {
+    writeFileSync(join(tmp, "vercel.json"), "{}");
+    assert.equal(matchesDetection(["vercel.json"], {}, tmp), true);
+  });
+
+  it("matches pyproject.toml:django via frameworks", () => {
+    assert.equal(
+      matchesDetection(["pyproject.toml:django"], { frameworks: ["django"] }, tmp),
+      true
+    );
   });
 });
