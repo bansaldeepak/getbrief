@@ -122,7 +122,7 @@ Announce the next phase and why, then wait if the transition crosses a 🔒 gate
 | `implement` | `pr-review` once every task is done and pushed 🔒 |
 | `pr-review` 🔒 | PR opened, user tests the build |
 | user tests | `retro` — captures learnings, updates docs/status, commits to same PR |
-| `retro` | merge 🔒 — `self-improving` agent runs post-merge |
+| `retro` | merge 🔒 — retro includes self-improving as its final step; retro done = all done |
 
 ## /brief setup
 
