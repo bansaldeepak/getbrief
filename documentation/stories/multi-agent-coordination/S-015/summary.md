@@ -1,7 +1,9 @@
 # S-015: Atomic ID Allocation + Agent Discipline — Summary
 
 ## What Changed
-<!-- Updated after each task is completed -->
+
+- **T1**: Added `brief:memory-harness` snippet to `templates/project-structure/MEMORY.md` and Phase 6 (Persist) to discover skill
+- **T2**: Added `rules/brief-cli-ops.md` agent discipline rule + manifest entry for `brief init` distribution
 
 ## Decisions Made
 
