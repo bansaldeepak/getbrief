@@ -186,6 +186,26 @@ Compile into a structured output:
 
 **Wait for user input before proceeding to /brief prd.**
 
+### Phase 6: Persist
+
+Write the discovery summary to `documentation/stories/<feature>/DISCOVERY.md`. The feature folder
+should already exist (created at branch check). If it doesn't, create it with `mkdirSync`.
+
+The DISCOVERY.md must contain all findings from the discovery conversation:
+- Current Reality (with Mermaid diagram)
+- Forcing Questions — Answers table
+- Brainstorm (all three lenses)
+- Assumptions & Risk table
+- Pre-Mortem findings
+- Experiments to Validate
+- Top Opportunities (ranked)
+- Design Decisions (from discovery)
+- Recommended Path
+- Open Questions
+
+Conversation output alone is not sufficient — it's lost when the session ends. The file is the
+deliverable, not the conversation.
+
 ## Rules
 
 - Never jump to solutions — stay in problem space
