@@ -32,6 +32,7 @@ brief search "<query>" --memory # memory only
 
 ## Feedback
 
+- [Discover must persist](documentation/memory/feedback_discover-must-persist.md) — /brief discover must always write DISCOVERY.md, not just conversation output
 - [Design pivots → immediate test updates](documentation/memory/design-pivots-mid-impl-need-immediate-test-updates.md) — when design changes mid-impl, update tests first
 - [Grep callers before removing return fields](documentation/memory/grep-all-callers-when-removing-a-return-field.md) — prevents vestigial fields in final commit
 - [Test template injection for heading duplication](documentation/memory/test-template-injection-for-heading-duplication.md) — prefix + template h1 can create doubles

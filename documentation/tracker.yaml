@@ -260,3 +260,12 @@ items:
     link: null
     pr: https://github.com/bansaldeepak/agents-setup/pull/27
     last_task: S-014-T2
+  - id: S-015
+    type: story
+    title: Atomic ID Allocation + Agent Discipline
+    status: planned
+    branch: feature/multi-agent-coordination
+    current_task: null
+    story: documentation/stories/multi-agent-coordination/S-015/story.md
+    link: null
+    pr: null
