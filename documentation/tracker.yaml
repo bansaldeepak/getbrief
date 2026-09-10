@@ -269,3 +269,13 @@ items:
     story: documentation/stories/multi-agent-coordination/S-015/story.md
     link: null
     pr: null
+    last_task: S-015-T11
+  - id: S-016
+    type: story
+    title: test
+    status: planned
+    branch: feature/test
+    current_task: null
+    story: documentation/stories/test/S-016/story.md
+    link: null
+    pr: null
