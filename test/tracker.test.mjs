@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
-import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker, allocateId, seedCounter } from "../lib/tracker.mjs";
+import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker, allocateId, seedCounter, nextId } from "../lib/tracker.mjs";
 
 describe("gitCommonDir", () => {
   let tmp;
@@ -240,5 +240,37 @@ describe("seedCounter", () => {
     const counter = seedCounter(tmp, gitDir);
     assert.equal(counter.story, 5);
     assert.equal(counter.todo, 7);
+  });
+});
+
+describe("nextId (refactored)", () => {
+  let tmp;
+
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), "brief-tracker-"));
+    mkdirSync(join(tmp, "documentation"), { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(tmp, { recursive: true });
+  });
+
+  it("in git repo delegates to allocateId via counter", () => {
+    execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
+    writeTracker(tmp, []);
+    const id1 = nextId([], "story", tmp);
+    const id2 = nextId([], "story", tmp);
+    assert.equal(id1, "S-001");
+    assert.equal(id2, "S-002");
+    assert.ok(existsSync(join(tmp, ".git/brief-counter")));
+  });
+
+  it("in non-git directory uses old max+1 fallback", () => {
+    const items = [
+      { id: "S-003", type: "story", title: "A", status: "done" },
+    ];
+    const id = nextId(items, "story", tmp);
+    assert.equal(id, "S-004");
+    assert.ok(!existsSync(join(tmp, ".git")));
   });
 });
