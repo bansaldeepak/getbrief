@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
-import { acquireLock, releaseLock, withLock, gitCommonDir } from "../lib/tracker.mjs";
+import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker } from "../lib/tracker.mjs";
 
 describe("gitCommonDir", () => {
   let tmp;
@@ -128,5 +128,36 @@ describe("withLock", () => {
       /boom/
     );
     assert.ok(!existsSync(join(tmp, "brief-id.lock")));
+  });
+});
+
+describe("writeTracker (atomic)", () => {
+  let tmp;
+
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), "brief-tracker-"));
+    mkdirSync(join(tmp, "documentation"), { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(tmp, { recursive: true });
+  });
+
+  it("writes tracker.yaml with correct content and no .tmp left behind", () => {
+    const items = [{ id: "S-001", type: "story", title: "Test", status: "planned" }];
+    writeTracker(tmp, items);
+    const content = readFileSync(join(tmp, "documentation/tracker.yaml"), "utf8");
+    assert.ok(content.includes("S-001"));
+    assert.ok(content.includes("Project Tracker"));
+    assert.ok(!existsSync(join(tmp, "documentation/tracker.yaml.tmp")));
+  });
+
+  it("roundtrips through readTracker", () => {
+    const items = [{ id: "TODO-001", type: "todo", title: "Fix bug", status: "open", priority: "P1" }];
+    writeTracker(tmp, items);
+    const read = readTracker(tmp);
+    assert.equal(read.length, 1);
+    assert.equal(read[0].id, "TODO-001");
+    assert.equal(read[0].title, "Fix bug");
   });
 });
