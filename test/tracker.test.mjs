@@ -1,10 +1,10 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, utimesSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, utimesSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
-import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker, allocateId, seedCounter, nextId } from "../lib/tracker.mjs";
+import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker, allocateId, seedCounter, nextId, allocateTaskNum } from "../lib/tracker.mjs";
 
 describe("gitCommonDir", () => {
   let tmp;
@@ -255,7 +255,7 @@ describe("nextId (refactored)", () => {
     rmSync(tmp, { recursive: true });
   });
 
-  it("in git repo delegates to allocateId via counter", () => {
+  it("in git repo allocates sequential IDs via counter", () => {
     execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
     writeTracker(tmp, []);
     const id1 = nextId([], "story", tmp);
@@ -265,6 +265,26 @@ describe("nextId (refactored)", () => {
     assert.ok(existsSync(join(tmp, ".git/brief-counter")));
   });
 
+  it("peek returns next ID without changing counter", () => {
+    execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
+    writeTracker(tmp, [{ id: "S-003", type: "story", title: "A", status: "done" }]);
+    const id1 = nextId([{ id: "S-003", type: "story" }], "story", tmp, { _peek: true });
+    const id2 = nextId([{ id: "S-003", type: "story" }], "story", tmp, { _peek: true });
+    assert.equal(id1, "S-004");
+    assert.equal(id2, "S-004");
+    assert.ok(!existsSync(join(tmp, ".git/brief-counter")));
+  });
+
+  it("peek does not create files", () => {
+    execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
+    mkdirSync(join(tmp, "documentation/stories"), { recursive: true });
+    writeTracker(tmp, []);
+    nextId([], "story", tmp, { _peek: true });
+    nextId([], "story", tmp, { _peek: true });
+    const entries = readdirSync(join(tmp, "documentation/stories"));
+    assert.equal(entries.length, 0);
+  });
+
   it("in non-git directory uses old max+1 fallback", () => {
     const items = [
       { id: "S-003", type: "story", title: "A", status: "done" },
@@ -272,5 +292,49 @@ describe("nextId (refactored)", () => {
     const id = nextId(items, "story", tmp);
     assert.equal(id, "S-004");
     assert.ok(!existsSync(join(tmp, ".git")));
+  });
+});
+
+describe("allocateTaskNum", () => {
+  let tmp;
+  let gitDir;
+
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), "brief-tracker-"));
+    execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
+    gitDir = join(tmp, ".git");
+    mkdirSync(join(tmp, "documentation"), { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(tmp, { recursive: true });
+  });
+
+  it("increments per-story task counter", () => {
+    writeTracker(tmp, []);
+    const n1 = allocateTaskNum(tmp, gitDir, "S-001");
+    const n2 = allocateTaskNum(tmp, gitDir, "S-001");
+    assert.equal(n1, 1);
+    assert.equal(n2, 2);
+
+    const counter = JSON.parse(readFileSync(join(gitDir, "brief-counter"), "utf8"));
+    assert.equal(counter["task:S-001"], 2);
+  });
+
+  it("uses independent counters per story", () => {
+    writeTracker(tmp, []);
+    const n1 = allocateTaskNum(tmp, gitDir, "S-001");
+    const n2 = allocateTaskNum(tmp, gitDir, "S-002");
+    assert.equal(n1, 1);
+    assert.equal(n2, 1);
+  });
+
+  it("seeds from existing task files on disk", () => {
+    writeTracker(tmp, []);
+    mkdirSync(join(tmp, "documentation/stories/feat/S-001/tasks"), { recursive: true });
+    writeFileSync(join(tmp, "documentation/stories/feat/S-001/tasks/T-005.md"), "");
+
+    const n = allocateTaskNum(tmp, gitDir, "S-001");
+    assert.equal(n, 6);
   });
 });

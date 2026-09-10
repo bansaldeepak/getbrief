@@ -7,7 +7,7 @@
     "brief": "./cli.mjs"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test 'test/**/*.test.mjs'"
   },
   "dependencies": {
     "@colbymchenry/codegraph": "1.5.0",
