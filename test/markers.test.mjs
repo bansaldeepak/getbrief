@@ -208,6 +208,27 @@ describe("mergeContent", () => {
     assert.ok(!result.includes("version="));
   });
 
+  it("preserves original timestamp when content unchanged", () => {
+    const originalTag = '<!-- brief:auto section="test" version="0.2.0" generated="2026-01-01T00:00:00.000Z" -->';
+    const sections = [
+      { type: "auto", id: "test", content: "same content", openTag: originalTag },
+    ];
+
+    const result = mergeContent(sections, { test: "same content" }, { version: "0.2.0" });
+    assert.ok(result.includes('generated="2026-01-01T00:00:00.000Z"'));
+  });
+
+  it("updates timestamp when content changes", () => {
+    const originalTag = '<!-- brief:auto section="test" version="0.2.0" generated="2026-01-01T00:00:00.000Z" -->';
+    const sections = [
+      { type: "auto", id: "test", content: "old content", openTag: originalTag },
+    ];
+
+    const result = mergeContent(sections, { test: "new content" }, { version: "0.2.0" });
+    assert.ok(!result.includes('generated="2026-01-01T00:00:00.000Z"'));
+    assert.match(result, /generated="\d{4}-\d{2}-\d{2}T/);
+  });
+
   it("handles mix of replace, keep, and append", () => {
     const sections = [
       { type: "manual", content: "# Top" },
