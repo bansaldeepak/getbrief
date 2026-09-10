@@ -217,7 +217,7 @@ if (command === "story") {
     process.exit(1);
   }
   const items = readTracker(root);
-  const id = nextId(items, type, root);
+  const id = nextId(items, type, root, { _peek: true });
   console.log(id);
 
 // Init / Generate / Migrate

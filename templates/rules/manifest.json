@@ -93,6 +93,14 @@
       "detect": ["*"],
       "paths": [],
       "file": "techstack.md"
+    },
+    {
+      "id": "brief-cli-ops",
+      "name": "Brief CLI Operations",
+      "description": "Mandatory brief CLI usage for documentation/ CRUD — prevents tracker drift",
+      "detect": ["documentation/tracker.yaml"],
+      "paths": ["documentation/**"],
+      "file": "brief-cli-ops.md"
     }
   ]
 }

@@ -1,6 +1,6 @@
 
 
-<!-- brief:auto section="harness" version="0.2.0" generated="2026-09-05T03:34:58.158Z" -->
+<!-- brief:auto section="harness" version="0.2.0" generated="2026-09-10T04:47:40.755Z" -->
 # Brief Workflow
 
 ## Full Lifecycle Workflow

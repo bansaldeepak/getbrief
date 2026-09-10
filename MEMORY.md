@@ -1,5 +1,16 @@
 # Memory — brief
 
+<!-- brief:memory-harness -->
+Use `brief memory` commands instead of reading files directly:
+- `brief memory list` — concise index of all memories
+- `brief memory show <name>` — view a specific memory
+- `brief memory create <name> --type=<type>` — create a new memory
+- `brief memory update <name>` — update an existing memory
+
+Do NOT read `documentation/memory/*.md` files directly — use the commands above.
+<!-- /brief:memory-harness -->
+
+
 Project management CLI + multi-agent installer. Standalone repo at `~/Work/Arcitae/brief/`.
 
 ## How to access
@@ -32,6 +43,7 @@ brief search "<query>" --memory # memory only
 
 ## Feedback
 
+- [Discover must persist](documentation/memory/feedback_discover-must-persist.md) — /brief discover must always write DISCOVERY.md, not just conversation output
 - [Design pivots → immediate test updates](documentation/memory/design-pivots-mid-impl-need-immediate-test-updates.md) — when design changes mid-impl, update tests first
 - [Grep callers before removing return fields](documentation/memory/grep-all-callers-when-removing-a-return-field.md) — prevents vestigial fields in final commit
 - [Test template injection for heading duplication](documentation/memory/test-template-injection-for-heading-duplication.md) — prefix + template h1 can create doubles

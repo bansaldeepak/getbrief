@@ -37,11 +37,20 @@ describe("init.mjs — scaffold", () => {
     assert.ok(existsSync(join(tmpDir, ".claude/CLAUDE.md")));
   });
 
-  it("does not overwrite existing files", async () => {
+  it("does not overwrite existing files but injects memory harness", async () => {
     writeFileSync(join(tmpDir, "MEMORY.md"), "# Custom\n");
     await initProject(tmpDir, { nonInteractive: true });
     const content = readFileSync(join(tmpDir, "MEMORY.md"), "utf8");
-    assert.equal(content, "# Custom\n");
+    assert.ok(content.startsWith("# Custom\n"));
+    assert.ok(content.includes("<!-- brief:memory-harness -->"));
+  });
+
+  it("does not double-inject memory harness", async () => {
+    writeFileSync(join(tmpDir, "MEMORY.md"), "# Custom\n\n<!-- brief:memory-harness -->\nexisting\n<!-- /brief:memory-harness -->\n");
+    await initProject(tmpDir, { nonInteractive: true });
+    const content = readFileSync(join(tmpDir, "MEMORY.md"), "utf8");
+    const count = (content.match(/brief:memory-harness/g) || []).length;
+    assert.equal(count, 2);
   });
 });
 
