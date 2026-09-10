@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
-import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker } from "../lib/tracker.mjs";
+import { acquireLock, releaseLock, withLock, gitCommonDir, writeTracker, readTracker, allocateId, seedCounter } from "../lib/tracker.mjs";
 
 describe("gitCommonDir", () => {
   let tmp;
@@ -159,5 +159,86 @@ describe("writeTracker (atomic)", () => {
     assert.equal(read.length, 1);
     assert.equal(read[0].id, "TODO-001");
     assert.equal(read[0].title, "Fix bug");
+  });
+});
+
+describe("allocateId", () => {
+  let tmp;
+  let gitDir;
+
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), "brief-tracker-"));
+    execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
+    gitDir = join(tmp, ".git");
+    mkdirSync(join(tmp, "documentation"), { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(tmp, { recursive: true });
+  });
+
+  it("increments counter and returns formatted ID", () => {
+    writeTracker(tmp, []);
+    const id1 = allocateId(tmp, gitDir, "story");
+    assert.equal(id1, "S-001");
+    const id2 = allocateId(tmp, gitDir, "story");
+    assert.equal(id2, "S-002");
+
+    const counter = JSON.parse(readFileSync(join(gitDir, "brief-counter"), "utf8"));
+    assert.equal(counter.story, 2);
+  });
+
+  it("seeds from tracker.yaml on first use", () => {
+    writeTracker(tmp, [
+      { id: "S-005", type: "story", title: "Existing", status: "done" },
+      { id: "S-003", type: "story", title: "Old", status: "done" },
+    ]);
+    const id = allocateId(tmp, gitDir, "story");
+    assert.equal(id, "S-006");
+  });
+
+  it("takes max of counter vs tracker when tracker is ahead", () => {
+    writeTracker(tmp, [{ id: "S-010", type: "story", title: "Manual", status: "planned" }]);
+    writeFileSync(join(gitDir, "brief-counter"), JSON.stringify({ story: 5 }));
+
+    const id = allocateId(tmp, gitDir, "story");
+    assert.equal(id, "S-011");
+  });
+
+  it("creates counter on first use when file missing", () => {
+    writeTracker(tmp, []);
+    assert.ok(!existsSync(join(gitDir, "brief-counter")));
+    allocateId(tmp, gitDir, "todo");
+    assert.ok(existsSync(join(gitDir, "brief-counter")));
+  });
+});
+
+describe("seedCounter", () => {
+  let tmp;
+  let gitDir;
+
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), "brief-tracker-"));
+    execFileSync("git", ["init"], { cwd: tmp, stdio: "pipe" });
+    gitDir = join(tmp, ".git");
+    mkdirSync(join(tmp, "documentation"), { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(tmp, { recursive: true });
+  });
+
+  it("seeds from tracker.yaml + filesystem", () => {
+    writeTracker(tmp, [
+      { id: "S-003", type: "story", title: "A", status: "done" },
+      { id: "TODO-007", type: "todo", title: "B", status: "open", priority: "P1" },
+    ]);
+    mkdirSync(join(tmp, "documentation/stories/feat/S-005"), { recursive: true });
+    mkdirSync(join(tmp, "documentation/todo"), { recursive: true });
+    writeFileSync(join(tmp, "documentation/todo/TODO-002.md"), "");
+
+    const counter = seedCounter(tmp, gitDir);
+    assert.equal(counter.story, 5);
+    assert.equal(counter.todo, 7);
   });
 });
