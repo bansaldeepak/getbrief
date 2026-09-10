@@ -1,5 +1,16 @@
 # Memory — brief
 
+<!-- brief:memory-harness -->
+Use `brief memory` commands instead of reading files directly:
+- `brief memory list` — concise index of all memories
+- `brief memory show <name>` — view a specific memory
+- `brief memory create <name> --type=<type>` — create a new memory
+- `brief memory update <name>` — update an existing memory
+
+Do NOT read `documentation/memory/*.md` files directly — use the commands above.
+<!-- /brief:memory-harness -->
+
+
 Project management CLI + multi-agent installer. Standalone repo at `~/Work/Arcitae/brief/`.
 
 ## How to access
