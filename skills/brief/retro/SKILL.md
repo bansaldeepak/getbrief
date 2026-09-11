@@ -101,7 +101,7 @@ Memory updates (non-destructive) can proceed automatically.
 If `brief` CLI is installed:
 
 ```bash
-brief story update S-NNN status=done pr="<PR URL>"
+brief story update S-NNN status=completed pr="<PR URL>"
 
 # Create TODOs from learnings that need future action:
 brief todo create "<action item>" --priority=P2 --story=S-NNN
@@ -113,7 +113,7 @@ brief decision create "<what was decided>" --story=S-NNN
 brief log "Retro completed for S-NNN" --tag=retro --story=S-NNN
 ```
 
-**Fallback** — edit tracker.yaml directly: set `status: done` and `pr: <URL>` on the story entry.
+**Fallback** — edit tracker.yaml directly: set `status: completed` and `pr: <URL>` on the story entry.
 
 ### Phase 6: Retro Summary
 

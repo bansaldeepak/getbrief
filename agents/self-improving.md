@@ -111,3 +111,4 @@ After changes, update MEMORY.md:
 - Verify staleness by checking current code — don't guess
 - Wait for user approval before modifying skills or rules (memory changes are OK)
 - After curation, MEMORY.md should be clean, high-signal index
+- **Accounting gate**: before editing MEMORY.md, list every file it links to. After editing, list again. Every removal must appear in the "Pruned" section of the report — if the before/after diff shows a dropped entry not named in the report, restore it
