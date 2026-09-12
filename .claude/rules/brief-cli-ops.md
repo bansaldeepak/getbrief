@@ -22,6 +22,10 @@ brief story update S-NNN status=completed
 brief story task update S-NNN-TN status=done
 brief todo update TODO-NNN status=done
 brief decision update DEC-NNN status=superseded
+brief memory update <ID|slug|title> --body="new content"
+
+# Retire (memory only — keeps file for audit trail)
+brief memory retire <ID|slug|title>
 
 # Read
 brief story show S-NNN
@@ -43,6 +47,13 @@ nothing validates them — a typo lands silently and the story disappears from `
 `brief story update` rewrites the `**Status**:` header in `story.md` too, so the tracker and the story
 file stay in step — but it leaves any parenthetical after the status untouched. Check that the
 parenthetical is still true after the update.
+
+### Memory commands accept ID, slug, or title
+
+Memory files are slug-named (`deploy-process.md`), not ID-named (`MEM-001.md`). All memory
+commands (`show`, `update`, `retire`) accept any of: `MEM-001`, `deploy-process`, or
+`"Deploy process"`. Never delete memory — use `brief memory retire` to set `status: retired`
+and stamp `valid_until`, preserving the file for audit trail.
 
 ### Regenerating the tracker
 
