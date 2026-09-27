@@ -29,13 +29,13 @@ describe("brief memory", () => {
     rmSync(root, { recursive: true, force: true });
   });
 
-  it("creates memory with MEM- prefix in tracker", async () => {
+  it("creates memory with slug-based ID in tracker", async () => {
     await itemCommand(root, "memory", "create", ["API rate limits"], []);
     const tracker = readFileSync(
       join(root, "documentation/tracker.yaml"),
       "utf8"
     );
-    assert.match(tracker, /MEM-001/);
+    assert.match(tracker, /id: api-rate-limits/);
     assert.match(tracker, /type: memory/);
   });
 
@@ -78,7 +78,7 @@ describe("brief memory", () => {
       root,
       "memory",
       "update",
-      ["MEM-001", "status=stale"],
+      ["old-info", "status=stale"],
       []
     );
     const tracker = readFileSync(
@@ -88,14 +88,32 @@ describe("brief memory", () => {
     assert.match(tracker, /status: stale/);
   });
 
-  it("increments memory IDs", async () => {
-    await itemCommand(root, "memory", "create", ["First"], []);
-    await itemCommand(root, "memory", "create", ["Second"], []);
+  it("update --body writes body into memory file", async () => {
+    await itemCommand(root, "memory", "create", ["Test body write"], []);
+    await itemCommand(
+      root,
+      "memory",
+      "update",
+      ["test-body-write"],
+      ["brief", "memory", "update", "test-body-write", "--body=New content here"]
+    );
+    const content = readFileSync(
+      join(root, "documentation/memory/test-body-write.md"),
+      "utf8"
+    );
+    assert.ok(content.includes("New content here"));
+    const afterFm = content.slice(content.indexOf("---", content.indexOf("---") + 3) + 3);
+    assert.ok(!afterFm.includes("Test body write"), "old body below frontmatter should be replaced");
+  });
+
+  it("uses slug-based IDs for memory", async () => {
+    await itemCommand(root, "memory", "create", ["First memory"], []);
+    await itemCommand(root, "memory", "create", ["Second memory"], []);
     const tracker = readFileSync(
       join(root, "documentation/tracker.yaml"),
       "utf8"
     );
-    assert.match(tracker, /MEM-001/);
-    assert.match(tracker, /MEM-002/);
+    assert.match(tracker, /id: first-memory/);
+    assert.match(tracker, /id: second-memory/);
   });
 });

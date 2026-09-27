@@ -43,7 +43,6 @@ items:
     story: documentation/stories/brief-project-setup/S-011/story.md
     link: null
     pr: https://github.com/bansaldeepak/agents-setup/pull/24
-    last_task: S-011-T1
   - id: S-004
     type: story
     title: brief v0.3 — CLI Command Enhancements
@@ -57,6 +56,45 @@ items:
     story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md
     link: null
     pr: https://github.com/bansaldeepak/agents-setup/pull/21
+  - id: S-012
+    type: story
+    title: Harness Injection & Init Rework
+    status: done
+    feature: harness-injection
+    branch: feature/harness-injection
+    category: feat
+    created: 2026-09-01
+    tasks: 7
+    current_task: null
+    story: documentation/stories/harness-injection/S-012/story.md
+    link: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/26
+  - id: S-015
+    type: story
+    title: Atomic ID Allocation + Agent Discipline
+    status: planned
+    feature: multi-agent-coordination
+    branch: feature/multi-agent-coordination
+    category: feat
+    created: 2026-09-09
+    tasks: 11
+    current_task: null
+    story: documentation/stories/multi-agent-coordination/S-015/story.md
+    link: null
+    pr: null
+  - id: S-014
+    type: story
+    title: Project-Scoped Rules & Smart Init
+    status: done
+    feature: project-scoped-rules
+    branch: feature/project-scoped-rules
+    category: feat
+    created: 2026-09-04
+    tasks: 9
+    current_task: S-014-T3
+    story: documentation/stories/project-scoped-rules/S-014/story.md
+    link: null
+    pr: https://github.com/bansaldeepak/agents-setup/pull/27
   - id: S-007
     type: story
     title: Harness & Core Rules Restructure
@@ -210,72 +248,121 @@ items:
     created: 2026-08-25
     link: null
     pr: null
+  - id: TODO-014
+    type: todo
+    title: Delete rules-gen.mjs dead code
+    status: active
+    priority: P3
+    created: 2026-09-01
+    link: null
+    pr: null
+  - id: TODO-015
+    type: todo
+    title: Expand detectStack() for observability and analytics packages
+    status: open
+    priority: P2
+    created: 2026-09-04
+    link: null
+    pr: null
   - id: RES-001
     type: research
     title: "RES-001: Bundle codegraph + brief context"
     status: active
     link: null
     pr: null
-  - id: TODO-014
-    type: todo
-    title: Delete rules-gen.mjs dead code
-    status: open
-    priority: P1
-    link: null
-    pr: null
-  - id: S-012
-    type: story
-    title: Harness Injection & Init Rework
-    status: done
-    branch: feature/harness-injection
-    current_task: null
-    story: documentation/stories/harness-injection/S-012/story.md
-    link: null
-    pr: https://github.com/bansaldeepak/agents-setup/pull/26
-  - id: MEM-001
+  - id: design-pivots-mid-impl-need-immediate-test-updates
     type: memory
-    title: Design pivots mid-impl need immediate test updates
+    title: When design pivots mid-implementation, update tests immediately in the same change, not deferred
     status: active
     link: null
     pr: null
-  - id: MEM-002
+  - id: feedback_discover-must-persist
     type: memory
-    title: Grep all callers when removing a return field
+    title: /brief discover must always create a DISCOVERY.md file in the feature folder — conversation output alone violates project-local memory premise
     status: active
     link: null
     pr: null
-  - id: MEM-003
+  - id: feedback_init-patterns
     type: memory
-    title: Test template injection for heading duplication
+    title: "Patterns and gotchas from building brief init (S-011): atomic manifest, recursive mtime, marker merge, extension scanning"
     status: active
     link: null
     pr: null
-  - id: S-014
-    type: story
-    title: Project-Scoped Rules & Smart Init
-    status: done
-    branch: feature/project-scoped-rules
-    current_task: S-014-T3
-    story: documentation/stories/project-scoped-rules/S-014/story.md
-    link: null
-    pr: https://github.com/bansaldeepak/agents-setup/pull/27
-    last_task: S-014-T2
-  - id: S-015
-    type: story
-    title: Atomic ID Allocation + Agent Discipline
-    status: planned
-    branch: feature/multi-agent-coordination
-    current_task: null
-    story: documentation/stories/multi-agent-coordination/S-015/story.md
+  - id: feedback_lifecycle-retro-position
+    type: memory
+    title: Retro runs after PR + user tests, before merge — same PR branch. Token usage tracking removed from all SDLC skills.
+    status: active
     link: null
     pr: null
-    last_task: S-015-T11
-  - id: S-016
-    type: story
-    title: test
-    status: planned
-    branch: feature/test
-    current_task: null
-    story: documentation/stories/test/S-016/story.md
+  - id: feedback_status-normalization
+    type: memory
+    title: Status fields in markdown files can be complex (e.g. 'Accepted (Option A) — validated by spike'). Only first word is extracted and mapped to known values.
+    status: active
+    link: null
+    pr: null
+  - id: grep-all-callers-when-removing-a-return-field
+    type: memory
+    title: Before removing a return field from a function, grep all callers to ensure nothing is left broken
+    status: active
+    link: null
+    pr: null
+  - id: project_cross-reference-drift
+    type: memory
+    title: The dominant failure mode in this config system is stale cross-references, not duplication — and nothing currently checks for them
+    status: active
+    link: null
+    pr: null
+  - id: project_memory-mechanisms
+    type: memory
+    title: Three separate memory systems exist on this machine and have never been reconciled — audit before adding a fourth
+    status: active
+    link: null
+    pr: null
+  - id: project_next-steps-scaffold
+    type: memory
+    title: brief CLI — project management tool. Resource-based CLI for stories, TODOs, decisions, research, logs. File-based, multi-agent safe, dual-write to tracker.yaml + .md files.
+    status: active
+    link: null
+    pr: null
+  - id: project_repo-extraction
+    type: memory
+    title: brief extracted to standalone repo at ~/Work/Arcitae/brief. Old ~/.agents deprecated. AGENTS.md → HARNESS.md. BRIEF_SKILLS_PATH needs update.
+    status: active
+    link: null
+    pr: null
+  - id: project_skills-cleanup-decisions
+    type: memory
+    title: Key architectural decisions for skills cleanup epic — no rename (D8), item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
+    status: active
+    link: null
+    pr: null
+  - id: project_standards-split
+    type: memory
+    title: Why standards are three skills, why stack content moved into repos, and what the 3,000-line-file problem actually was
+    status: active
+    link: null
+    pr: null
+  - id: reference_agent-config-loading
+    type: memory
+    title: What actually loads into context each session vs. what loads on demand — the constraint that decides where a rule belongs
+    status: active
+    link: null
+    pr: null
+  - id: reference_session-log-formats
+    type: memory
+    title: Where Claude and Codex record sessions and token usage, and the three details that make a naive reader wrong
+    status: active
+    link: null
+    pr: null
+  - id: reference_skills-cli-local-sources
+    type: memory
+    title: brief lives at ~/Work/Arcitae/brief (standalone repo). init creates symlinks into BRIEF_SKILLS_PATH. Old ~/.agents path deprecated.
+    status: active
+    link: null
+    pr: null
+  - id: test-template-injection-for-heading-duplication
+    type: memory
+    title: When injecting templates with markdown headers, test for heading duplication — prefix + template h1 can create doubles
+    status: active
     link: null
     pr: null
