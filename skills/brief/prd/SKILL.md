@@ -202,7 +202,7 @@ Present the PRD to the user. Highlight:
 
 ### Phase 4: Next Step
 
-Mark status `🔒 Approved`, then hand back to the `sdlc` router for the next phase — it owns the graph.
+Mark status `🔒 Approved`, then hand back to the `brief` router for the next phase — it owns the graph.
 
 ## Rules
 

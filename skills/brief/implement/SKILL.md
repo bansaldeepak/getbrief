@@ -10,8 +10,8 @@ model: opus
 Runs between `project-plan` and `pr-review`: one task at a time, with a human gate at every commit
 and every push.
 
-Universal git and scope rules come from `AGENTS.md`; destructive database operations from
-`db-safety`; code shape from `coding-standards` and its backend/frontend companions. **Commands,
+Universal git and scope rules come from `AGENTS.md`; code shape from `coding-style` and
+`safe-modifications`. **Commands,
 scripts, and deploy behaviour are project-specific — read the repo's `AGENTS.md` for those.** This
 skill covers only *when you are allowed to commit, push, and open a PR*.
 

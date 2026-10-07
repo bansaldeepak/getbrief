@@ -107,7 +107,7 @@ After changes, update MEMORY.md:
 
 - Never delete without explaining why
 - Promote before pruning — extract value first
-- Keep MEMORY.md under ~40 lines (format and flush targets: `project-memory` skill)
+- Keep MEMORY.md under ~40 lines (format and flush targets: `memory` skill)
 - Verify staleness by checking current code — don't guess
 - Wait for user approval before modifying skills or rules (memory changes are OK)
 - After curation, MEMORY.md should be clean, high-signal index
