@@ -20,3 +20,11 @@ Verification: `npm test` — 256 passed, 0 failed. Typecheck/lint N/A: this ESM 
 Tests include unknown/nested metadata, historical memory type, stale writes, missing/duplicate files,
 interrupted migration, body/status edits, symlink rejection, and rollback after view generation.
 No real project migration has been executed.
+
+### T2 — Scoped identities and immutable logs
+Implemented in `b3cc287`. New record-mode story IDs are feature-scoped; ambiguous shorthand fails.
+Task progress derives from separate task files. New log entries serialize YAML safely and use
+session/agent metadata plus immutable UUIDs. `verify-records --base` checks historical mutations.
+Verification: `npm test` — 261 passed, 0 failed. Two independent clone branches merge cleanly for
+different features; independent same-feature creation produces a detected conflict. 100 logs at
+one timestamp remain distinct. No historical project logs were rewritten.
