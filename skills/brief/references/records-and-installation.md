@@ -5,14 +5,18 @@ Brief-managed changes. The selected execution mode never relaxes these storage r
 
 ## Installation
 
+- `brief install` installs the machine workflow package from installed CLI assets. Preview with
+  `--dry-run`; repeated installs stay pinned. Brief is CLI-only; there is no MCP setup or server.
 - Recommend `brief init --scope=local` for teams: `.brief/workflow/` contains real, pinned skills,
   rules and agents; commit the bundle, relative registrations and managed instruction changes.
 - `--scope=global` selects the independent home package at `~/.brief/workflow/`. Each machine must
   install it. Project-local bundles take precedence over global skills. The CLI runtime is separate.
 - Repeated init preserves the selected scope/version. Updates are explicit:
   `brief update --check`, `brief update --dry-run`, then authorized `brief update --apply`.
-  Add `--global` for the machine package or `--source=<path>` for an available checkout/package.
-  Checks do not fetch upstream. A global update only offers an update to pinned local copies.
+  Add `--global` for the machine package. No source argument is needed for npm or npm-linked use:
+  project init/update defaults to the home package, then CLI assets; global operations use CLI assets.
+  `--source=<path>` explicitly selects a local checkout/package or directory symlink. URLs are not
+  fetched. A global update only offers an update to pinned local copies.
 - Preserve custom files and outside-block instructions. Never delete a real directory to replace it
   with a link. Resolve ownership/customization conflicts before writing. `brief doctor` detects
   missing registrations and incomplete transactions; `brief update --recover` restores only owned

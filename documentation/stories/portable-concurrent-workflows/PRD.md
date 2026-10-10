@@ -107,3 +107,12 @@ project migration or publication of this follow-up is authorized.
 
 Milestones are approval-driven: PRD → TRD → stories/tasks → implementation/review/retro → publication
 approval. No calendar deadline supplied. CLI flows need no browser verification.
+
+## CLI-only npm onboarding — user clarification, 2026-10-10
+
+The user confirmed MCP was removed and is not wanted. `brief install` installs the machine workflow
+package in `~/.brief/workflow/`; `brief init` sets up a project using its selected scope. Ordinary
+npm or npm-linked use requires no source argument. Explicit local directory/symlink sources are
+development overrides, not remote downloads. Keep updates explicit and project copies pinned.
+Test both source modes and an actual packed npm installation in isolated homes/projects. No real
+home migration or npm publication is authorized by these tests.

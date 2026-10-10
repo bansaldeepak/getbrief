@@ -194,3 +194,16 @@ dependencies. No new DB, package manager, network service or merge driver is req
 
 No product-choice blocker remains. Any concrete metadata conflict found during real migration is
 reported before that migration. Local fixture testing does not authorize migrating unrelated projects.
+
+## T5: CLI-only distribution contract
+
+- Remove stale MCP help, configuration writer, server route and knowledge.db lookup; preserve historical records.
+- `brief install [--dry-run] [--source=<local-path>]` creates the home workflow package using the
+  existing ownership/preflight/transaction machinery. Repeated install preserves a pinned package;
+  upgrades use `brief update --global`. No npm postinstall mutates a user's home.
+- Project source precedence: explicit local override, available home package, installed CLI assets.
+  Global install/update defaults to installed CLI assets. Repeated init preserves its existing package.
+- Accept directory symlinks as explicit source roots, but keep internal path safety checks. Reject
+  URL sources with an actionable local-path message; do not fetch remote code implicitly.
+- Test handler/library home injection using temporary roots, without modifying HOME. Validate the
+  npm tarball contains runtime assets, and exercise its installed modules independently of the checkout.

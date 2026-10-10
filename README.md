@@ -85,7 +85,8 @@ can be reverted independently. No bulk migration of existing project repositorie
 Install the CLI from this checkout using your normal npm global-link workflow, then in a project:
 
 ```bash
-brief init
+brief install                    # once per machine: copy the home workflow package
+brief init --scope=local         # in each project: tracked, pinned workflow copy
 brief status
 brief doctor
 ```
@@ -171,6 +172,12 @@ and detect tracked aggregate-view changes. This command does not replace a proje
 
 ### Portable workflow installation and updates
 
+`brief install` copies workflow assets from the installed npm package (or npm-linked checkout) into
+`~/.brief/workflow/` and registers them with supported agents. Preview with `brief install --dry-run`.
+Repeated installs keep that package pinned; `brief update --global` reviews/applies upgrades.
+Installing the npm CLI itself does not run a home-writing postinstall hook. Brief is CLI-only;
+the old MCP server/configuration commands have been removed.
+
 `brief init --scope=local` (recommended; non-interactive default) installs a real, Git-trackable
 bundle in `.brief/workflow/`, with relative provider registrations and portable provenance. Commit
 that directory, registrations and instruction changes so a fresh clone has the same skills, rules
@@ -181,14 +188,19 @@ start with canonical records and ignored local tracker views.
 the project choice. Every machine using global scope needs that package installed. Re-running init
 keeps existing packages pinned. The Brief CLI runtime is still installed separately.
 
-Updates use an available local package or CLI checkout; they never silently fetch upstream:
+No `--source` is needed in normal use. Project init/update uses the home package when available,
+otherwise the installed CLI assets. Global install/update uses the installed CLI assets. An explicit
+`--source=/path/to/brief` overrides this for a local checkout, unpacked package or directory symlink.
+HTTP/Git URLs are not fetched; clone or download first. Existing project packages remain pinned on init.
+
+After updating the CLI through npm, review/apply the home update, then each project's update:
 
 ```sh
+brief update --dry-run --global
+brief update --apply --global
 brief update --check
-brief update --dry-run --source=/path/to/brief
-brief update --apply --source=/path/to/brief
-brief update --dry-run --global --source=/path/to/brief
-brief update --apply --global --source=/path/to/brief
+brief update --dry-run
+brief update --apply
 ```
 
 Updating the global package does not update project copies. Changed managed files are preserved;

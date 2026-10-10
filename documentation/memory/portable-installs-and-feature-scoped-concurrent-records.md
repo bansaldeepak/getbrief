@@ -36,3 +36,7 @@ Apply these constraints in PRD/TRD/tasks and implementation rule checks. Separat
 ## Rollout boundary
 
 The parent branch was pushed at 02a3457 under explicit authorization. S-018 is stacked above it. Follow-up push, PR, merge and real-project/home migrations require their own applicable authority. Isolated fixtures do not establish deployment or user application testing.
+
+### Note (2026-10-10)
+
+User clarification on 2026-10-10: Brief is CLI-only; the old MCP server was removed and MCP setup is not wanted. Npm onboarding should use brief install to create the home workflow package. Source is optional; test installed/npm-linked defaults and explicit local directory or symlink sources. Scope: Brief distribution and project setup; no npm publication or real-home migration authorized.
