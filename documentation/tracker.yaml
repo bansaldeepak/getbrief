@@ -304,6 +304,8 @@ items:
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Preserve lifecycle status during legacy scanning and migration; distinguish record metadata from narrative or section-local status.
   - id: grep-all-callers-when-removing-a-return-field
     type: memory
     title: Before removing a return field from a function, grep all callers to ensure nothing is left broken
@@ -419,7 +421,7 @@ items:
   - id: BUG-001
     type: bug
     title: Legacy scanner drift and narrative status parsing block record migration
-    status: in_progress
+    status: done
     priority: P1
     link: null
     pr: null

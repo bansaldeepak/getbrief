@@ -30,3 +30,11 @@ factual/reference review without repeating unrelated executable tests.
 
 Verdict: ready for local handoff after retro/curation and final record checks. Publication/merge
 remain separate user-controlled steps; this review does not authorize either.
+
+## Incremental review — BUG-001
+
+Base `f9b62f2`, implementation `aee2f64`. Fixed legacy deferred/research scanning and bounded status
+validation/mirroring to actual metadata. Reviewer finding BUG-REVIEW-01 (introduced/important:
+indented or inline header fields bypassed validation) was corrected and re-reviewed. No remaining
+confirmed findings. Full suite 287 passed; record/skill checks and real dry-run passed for 47 records.
+Copied-documentation migration and byte-exact rollback passed. See [bug evidence](../../../bugs/BUG-001.md).

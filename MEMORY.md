@@ -51,5 +51,5 @@ brief search "<query>" --memory # memory only
 - [Test template injection for heading duplication](documentation/memory/test-template-injection-for-heading-duplication.md) — prefix + template h1 can create doubles
 - [Lifecycle controls and scoped learning](documentation/memory/autonomous-lifecycle-controls-and-scoped-learning.md) — current approved modes, review/retro timing, and planning recall; explicit scope and promotion controls
 - [Historical retro position](documentation/memory/feedback_lifecycle-retro-position.md) — timing superseded by lifecycle controls; original rationale and token-tracking removal retained
-- [Status normalization](documentation/memory/feedback_status-normalization.md) — only first word of status field matters
+- [Status normalization](documentation/memory/feedback_status-normalization.md) — preserve lifecycle values; distinguish record metadata from narrative and experiment status
 - [Init patterns](documentation/memory/feedback_init-patterns.md) — atomic writes, marker preservation, legacy mtime checks, ownership and guarded recovery

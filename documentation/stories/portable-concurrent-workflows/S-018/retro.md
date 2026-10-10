@@ -45,3 +45,12 @@ in this repository. No provider-global memory files were written.
 isolated-home registrations passed. Both reviewer procedures re-reviewed fixes. See [review](review.md)
 and [summary](summary.md). Later user changes require incremental review and affected checks/learning.
 No follow-up push, PR, merge, actual home conversion or unrelated project migration has occurred.
+
+## Incremental learning — BUG-001
+
+User testing exposed legacy status drift and narrative metadata ambiguity absent from prior fixtures.
+Fixed at `aee2f64`, reviewed with all new findings closed, and verified by 287 tests plus real-project
+dry-run and copied-documentation migration/rollback. Added metadata-boundary and deferral regressions;
+updated the shared contract/README and existing status-normalization memory. Curation remains 18
+active memories with no removals or pointer loss. See [BUG-001](../../../bugs/BUG-001.md).
+The project itself is still in legacy record mode; no actual migration or publication performed.

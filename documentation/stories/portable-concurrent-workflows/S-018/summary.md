@@ -43,7 +43,8 @@ readable and unchanged; new entries use valid serialized YAML and immutable iden
 ## Final Local Verification
 
 - Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
-- Implementation candidate: `29794a2`, plus final init-reporting correction `5a22552`; later changes are story/memory/retro bookkeeping only.
+- Current implementation candidate: `aee2f64`, including the BUG-001 migration correction; subsequent changes are story/memory/retro bookkeeping only.
+- Current `npm test` at `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
 - `npm test` at `29794a2`: **280 passed, 0 failed**, including parent lifecycle tests and all new regressions. After `5a22552`, the affected portable suite was rerun: **13 passed**, including repeat-init output.
 - `npm run check:skills`: **56 maintained files, 0 reference problems; 14 skills, 0 metadata errors**.
 - `node cli.mjs verify-records --base=02a345763f40fb1adbacf096c911a86d88060bc5`: passed on this legacy-mode repo; no historical-log changes.
@@ -66,5 +67,13 @@ same-feature allocation conflicts still need coordination; unrelated records avo
 
 [Retro](retro.md) and scoped curation are complete before publication. Eight factual memory updates
 preserve the 18-record inventory and every index pointer. Source/rule/agent improvements are applied.
-This follow-up contains 10 local commits above the parent: planning, four implementation tasks,
+The original handoff contained 10 local commits above the parent: planning, four implementation tasks,
 three interim bookkeeping commits, one final review correction, and final story/retro/memory records.
+
+## User-test correction — BUG-001
+
+The user's actual migration preview exposed legacy scanner drift and narrative status misclassification.
+[BUG-001](../../../bugs/BUG-001.md) records the repair at `aee2f64`, independent incremental review,
+287-test result, real-data fixture verification, and one existing-memory update. The branch now has
+12 local commits above the parent, including this fix and its separate bookkeeping. Actual project
+authority remains unchanged; push/PR/merge are still pending user choice.
