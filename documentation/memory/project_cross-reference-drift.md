@@ -1,12 +1,16 @@
 ---
 name: cross-reference-drift
-description: The dominant failure mode in this config system is stale cross-references, not duplication — and nothing currently checks for them
+description: Historical cross-reference drift findings with active source reference validation now implemented
 type: project
 created: 2026-07-29
-updated: 2026-07-29
+updated: 2026-10-10
 valid_until: 2026-10-29
 importance: 5
 ---
+
+## Current validation (2026-10-10)
+
+npm run check:skills validates maintained source references and metadata. The original absence-of-checker observation below is historical. This does not establish integrity in unrelated consuming projects; portable bundle closure is tested separately.
 
 The 2026-07-29 audit was commissioned on the premise that `custom-skills/` was **bloated**. It was
 not — 2,744 lines across 19 skills, average 144. The real defects were duplication (one skill

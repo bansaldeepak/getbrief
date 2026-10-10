@@ -1,9 +1,9 @@
 ---
 name: init-patterns
-description: "Patterns and gotchas from building brief init (S-011): atomic manifest, recursive mtime, marker merge, extension scanning"
+description: Init lessons covering atomic writes, marker preservation, legacy mtime checks, ownership and guarded recovery
 type: feedback
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-10-10
 valid_until: permanent
 importance: 3
 ---
@@ -35,3 +35,12 @@ importance: 3
 manifest-writing feature in brief.
 
 Related: [[project-next-steps-scaffold]], [[skills-cli-local-sources]].
+
+
+## Portable package qualification (2026-10-10)
+
+S-018 retains atomic replacement and preservation outside managed markers. Multi-file updates additionally require complete preflight, recorded ownership, private recovery data, stale-plan checks and provenance published last. An atomic manifest alone is not a multi-file transaction.
+
+Recursive mtime checks are historical legacy-copy guidance; portable provenance uses content hashes. Recovery refuses later edits. Unowned directories must not be removed for links. Re-init must not adopt customized bytes as the new upstream baseline.
+
+These are observed implementation lessons from [S-018](../stories/portable-concurrent-workflows/S-018/summary.md), not inferred user preferences.

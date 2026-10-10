@@ -1,12 +1,16 @@
 ---
 name: repo-extraction
-description: "brief extracted to standalone repo at ~/Work/Arcitae/brief. Old ~/.agents deprecated. AGENTS.md → HARNESS.md. BRIEF_SKILLS_PATH needs update."
+description: Historical Brief repository extraction with current portable installation and source-path status
 type: project
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-10-10
 valid_until: 2026-11-27
 importance: 5
 ---
+
+## Current status (2026-10-10)
+
+The source-path and managed-workflow changes are implemented. Installation now follows the [portable contract](../../skills/brief/references/records-and-installation.md). The account below records the 2026-08-27 extraction; its historical GitHub rename item has not been reverified by this work.
 
 ## Repo Extraction (2026-08-27)
 
@@ -35,7 +39,7 @@ Brief is now a standalone project at `/Users/db/Work/Arcitae/brief/` (was nested
 - `skills/gstack/`, `skills/shadcn-ui/` — third-party, user-installed (stay on user's machine, not in repo)
 - `.skill-lock.json` — skills CLI state (not brief's concern)
 
-### Outstanding debt
+### Outstanding debt recorded on 2026-08-27
 
 - `BRIEF_SKILLS_PATH` in `lib/init.mjs` hardcodes `~/.agents/brief/skills/brief/` — must be updated to resolve from the actual brief install location
 - `build.sh`/`check.sh` still sync to `~/.claude/CLAUDE.md` etc. — works but needs proper "harness injection" pattern

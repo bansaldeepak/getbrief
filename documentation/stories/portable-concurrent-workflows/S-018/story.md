@@ -5,7 +5,7 @@
 **Created**: 2026-10-10
 
 ## Context
-Implement the approved portable/concurrent-workflows PRD and TRD on top of the published feature/autonomous-lifecycle at02a3457. User directed combined local testing before merge on2026-10-10.
+Implement the approved portable/concurrent-workflows PRD and TRD on top of the published feature/autonomous-lifecycle at 02a3457. User directed combined local testing before merge on 2026-10-10.
 
 ## Goal
 Portable scoped Brief installations and independent project records that merge cleanly across different features.
@@ -24,7 +24,11 @@ Critical checkpoint: before any actual project migration or global installation 
 Retro before follow-up publication; no merge until combined local verification and user approval.
 
 ## Acceptance Criteria
-- [ ] Lossless record migration and reconstruction of local tracker views.
-- [ ] Feature-scoped IDs and independent task/log writes validated across clones.
-- [ ] Complete pinned local bundles and scoped global updates preserve customizations.
-- [ ] Both lifecycle and portability changes pass combined local checks.
+- [x] Lossless record migration and reconstruction of local tracker views.
+- [x] Feature-scoped IDs and independent task/log writes validated across clones.
+- [x] Complete pinned local bundles and scoped global updates preserve customizations.
+- [x] Both lifecycle and portability changes pass combined local checks.
+
+## Local completion
+All four tasks are done; combined local verification passed. Story remains open for publication/user
+testing/merge decisions. No follow-up push, PR, or merge has occurred. See summary and retro.

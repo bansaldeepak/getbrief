@@ -13,12 +13,12 @@ importance: 5
 
 **Source:** User decisions approved on 2026-10-10 in [PRD](../stories/autonomous-lifecycle/PRD.md), [retro policy](../stories/autonomous-lifecycle/RETRO-POLICY.md), and [audit](../stories/autonomous-lifecycle/AUDIT.md). Technical application is recorded in [TRD](../stories/autonomous-lifecycle/TRD.md).
 **Scope:** Explicitly shared brief lifecycle skills and their supported provider guidance. This authorizes the specified policy upgrade; it does not turn individual project design choices into global preferences.
-**Status:** Explicitly decided. Source implementation and verification completed at `7382850`; shared installation verified on 2026-10-10. See [S-017 summary](../stories/autonomous-lifecycle/S-017/summary.md) for evidence. No remote publication, user application testing, or merge is claimed; this policy record does not confer publication or merge approval.
+**Status:** Explicitly decided. Source/shared installation verified on 2026-10-10; 7382850 is historical pre-rebase evidence. The rebased feature/autonomous-lifecycle branch was pushed at 02a3457 under explicit authorization. See [S-017 summary](../stories/autonomous-lifecycle/S-017/summary.md). No user application testing or merge is claimed. The separately authorized S-018 follow-up has its own publication and merge gates.
 
 ## Execution and ambiguity
 
 - Before a story, recommend a mode from its risk and verification evidence, then retain the user's selection on resume. Strict asks before every commit; selective permits routine local commits and asks at critical/manual checkpoints; auto completes authorized local story work before publication approval.
-- Recommend selective for migrations, critical behavior, or human browser verification, and auto for clear code-only work adequately covered by tests. Recommend strict when granular oversight or weak verification warrants it. Recommendation is not selection. The user selected selective for S-017 only; future stories still need their own selection or applicable explicit instruction.
+- Recommend selective for migrations, critical behavior, or human browser verification, and auto for clear code-only work adequately covered by tests. Recommend strict when granular oversight or weak verification warrants it. Recommendation is not selection. The user selected selective for S-017 and separately for S-018. Neither establishes a future-story default; each needs its own selection or applicable explicit instruction.
 - Every mode investigates ambiguity and asks if it remains unresolved before dependent work. Do not invent intended behavior, infer approval from silence, or re-ask an applicable settled choice. Migration execution still requires explicit approval independently of mode and code approval.
 
 ## Review, retro, and publication

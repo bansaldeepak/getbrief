@@ -284,10 +284,12 @@ items:
     pr: null
   - id: feedback_init-patterns
     type: memory
-    title: "Patterns and gotchas from building brief init (S-011): atomic manifest, recursive mtime, marker merge, extension scanning"
+    title: Init lessons covering atomic writes, marker preservation, legacy mtime checks, ownership and guarded recovery
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Init lessons covering atomic writes, marker preservation, legacy mtime checks, ownership and guarded recovery
   - id: feedback_lifecycle-retro-position
     type: memory
     title: Historical retro timing superseded on 2026-10-10; token-usage removal retained.
@@ -310,28 +312,36 @@ items:
     pr: null
   - id: project_cross-reference-drift
     type: memory
-    title: The dominant failure mode in this config system is stale cross-references, not duplication — and nothing currently checks for them
+    title: Historical cross-reference drift findings with active source reference validation now implemented
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Historical cross-reference drift findings with active source reference validation now implemented
   - id: project_memory-mechanisms
     type: memory
-    title: Three separate memory systems exist on this machine and have never been reconciled — audit before adding a fourth
+    title: Project repository memory is authoritative; historical host-hook investigation remains unverified
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Project repository memory is authoritative; historical host-hook investigation remains unverified
   - id: project_next-steps-scaffold
     type: memory
-    title: brief CLI — project management tool. Resource-based CLI for stories, TODOs, decisions, research, logs. File-based, multi-agent safe, dual-write to tracker.yaml + .md files.
+    title: Brief CLI with canonical Markdown and local views in record mode, legacy compatibility and portable workflow packages
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Brief CLI with canonical Markdown and local views in record mode, legacy compatibility and portable workflow packages
   - id: project_repo-extraction
     type: memory
-    title: brief extracted to standalone repo at ~/Work/Arcitae/brief. Old ~/.agents deprecated. AGENTS.md → HARNESS.md. BRIEF_SKILLS_PATH needs update.
+    title: Historical Brief repository extraction with current portable installation and source-path status
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Historical Brief repository extraction with current portable installation and source-path status
   - id: project_skills-cleanup-decisions
     type: memory
     title: Key architectural decisions for skills cleanup epic — no rename (D8), item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
@@ -358,10 +368,12 @@ items:
     pr: null
   - id: reference_skills-cli-local-sources
     type: memory
-    title: brief lives at ~/Work/Arcitae/brief (standalone repo). init creates symlinks into BRIEF_SKILLS_PATH. Old ~/.agents path deprecated.
+    title: Brief pinned local/global packages and portable registrations, with historical live-link behavior retained
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Brief pinned local/global packages and portable registrations, with historical live-link behavior retained
   - id: test-template-injection-for-heading-duplication
     type: memory
     title: When injecting templates with markdown headers, test for heading duplication — prefix + template h1 can create doubles
@@ -385,19 +397,22 @@ items:
     link: null
     pr: null
     updated: 2026-10-10
+    description: Autonomous lifecycle controls and scoped learning
   - id: portable-installs-and-feature-scoped-concurrent-records
     type: memory
-    title: Portable installs and feature-scoped concurrent records
+    title: Approved Brief local/global packages, pinned updates, canonical records, scoped IDs and immutable logs
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Approved Brief local/global packages, pinned updates, canonical records, scoped IDs and immutable logs
   - id: S-018
     type: story
     title: Portable installs and concurrent project records
     status: in_progress
     branch: feature/portable-concurrent-workflows
-    current_task: S-018-T4
+    current_task: null
     story: documentation/stories/portable-concurrent-workflows/S-018/story.md
     link: null
     pr: null
-    last_task: S-018-T3
+    last_task: S-018-T4

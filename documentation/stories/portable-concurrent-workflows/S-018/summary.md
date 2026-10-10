@@ -1,16 +1,6 @@
 # S-018: Portable installs and concurrent project records — Summary
 
 ## What Changed
-<!-- Updated after each task is completed -->
-
-## Decisions Made
-<!-- Non-obvious choices and why -->
-
-## Testing
-<TBD at implementation>
-
-## Follow-up
-<!-- Deferred items, future improvements -->
 
 ### T1 — Canonical record authority
 Implemented in `9cbe632`. Complete metadata is embedded in canonical Markdown; generated views are
@@ -38,3 +28,43 @@ existing project records require explicit migration. No actual home installation
 Verification: full `npm test` — 268 passed; latest affected package suite 7 passed. Tests cover
 fresh-copy discovery with the original source removed, local/global isolation, customized/unowned
 files, stale plans, interrupted recovery, pinned init, notices, and global-only project selection.
+
+### T4 — Distributed contracts and review closure
+Implemented in `29794a2`. Router, direct planning context, phase skills, rules, provider adapter,
+agent sources and templates now carry the same record/install contract. Fresh setup requests the
+user's scope choice; existing scope is reused. All modes retain ambiguity and publication controls.
+The mandatory CLI rule is installed on the first init. Generated views start empty, without fake records.
+
+Both independent reviews completed with no unresolved introduced findings after corrections.
+The named reviewer deployment returned 404; default agents followed the same reviewer procedure.
+Detailed evidence and finding closure: [review](review.md). Historical malformed log notes remain
+readable and unchanged; new entries use valid serialized YAML and immutable identities.
+
+## Final Local Verification
+
+- Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
+- Implementation candidate: `29794a2`, plus final init-reporting correction `5a22552`; later changes are story/memory/retro bookkeeping only.
+- `npm test` at `29794a2`: **280 passed, 0 failed**, including parent lifecycle tests and all new regressions. After `5a22552`, the affected portable suite was rerun: **13 passed**, including repeat-init output.
+- `npm run check:skills`: **56 maintained files, 0 reference problems; 14 skills, 0 metadata errors**.
+- `node cli.mjs verify-records --base=02a345763f40fb1adbacf096c911a86d88060bc5`: passed on this legacy-mode repo; no historical-log changes.
+- `build.sh` then `check.sh` in an isolated temporary home: **30 registrations passed**.
+- Combined test: initialize from machine package, commit local bundle, clone, create independent
+  feature/task/log work, merge, remove original project/home, then validate discovery, records,
+  lifecycle modes/review/retro controls and package reference closure.
+- Typecheck/lint/npm build: N/A; no such project scripts. The shell installer and source checks
+  above are the applicable build/verification workflow. Browser verification: N/A for this CLI work.
+
+## Rollout Status
+
+Parent `feature/autonomous-lifecycle` is pushed at `02a3457`. This follow-up is stacked on that exact
+commit, implemented and tested locally. No follow-up push, PR, merge, real-project record migration,
+or actual home-package migration was performed. Local fixtures do not claim user application testing.
+Story remains open for those user-controlled publication/testing/merge decisions. Same-record or
+same-feature allocation conflicts still need coordination; unrelated records avoid aggregate writes.
+
+## Retro and Commit Accounting
+
+[Retro](retro.md) and scoped curation are complete before publication. Eight factual memory updates
+preserve the 18-record inventory and every index pointer. Source/rule/agent improvements are applied.
+This follow-up contains 10 local commits above the parent: planning, four implementation tasks,
+three interim bookkeeping commits, one final review correction, and final story/retro/memory records.

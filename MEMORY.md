@@ -30,11 +30,11 @@ brief search "<query>" --memory # memory only
 - [Session log formats](documentation/memory/reference_session-log-formats.md) — where Claude and
   Codex record branch and token usage.
 - [Skills CLI, local sources](documentation/memory/reference_skills-cli-local-sources.md) — brief
-  init symlinks directly; skills CLI copies (used only for remote/third-party skills).
+  pinned local/global packages, portable registrations, and historical live-link behavior.
 
 ## Active
 
-- [Portable concurrent workflows](documentation/stories/portable-concurrent-workflows/PRD.md) — draft scope; [user choices](documentation/memory/portable-installs-and-feature-scoped-concurrent-records.md) cover global/local installation, generated tracker views, and feature-scoped story IDs; implementation pending
+- [Portable concurrent workflows](documentation/stories/portable-concurrent-workflows/PRD.md) — approved choices implemented locally; [user choices](documentation/memory/portable-installs-and-feature-scoped-concurrent-records.md) and [verification/publication status](documentation/stories/portable-concurrent-workflows/S-018/summary.md) remain authoritative
 - [Autonomous lifecycle](documentation/stories/autonomous-lifecycle/PRD.md) — approved and implemented shared workflow; [validation](documentation/stories/autonomous-lifecycle/VALIDATION.md) records review, tests, installation, and limits
 - [Repo extraction](documentation/memory/project_repo-extraction.md) — brief is standalone at
   ~/Work/Arcitae/brief. BRIEF_SKILLS_PATH fixed; harness injection complete.
@@ -52,4 +52,4 @@ brief search "<query>" --memory # memory only
 - [Lifecycle controls and scoped learning](documentation/memory/autonomous-lifecycle-controls-and-scoped-learning.md) — current approved modes, review/retro timing, and planning recall; explicit scope and promotion controls
 - [Historical retro position](documentation/memory/feedback_lifecycle-retro-position.md) — timing superseded by lifecycle controls; original rationale and token-tracking removal retained
 - [Status normalization](documentation/memory/feedback_status-normalization.md) — only first word of status field matters
-- [Init patterns](documentation/memory/feedback_init-patterns.md) — atomic manifest, recursive mtime, marker merge
+- [Init patterns](documentation/memory/feedback_init-patterns.md) — atomic writes, marker preservation, legacy mtime checks, ownership and guarded recovery
