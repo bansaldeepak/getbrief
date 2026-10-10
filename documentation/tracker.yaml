@@ -396,7 +396,8 @@ items:
     title: Portable installs and concurrent project records
     status: in_progress
     branch: feature/portable-concurrent-workflows
-    current_task: S-018-T1
+    current_task: S-018-T2
     story: documentation/stories/portable-concurrent-workflows/S-018/story.md
     link: null
     pr: null
+    last_task: S-018-T1

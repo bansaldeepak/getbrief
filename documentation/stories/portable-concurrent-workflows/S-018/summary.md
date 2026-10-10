@@ -11,3 +11,12 @@
 
 ## Follow-up
 <!-- Deferred items, future improvements -->
+
+### T1 — Canonical record authority
+Implemented in `9cbe632`. Complete metadata is embedded in canonical Markdown; generated views are
+local and explicit. Migration previews conflicts before writes, preserves legacy progress pointers,
+and supports guarded byte-exact rollback. Routine edits update only affected records.
+Verification: `npm test` — 256 passed, 0 failed. Typecheck/lint N/A: this ESM repository has no such scripts.
+Tests include unknown/nested metadata, historical memory type, stale writes, missing/duplicate files,
+interrupted migration, body/status edits, symlink rejection, and rollback after view generation.
+No real project migration has been executed.
