@@ -1,33 +1,23 @@
 ---
 name: memory-review
-description: "Trigger memory curation. Flushes inactive feature context, then reviews MEMORY.md for staleness, promotes valuable entries to rules or skills, and prunes what's dead."
+description: "Reconcile captured choices, preserve inactive context, and curate authorized rule, skill, agent, and memory improvements."
 user_invocable: true
 ---
 
-# /brief memory-review -- Memory Curation
+# /brief memory-review — Curation
 
-**Usage**: `/brief memory-review`
+Read [memory](../memory/SKILL.md) for storage, scope, and mutation contracts.
 
-The curation procedure lives in the `self-improving` agent, and the memory format lives in
-`project-memory`. This skill is the entry point — it does not restate either.
+1. Inventory the canonical store, including entries absent from the short index. Collect the active
+   conversation's explicit choices from the caller, plus relevant decisions and retro findings.
+2. Flush inactive feature context to its context.md; retain index/discovery pointers as needed.
+   Do not prune user preferences merely because the feature ended.
+3. Invoke self-improving with inventory, captured choices, sources, scope, and existing edit
+   authorizations. If unavailable, follow its procedure in the active agent.
+4. Apply authorized improvements and verify source/destination/recall. Missing promotion approval
+   requires a concrete proposal; existing scope-specific approval is reused.
+5. Report captures, applied/promoted/extracted items, proposed items, supersessions/retirements,
+   conflicts, and before/after accounting. Use the current story's commit policy.
 
-## Instructions
-
-1. **Flush inactive feature context first.** Scan `MEMORY.md` for decisions, gotchas, or patterns
-   belonging to a completed or inactive feature and move them to that feature's `context.md` — see
-   `project-memory` for the location table and format. If the user is switching topics with context
-   still unflushed, ask before proceeding.
-
-2. **Invoke the `self-improving` agent** to review, promote, extract, and prune what remains.
-
-3. **Report** the agent's curation summary.
-
-Memory pruning proceeds automatically. **Wait for user approval before modifying skills or rules** —
-those are shared configuration, not project state.
-
-## Rules
-
-- Flush before curating — otherwise finished work gets pruned as "stale" instead of preserved
-- Never delete a memory without saying why
-- Promote before pruning: extract the value, then remove the entry
-- After curation `MEMORY.md` is a clean index of active work, under ~40 lines
+Do not silently enlarge scope or remove facts. Unresolved conflicts and unapproved promotions
+stay explicit; curation is not permission to change project policy independently.

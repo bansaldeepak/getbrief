@@ -62,8 +62,8 @@ brief bug update BUG-001 status=done
 # Memory management
 brief memory create "Key insight" --memtype=feedback --body="Details"
 brief memory list                   # active memories
-brief memory show MEM-001           # full memory file
-brief memory update MEM-001 status=stale
+brief memory show <slug>           # full memory file
+brief memory retire <slug>
 
 # Log (multi-agent safe — one file per entry)
 brief log "What happened" --tag=progress --story=S-001
@@ -116,7 +116,7 @@ would be lost if only in conversation, or future agents need to know.
 Fall back to reading files directly:
 - `PROJECT-TRACKER.md` — active items (lean, start here)
 - `tracker.yaml` — full history
-- `memory/` — individual memory files
+- `documentation/memory/` — individual memory files
 
 ## When to check
 
