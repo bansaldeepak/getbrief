@@ -12,6 +12,7 @@ importance: 5
 
 The sections below preserve implementation history; unconditional tracker, installation-path and lifecycle claims are historical.
 
+- Brief is CLI-only. brief install installs the pinned home workflow package; project setup uses brief init. Removed MCP setup/server and knowledge.db lookup are not current architecture or planned restoration work. Runtime installation and workflow updates remain separate.
 - Fresh projects use canonical Markdown selected by .brief/records.json; existing projects retain legacy dual-write until explicit migration. Memory records participate in the inventory; logs are separate immutable events.
 - Record-mode tracker.yaml and PROJECT-TRACKER.md are ignored local views. Routine mutations do not rewrite them or shared task-progress pointers.
 - New story/task IDs are feature-scoped; preserve existing IDs and resolve same-record conflicts explicitly.
@@ -20,7 +21,7 @@ The sections below preserve implementation history; unconditional tracker, insta
 
 Apply [portable choices](portable-installs-and-feature-scoped-concurrent-records.md), [lifecycle controls](autonomous-lifecycle-controls-and-scoped-learning.md), [record/install contract](../../skills/brief/references/records-and-installation.md) and current CLI help. Historical deferred items below are not a newly validated backlog.
 
-## brief CLI — Implemented (2026-08-20)
+## Historical implementation snapshot (2026-08-20 through 2026-08-27)
 
 ### What it is
 
@@ -56,7 +57,7 @@ documentation/
 ### Commands Implemented
 
 ```bash
-## Historical implementation snapshot (2026-08-20 through 2026-08-27)
+# Resource CRUD
 brief story create|list|tasks|task|update
 brief todo create|list|update|show
 brief decision create|list|update|show

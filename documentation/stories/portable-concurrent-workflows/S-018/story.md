@@ -30,5 +30,8 @@ Retro before follow-up publication; no merge until combined local verification a
 - [x] Both lifecycle and portability changes pass combined local checks.
 
 ## Local completion
-All four tasks are done; combined local verification passed. Story remains open for publication/user
+All five tasks are done; combined local verification passed. Story remains open for publication/user
 testing/merge decisions. No follow-up push, PR, or merge has occurred. See summary and retro.
+
+User clarified CLI-only npm onboarding on 2026-10-10. T5 removes obsolete MCP remnants, makes
+brief install own the home workflow package, and verifies optional local source overrides.

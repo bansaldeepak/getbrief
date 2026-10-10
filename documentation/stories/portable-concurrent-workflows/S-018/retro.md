@@ -54,3 +54,14 @@ dry-run and copied-documentation migration/rollback. Added metadata-boundary and
 updated the shared contract/README and existing status-normalization memory. Curation remains 18
 active memories with no removals or pointer loss. See [BUG-001](../../../bugs/BUG-001.md).
 The project itself is still in legacy record mode; no actual migration or publication performed.
+
+## Incremental learning — T5
+
+User reaffirmed that Brief is CLI-only; the removed MCP server still had dangling CLI entry points.
+Removed those remnants, added the intended home installer, and captured source precedence explicitly.
+Test both source and destination transaction state when copying installed packages; package provenance
+must not inherit a consumer's Git revision. Added source-selection/provenance regressions and tested
+the final npm tarball in isolated prefixes/homes. Full suite 294 passed at `b737777`; review is clear.
+Three existing memories updated with user choice and observed implementation; 18 remain, no removals
+or broader promotion. Source contract/README/PRD/TRD reflect the CLI-only flow. No actual home changes
+or publication occurred; dependency scripts/codegraph indexing were outside the package smoke test.

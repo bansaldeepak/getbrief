@@ -40,3 +40,6 @@ The parent branch was pushed at 02a3457 under explicit authorization. S-018 is s
 ### Note (2026-10-10)
 
 User clarification on 2026-10-10: Brief is CLI-only; the old MCP server was removed and MCP setup is not wanted. Npm onboarding should use brief install to create the home workflow package. Source is optional; test installed/npm-linked defaults and explicit local directory or symlink sources. Scope: Brief distribution and project setup; no npm publication or real-home migration authorized.
+
+
+Implementation verified in S-018-T5: brief install creates the pinned home workflow package from installed CLI assets. MCP routes/configuration and the obsolete knowledge-database lookup are removed. Project init/update defaults to the available home package, then CLI assets; global operations default to CLI assets. Explicit sources are local directories or directory symlinks; URLs are not fetched. Packed npm installation was exercised in temporary prefixes/homes. See the S-018 summary for current verification; this does not constitute npm publication or a real-home migration.

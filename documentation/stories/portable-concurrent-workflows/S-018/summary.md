@@ -43,8 +43,9 @@ readable and unchanged; new entries use valid serialized YAML and immutable iden
 ## Final Local Verification
 
 - Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
-- Current implementation candidate: `aee2f64`, including the BUG-001 migration correction; subsequent changes are story/memory/retro bookkeeping only.
-- Current `npm test` at `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
+- Current implementation candidate: `b737777`, including CLI-only npm onboarding and source-selection corrections; subsequent changes are story/memory/retro bookkeeping only.
+- Current `npm test` at `b737777`: **294 passed, 0 failed**. The packed npm artifact was installed into a temporary prefix and passed source-less, local/symlink override, global/local, pinned-update and removed-MCP smoke checks.
+- Prior BUG-001 candidate `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
 - `npm test` at `29794a2`: **280 passed, 0 failed**, including parent lifecycle tests and all new regressions. After `5a22552`, the affected portable suite was rerun: **13 passed**, including repeat-init output.
 - `npm run check:skills`: **56 maintained files, 0 reference problems; 14 skills, 0 metadata errors**.
 - `node cli.mjs verify-records --base=02a345763f40fb1adbacf096c911a86d88060bc5`: passed on this legacy-mode repo; no historical-log changes.
@@ -74,6 +75,24 @@ three interim bookkeeping commits, one final review correction, and final story/
 
 The user's actual migration preview exposed legacy scanner drift and narrative status misclassification.
 [BUG-001](../../../bugs/BUG-001.md) records the repair at `aee2f64`, independent incremental review,
-287-test result, real-data fixture verification, and one existing-memory update. The branch now has
+287-test result, real-data fixture verification, and one existing-memory update. That handoff had
 12 local commits above the parent, including this fix and its separate bookkeeping. Actual project
 authority remains unchanged; push/PR/merge are still pending user choice.
+
+## T5 — CLI-only npm onboarding
+
+Implemented at `b737777`. The old MCP server file was already removed; stale CLI routes, config writer
+and knowledge.db lookup are now removed too. `brief install` creates the home package; project setup
+and updates require no source argument. Explicit local directories/symlinks remain supported.
+Source resolution rejects interrupted package sources and avoids claiming a consumer repository's SHA.
+
+Independent incremental review closed T5-INSTALL-01 (pending source transaction). Initial full suite
+293 passed, then the provenance correction passed 7 targeted tests; final full suite **294 passed**.
+Repacked the final source and installed its tarball via npm in a temporary prefix. The installed
+modules passed no-source init/install, explicit and symlink sources, home-to-project copies, global
+selection, pinned updates, unsupported-URL refusal, and removed MCP command checks. Dependency
+install scripts and codegraph indexing were skipped; these tests cover workflow distribution.
+Source/skill and record checks passed. No registry publication or actual-home installation occurred.
+
+Three existing memories were reconciled; 18 remain active with all index pointers retained.
+This branch has 14 local commits above the parent, including T5 and its separate final bookkeeping.

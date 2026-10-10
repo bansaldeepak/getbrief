@@ -38,3 +38,13 @@ validation/mirroring to actual metadata. Reviewer finding BUG-REVIEW-01 (introdu
 indented or inline header fields bypassed validation) was corrected and re-reviewed. No remaining
 confirmed findings. Full suite 287 passed; record/skill checks and real dry-run passed for 47 records.
 Copied-documentation migration and byte-exact rollback passed. See [bug evidence](../../../bugs/BUG-001.md).
+
+## Incremental review — T5
+
+Base `4a9dbfa`, implementation `b737777`. CLI-only install/source selection reviewed independently.
+T5-INSTALL-01 (introduced/important: incomplete home package copied into fresh local project) was
+corrected at the source boundary, including explicit bundle paths and symlinks, and re-reviewed.
+Provenance correction prevents npm packages from claiming a containing consumer repository's SHA.
+No remaining confirmed findings. Final full suite 294 passed, skill/record checks passed, and the
+repacked npm artifact passed isolated installation/source/pinning smoke tests. Actual home and npm
+publication remain outside performed work. Final record-only updates received factual/reference review.

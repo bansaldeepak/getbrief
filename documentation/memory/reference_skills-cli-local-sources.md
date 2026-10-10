@@ -10,6 +10,8 @@ importance: 4
 
 ## Current installation contract (2026-10-10)
 
+Source checkout access is optional. An installed npm package or npm-linked checkout supplies assets for brief install. Project init/update uses the available home package before CLI assets; global install/update uses CLI assets. --source=<local-path> overrides those defaults and accepts directory symlinks. No source URL is fetched, and npm installation itself has no home-writing postinstall hook. Brief is CLI-only, following the [approved user clarification](portable-installs-and-feature-scoped-concurrent-records.md).
+
 Brief supports Git-tracked project-local .brief/workflow packages and a separate machine package in the home directory. Recommend local for teams. Relative local registrations work without the original developer checkout; local guidance takes precedence. The CLI runtime remains separate.
 
 Repeated init preserves selected scope and pinned provenance. Updates compare available local source, show revisions/content changes, preserve customizations and require explicit apply. Global updates do not replace project copies or silently fetch upstream.
