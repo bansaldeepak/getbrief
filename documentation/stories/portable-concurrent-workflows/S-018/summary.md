@@ -43,8 +43,8 @@ readable and unchanged; new entries use valid serialized YAML and immutable iden
 ## Final Local Verification
 
 - Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
-- Current implementation candidate: `b737777`, including CLI-only npm onboarding and source-selection corrections; subsequent changes are story/memory/retro bookkeeping only.
-- Current `npm test` at `b737777`: **294 passed, 0 failed**. The packed npm artifact was installed into a temporary prefix and passed source-less, local/symlink override, global/local, pinned-update and removed-MCP smoke checks.
+- Current package/documentation candidate: `fd7e084`; runtime remains `b737777`. Subsequent changes are story/retro bookkeeping only.
+- Runtime `npm test` at `b737777`: **294 passed, 0 failed**. The packed npm artifact was installed into a temporary prefix and passed source-less, local/symlink override, global/local, pinned-update and removed-MCP smoke checks. Those artifact checks were repeated successfully after renaming the package to getbrief.
 - Prior BUG-001 candidate `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
 - `npm test` at `29794a2`: **280 passed, 0 failed**, including parent lifecycle tests and all new regressions. After `5a22552`, the affected portable suite was rerun: **13 passed**, including repeat-init output.
 - `npm run check:skills`: **56 maintained files, 0 reference problems; 14 skills, 0 metadata errors**.
@@ -95,4 +95,19 @@ install scripts and codegraph indexing were skipped; these tests cover workflow 
 Source/skill and record checks passed. No registry publication or actual-home installation occurred.
 
 Three existing memories were reconciled; 18 remain active with all index pointers retained.
-This branch has 14 local commits above the parent, including T5 and its separate final bookkeeping.
+That handoff had 14 local commits above the parent, including T5 and its separate final bookkeeping.
+
+## T6 — Reader-facing pilot guide and getbrief naming
+
+Implemented at `fd7e084`. README now leads with requirements, npm/machine/project setup, a one-project
+migration and skills-behaviour pilot, explicit updates/recovery, and separate local development steps.
+User selected getbrief for npm and GitHub; executable brief and .brief storage remain unchanged.
+Renamed repository to https://github.com/bansaldeepak/getbrief and updated origin; PRIVATE retained.
+
+README/package review found no confirmed issues. Source/skill references and record checks passed;
+all 16 shell example blocks parsed without executing real-project commands. Package/lock names and
+bin mapping were checked. Installed getbrief-0.2.0.tgz into a temporary prefix; brief --help and the
+source/global/local/pinning smoke matrix passed. Runtime code did not change; its 294-test result above
+remains applicable. Two existing memories reconciled; 18 retained, no removals or broader promotion.
+This branch now has 16 local commits above the published parent. User will pilot one real project
+before push/merge; no npm publication, code push, merge or actual project/home migration occurred here.

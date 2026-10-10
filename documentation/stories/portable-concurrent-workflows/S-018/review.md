@@ -48,3 +48,10 @@ Provenance correction prevents npm packages from claiming a containing consumer 
 No remaining confirmed findings. Final full suite 294 passed, skill/record checks passed, and the
 repacked npm artifact passed isolated installation/source/pinning smoke tests. Actual home and npm
 publication remain outside performed work. Final record-only updates received factual/reference review.
+
+## Incremental review — T6
+
+Base `4b45606`, candidate `fd7e084`: README and getbrief package metadata reviewed independently with
+no confirmed findings. Sixteen shell blocks parsed; reference/record checks and renamed-tarball
+installation/CLI/source/pinning smoke passed. Repository links verified after rename; visibility stays
+PRIVATE. No runtime changes beyond the already tested candidate. Real-agent pilot and publication pending.

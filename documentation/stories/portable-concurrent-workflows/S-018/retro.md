@@ -65,3 +65,11 @@ the final npm tarball in isolated prefixes/homes. Full suite 294 passed at `b737
 Three existing memories updated with user choice and observed implementation; 18 remain, no removals
 or broader promotion. Source contract/README/PRD/TRD reflect the CLI-only flow. No actual home changes
 or publication occurred; dependency scripts/codegraph indexing were outside the package smoke test.
+
+## Incremental learning — T6
+
+User selected getbrief for npm/repository naming, retaining brief as the executable. Registry checking
+prevented README instructions from pointing at the unrelated public brief package. Rewrote onboarding
+around installation, explicit migration and observed agent behaviour; reviewed command syntax and
+retested the renamed tarball. Repository rename verified with PRIVATE visibility retained. Two existing
+memories reconciled; 18 retained. Real-project pilot, public release, push and merge remain pending.
