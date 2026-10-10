@@ -28,3 +28,13 @@ session/agent metadata plus immutable UUIDs. `verify-records --base` checks hist
 Verification: `npm test` — 261 passed, 0 failed. Two independent clone branches merge cleanly for
 different features; independent same-feature creation produces a detected conflict. 100 logs at
 one timestamp remain distinct. No historical project logs were rewritten.
+
+### T3 — Portable workflow packages
+Implemented in `927c903`. Local bundles contain real skill/rule/agent assets and portable provider
+registrations; global packages update independently. Explicit updates preserve customization,
+preflight ownership, publish provenance last, and support guarded interrupted-transaction recovery.
+Legacy destructive link replacement now refuses unowned destinations. Fresh init enables records;
+existing project records require explicit migration. No actual home installation was changed.
+Verification: full `npm test` — 268 passed; latest affected package suite 7 passed. Tests cover
+fresh-copy discovery with the original source removed, local/global isolation, customized/unowned
+files, stale plans, interrupted recovery, pinned init, notices, and global-only project selection.
