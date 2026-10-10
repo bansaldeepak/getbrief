@@ -1,0 +1,96 @@
+import { describe, it, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, symlinkSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { tmpdir } from "node:os";
+import { stringify } from "yaml";
+import { migrateRecordAuthority, rollbackRecordAuthority, readRecordItems, splitRecord, safeProjectPath } from "../lib/records.mjs";
+import { readTracker, writeTracker, writeTrackerView, generateMarkdown } from "../lib/tracker.mjs";
+import { itemCommand } from "../lib/commands/item.mjs";
+import { storyCommand } from "../lib/commands/story.mjs";
+
+describe("canonical record authority", () => {
+  let root, items, source;
+  const story = "documentation/stories/cart/S-001/story.md";
+  function put(file, text) { mkdirSync(dirname(join(root, file)), { recursive: true }); writeFileSync(join(root, file), text); }
+  function get(file) { return readFileSync(join(root, file), "utf8"); }
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), "brief-records-"));
+    items = [
+      { id: "S-001", type: "story", title: "Cart", status: "planned", story, current_task: "S-001-T1", extra: { nested: [null, false, "x"] }, pr: "#17" },
+      { id: "choice", type: "memory", title: "Choice", status: "active", custom: ["preserve", 0] },
+    ];
+    put(story, "# S-001: Cart\n\n**Status**: planned\n**Branch**: feature/cart\n\n## Goal\nKeep body.\n");
+    put("documentation/memory/choice.md", "---\nname: choice\ntype: feedback\nupdated: 2026-01-01\nvalid_until: permanent\n---\n\nUser choice.\n");
+    put("documentation/tracker.yaml", stringify({ items }));
+    source = new Map([story, "documentation/memory/choice.md", "documentation/tracker.yaml"].map(f => [f, get(f)]));
+  });
+  afterEach(() => rmSync(root, { recursive: true, force: true }));
+  it("previews without writing then round-trips unknown metadata and legacy memory type", () => {
+    assert.equal(migrateRecordAuthority(root).records, 2);
+    assert.equal(existsSync(join(root, ".brief")), false);
+    migrateRecordAuthority(root, { apply: true });
+    const saved = splitRecord(get(story)).data._brief;
+    assert.deepEqual({ ...saved.item, ...saved.legacy }, items[0]);
+    assert.equal(splitRecord(get("documentation/memory/choice.md")).data.type, "feedback");
+    assert.equal(readTracker(root).length, 2);
+  });
+  it("writes only changed records and rejects stale writes", () => {
+    migrateRecordAuthority(root, { apply: true });
+    const stale = readTracker(root), fresh = readTracker(root), memory = get("documentation/memory/choice.md");
+    fresh.find(i => i.id === "S-001").status = "in_progress";
+    writeTracker(root, fresh);
+    assert.equal(get("documentation/tracker.yaml"), source.get("documentation/tracker.yaml"));
+    assert.equal(get("documentation/memory/choice.md"), memory);
+    assert.throws(() => writeTracker(root, stale), /changed since read/);
+    assert.equal(readTracker(root).find(i => i.id === "S-001").status, "in_progress");
+  });
+  it("updates body/status atomically without losing frontmatter", async () => {
+    migrateRecordAuthority(root, { apply: true });
+    await storyCommand(root, "update", ["S-001", "status=done"], ["--body=## Goal\nUpdated."]);
+    const parsed = splitRecord(get(story));
+    assert.match(parsed.body, /^# S-001: Cart/);
+    assert.match(parsed.body, /\*\*Status\*\*: done/);
+    assert.match(parsed.body, /Updated/);
+    assert.deepEqual(parsed.data._brief.item.extra, items[0].extra);
+    await itemCommand(root, "memory", "update", ["choice", "updated=2026-10-10"], ["--body=New learning"]);
+    assert.match(get("documentation/memory/choice.md"), /New learning/);
+    assert.equal(readRecordItems(root).length, 2);
+  });
+  it("restores original bytes including generated views", () => {
+    migrateRecordAuthority(root, { apply: true });
+    writeTrackerView(root, readTracker(root)); generateMarkdown(root);
+    rollbackRecordAuthority(root);
+    for (const [file, text] of source) assert.equal(get(file), text);
+    assert.equal(existsSync(join(root, ".brief/records.json")), false);
+    assert.equal(existsSync(join(root, "documentation/PROJECT-TRACKER.md")), false);
+  });
+  it("refuses rollback over post-migration edits", () => {
+    migrateRecordAuthority(root, { apply: true });
+    put(story, get(story) + "Added later\n");
+    assert.throws(() => rollbackRecordAuthority(root), /Post-migration edits/);
+    assert.match(get(story), /Added later/);
+  });
+  it("blocks conflicting/missing records before mutation", () => {
+    put(story, source.get(story).replace("planned", "done"));
+    assert.throws(() => migrateRecordAuthority(root, { apply: true }), /Conflicting/);
+    assert.equal(existsSync(join(root, ".brief/records.json")), false);
+    rmSync(join(root, story));
+    assert.throws(() => migrateRecordAuthority(root, { apply: true }), /ENOENT/);
+  });
+  it("detects duplicate identities, malformed metadata and interrupted transactions", () => {
+    migrateRecordAuthority(root, { apply: true });
+    put("documentation/stories/copy/S-001/story.md", get(story));
+    assert.throws(() => readTracker(root), /Duplicate record/);
+    rmSync(join(root, "documentation/stories/copy"), { recursive: true });
+    const journal = JSON.parse(get(".brief/records-migration.json")); journal.state = "pending";
+    put(".brief/records-migration.json", JSON.stringify(journal));
+    assert.throws(() => readTracker(root), /Incomplete record migration/);
+    rollbackRecordAuthority(root);
+  });
+  it("rejects dangling symlinks and path traversal", () => {
+    symlinkSync(join(root, "absent"), join(root, "link"));
+    assert.throws(() => safeProjectPath(root, "link/child"), /symlink/);
+    assert.throws(() => safeProjectPath(root, "../elsewhere"), /Unsafe/);
+  });
+});

@@ -144,3 +144,13 @@ results and limits are recorded with the [autonomous lifecycle work](documentati
 
 To test installation without touching the real host configuration, pass `--home-dir` with an empty
 temporary directory to build/check. No environment variable override is required.
+
+### Concurrent records (explicit opt-in for existing projects)
+
+`brief tracker migrate-authority --dry-run` inventories legacy tracker metadata and its canonical
+Markdown files. After reviewing the report, `--apply` preserves complete metadata in each file's
+`_brief` frontmatter. Conflicting or missing files block migration. New record-mode updates touch
+only the affected record; `brief tracker generate --markdown` rebuilds ignored local views.
+Untrack previously committed views using the command in the migration report. Historical logs stay
+unchanged. `brief tracker rollback-authority --apply` restores exact inputs if no later edits or new
+records exist; an interrupted migration blocks record commands until recovery.
