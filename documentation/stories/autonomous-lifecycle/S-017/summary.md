@@ -1,13 +1,15 @@
 # S-017: Autonomous lifecycle and explicit planning context — Summary
 
 ## Progress
-- T1 complete: execution modes, review closure, retro timing, router and harness aligned; commit 2c76ef2.
-- QA after T1: 236 Node tests passed; lint/typecheck N/A (not configured).
-- T2 in progress: planning explicitly consumes learned guidance and memory/agent contracts are being aligned.
-- T3 pending: safe shared installation and active-source validation.
+- T1 complete: mode-aware execution, review closure, retro timing, router/harness; commit 2c76ef2. QA: 236 tests passed.
+- T2 complete: explicit planning inputs and scoped memory/curation; commit ce81892. QA: 236 tests passed.
+- T3 in progress: active-source validation and safe shared installation.
+
+## Review
+Independent forward evaluation covered six requests (ambiguity, finding origin, scoped preferences, migration authority, deferred retro after merge, authorized promotion). Two wording issues were found and corrected; broader policy review is running.
 
 ## Decisions
-Selective mode explicitly chosen. PRD authorizes policy edits; no remote push/PR authorized. Retro defaults before publication. preserve custom global settings.
+Selective mode explicitly selected. All policy edits authorized by PRD. No remote publication authorized. Global rollout preserves custom provider content and existing project overrides.
 
 ## Verification
-Independent forward evaluation and installation checks pending. No browser or migration verification applies to this repo change.
+No browser/DB work applies here. Bundled skill validator lacks PyYAML in this environment; source syntax validation will use the existing project YAML parser. Installed-source verification pending.

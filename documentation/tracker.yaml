@@ -371,7 +371,8 @@ items:
     title: Autonomous lifecycle and explicit planning context
     status: in_progress
     branch: feature/autonomous-lifecycle
-    current_task: S-017-T1
+    current_task: S-017-T3
     story: documentation/stories/autonomous-lifecycle/S-017/story.md
     link: null
     pr: null
+    last_task: S-017-T2
