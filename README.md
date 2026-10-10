@@ -1,4 +1,4 @@
-# getbrief
+# Brief
 
 Brief brings planning, implementation, review, and project memory into one CLI and agent workflow.
 It stores stories, tasks, decisions, and learning as files in your repository, so the context travels
@@ -9,7 +9,8 @@ with the code. Workflow guidance supports Claude, Codex, and Gemini.
 - Review new code and capture learning before publication, with user approval for push and merge.
 - Share pinned project skills through Git and keep independent agents off shared tracker/log files.
 
-The npm package and repository are **getbrief**. The command and skill remain **`brief`**.
+The product is **Brief**. Install the **getbrief** npm package and use the **`brief`** command.
+The GitHub repository is also named **getbrief**; the skill remains **`brief`**.
 
 ## Requirements
 

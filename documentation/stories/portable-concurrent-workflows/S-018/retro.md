@@ -73,3 +73,6 @@ prevented README instructions from pointing at the unrelated public brief packag
 around installation, explicit migration and observed agent behaviour; reviewed command syntax and
 retested the renamed tarball. Repository rename verified with PRIVATE visibility retained. Two existing
 memories reconciled; 18 retained. Real-project pilot, public release, push and merge remain pending.
+
+Final user clarification preserves Brief as the product/documentation brand while getbrief names npm
+and GitHub. Applied to README/PRD and the existing memory; 18 records retained with no new promotion.

@@ -119,6 +119,7 @@ home migration or npm publication is authorized by these tests.
 
 ## Release naming and pilot documentation — user choice, 2026-10-10
 
-Use getbrief for the npm package and GitHub repository; preserve brief as the command and skill name.
+Use Brief for the product and documentation brand, getbrief for the npm package and GitHub repository,
+and brief for the command and skill name.
 Publish reader-facing setup/update/migration instructions and a one-project real-agent pilot before
 push/merge. The selected repository rename does not change its visibility or publish branch contents.

@@ -43,7 +43,7 @@ readable and unchanged; new entries use valid serialized YAML and immutable iden
 ## Final Local Verification
 
 - Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
-- Current package/documentation candidate: `fd7e084`; runtime remains `b737777`. Subsequent changes are story/retro bookkeeping only.
+- Package metadata candidate: `fd7e084`; runtime remains `b737777`. Subsequent changes are README branding clarification and story/memory/retro records only.
 - Runtime `npm test` at `b737777`: **294 passed, 0 failed**. The packed npm artifact was installed into a temporary prefix and passed source-less, local/symlink override, global/local, pinned-update and removed-MCP smoke checks. Those artifact checks were repeated successfully after renaming the package to getbrief.
 - Prior BUG-001 candidate `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
 - `npm test` at `29794a2`: **280 passed, 0 failed**, including parent lifecycle tests and all new regressions. After `5a22552`, the affected portable suite was rerun: **13 passed**, including repeat-init output.
@@ -109,5 +109,17 @@ all 16 shell example blocks parsed without executing real-project commands. Pack
 bin mapping were checked. Installed getbrief-0.2.0.tgz into a temporary prefix; brief --help and the
 source/global/local/pinning smoke matrix passed. Runtime code did not change; its 294-test result above
 remains applicable. Two existing memories reconciled; 18 retained, no removals or broader promotion.
-This branch now has 16 local commits above the published parent. User will pilot one real project
+The T6 handoff had 16 local commits above the published parent. User will pilot one real project
 before push/merge; no npm publication, code push, merge or actual project/home migration occurred here.
+
+Final branding clarification: the product/documentation heading is Brief, npm and GitHub are getbrief,
+and command/skill are brief. README, PRD and the existing scoped memory now state that distinction.
+Documentation reference/record checks passed; no runtime retest was needed. Including this clarification,
+the branch has 17 local commits above the parent.
+
+Concurrent user work applied record-authority migration during this clarification. Its record/view
+changes, including the memory file containing the branding choice, remain outside the branding
+documentation commit. The earlier handoff evidence does not establish readiness of that migration.
+Record verification passes for the isolated five-file branding candidate against `eff04ad` contents.
+The live working tree currently fails verification because both generated tracker views remain tracked;
+that migration step is still outside this documentation commit.
