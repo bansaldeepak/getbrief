@@ -99,7 +99,11 @@ Utilities:
   verify-records       Validate records/logs; --base=<ref> checks immutable history
 
 Project Setup:
-  init                 Scaffold canonical project structure
+  init [--scope=local|global]  Install workflow and scaffold project (local recommended)
+  update --check|--dry-run|--apply [--global] [--source=<path>]
+                       Review or apply an explicit workflow package update
+  update --recover     Roll back an interrupted installation (--global for machine)
+  update --notice=on|off|snooze  Configure local update notices
   doctor [--json]      Check project health (symlinks, manifest, rules)
   migrate              Check/apply brief format upgrades
 
@@ -125,6 +129,11 @@ if (command === "version" || command === "--version" || command === "-V") {
 }
 
 const root = findGitRoot();
+if (["status", "pending", "active"].includes(command)) {
+  const { updateNotice } = await import("./lib/workflow-package.mjs");
+  const notice = updateNotice(root);
+  if (notice) console.error(notice);
+}
 
 // Resource commands
 if (command === "story") {
@@ -234,7 +243,9 @@ if (command === "story") {
   const reindex = rawArgs.includes("--reindex");
   const nonInteractive = rawArgs.includes("--non-interactive");
   const { initProject } = await import("./lib/init.mjs");
-  const { created, skipped } = await initProject(root, { reindex, nonInteractive });
+  const scope = args.find(a => a.startsWith("--scope="))?.slice(8);
+  const source = args.find(a => a.startsWith("--source="))?.slice(9);
+  const { created, skipped } = await initProject(root, { reindex, nonInteractive, scope, source });
   if (created.length) {
     console.log("Created:");
     for (const f of created) console.log(`  + ${f}`);
@@ -246,6 +257,21 @@ if (command === "story") {
   if (!created.length) console.log("Nothing to do — project already initialized.");
   else console.log(`\n✓ Project scaffolded at ${root}`);
 
+} else if (command === "update") {
+  const { planWorkflow, applyWorkflow, recoverWorkflow, updateNotice, WORKFLOW_MANIFEST, WORKFLOW_DIR, CLI_SOURCE } = await import("./lib/workflow-package.mjs");
+  const global = args.includes("--global"), target = global ? homedir() : root;
+  const setting = args.find(a => a.startsWith("--notice="))?.slice(9);
+  const modes = ["--check", "--dry-run", "--apply", "--recover"].filter(flag => args.includes(flag));
+  if (modes.length > 1 || (setting && modes.length)) throw new Error("Choose one update operation");
+  if (setting) { updateNotice(target, { setting }); console.log(`Update notices: ${setting}`); }
+  else if (args.includes("--recover")) console.log(JSON.stringify(recoverWorkflow(target), null, 2));
+  else {
+    const source = args.find(a => a.startsWith("--source="))?.slice(9) || (!global && existsSync(join(homedir(), WORKFLOW_MANIFEST)) ? join(homedir(), WORKFLOW_DIR) : CLI_SOURCE);
+    const plan = planWorkflow(target, { source, scope: global ? "global" : "local" });
+    console.log(JSON.stringify({ scope: plan.scope, available: plan.available, changes: plan.changes.map(c => ({ file: c.file, action: !c.before ? "add" : !c.after ? "remove" : "update" })), conflicts: plan.conflicts }, null, 2));
+    if (args.includes("--apply")) applyWorkflow(plan);
+    if (plan.conflicts.length) process.exitCode = 1;
+  }
 } else if (command === "migrate") {
   const { migrateProject } = await import("./lib/migrate.mjs");
   const { added, totalItems } = migrateProject(root);

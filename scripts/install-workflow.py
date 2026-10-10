@@ -12,6 +12,7 @@ import tempfile
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent.parent
+LINK_ROOT = ROOT
 OPEN = "<!-- brief:workflow -->"
 CLOSE = "<!-- /brief:workflow -->"
 AGENTS = ("qa", "reviewer", "researcher", "self-improving")
@@ -57,20 +58,20 @@ def integrate_config(text, block):
 def targets():
     result = {}
     for host in (".agents", ".claude", ".codex"):
-        result[f"{host}/skills/brief"] = ("link", str(ROOT / "skills/brief"))
+        result[f"{host}/skills/brief"] = ("link", str(LINK_ROOT / "skills/brief"))
         for rule in RULES:
-            result[f"{host}/rules/{rule}.md"] = ("link", str(ROOT / f"rules/{rule}.md"))
+            result[f"{host}/rules/{rule}.md"] = ("link", str(LINK_ROOT / f"rules/{rule}.md"))
     for name in AGENTS:
         for host in (".agents", ".claude"):
-            result[f"{host}/agents/{name}.md"] = ("link", str(ROOT / f"agents/{name}.md"))
+            result[f"{host}/agents/{name}.md"] = ("link", str(LINK_ROOT / f"agents/{name}.md"))
         generated = subprocess.run([sys.executable, str(ROOT / "scripts/gen-codex-agent.py"),
-                                    str(ROOT / f"agents/{name}.md")],
+                                    str(ROOT / f"agents/{name}.md"), "--label", str(LINK_ROOT / f"agents/{name}.md")],
                                    capture_output=True, text=True)
         if generated.stderr:
             print(generated.stderr, end="", file=sys.stderr)
         generated.check_returncode()
         result[f".codex/agents/{name}.toml"] = ("file", generated.stdout)
-    adapter = (ROOT / "templates/WORKFLOW-ADAPTER.md").read_text().replace("@BRIEF_SOURCE@", str(ROOT))
+    adapter = (ROOT / "templates/WORKFLOW-ADAPTER.md").read_text().replace("@BRIEF_SOURCE@", str(LINK_ROOT))
     for path in CONFIGS:
         result[path] = ("block", OPEN + "\n" + adapter.rstrip() + "\n" + CLOSE)
     return result
@@ -127,7 +128,7 @@ def make_plan(home, previous, adopt):
         expected = {"kind": kind, "target": payload} if kind == "link" else {"kind": kind, "sha256": digest(payload)}
         content, owned, matches = payload, False, False
         if kind == "link":
-            if not Path(payload).exists():
+            if not (ROOT / Path(payload).relative_to(LINK_ROOT)).exists():
                 raise ValueError(f"missing source: {payload}")
             matches = path.resolve() == Path(payload).resolve() and exists
             owned = path.is_symlink() and old.get("kind") == "link" and os.readlink(path) == old.get("target")
@@ -196,7 +197,7 @@ def install(home, plan, manifest_path):
                     os.unlink(temporary)
         else:
             atomic_write(path, item["payload"])
-    data = {"version": 1, "source": str(ROOT), "entries": {i["relative"]: i["expected"] for i in plan}}
+    data = {"version": 1, "source": str(LINK_ROOT), "entries": {i["relative"]: i["expected"] for i in plan}}
     serialized = json.dumps(data, indent=2) + "\n"
     if not manifest_path.exists() or manifest_path.read_text() != serialized:
         backup(manifest_path, backup_root / ".agents/brief-workflow.json")
@@ -206,13 +207,21 @@ def install(home, plan, manifest_path):
 
 
 def main():
+    global ROOT, LINK_ROOT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--home-dir", type=Path, default=Path.home(), help="Installation root; use a temporary directory for tests")
+    parser.add_argument("--source-dir", type=Path, default=ROOT, help="Workflow checkout or packaged source")
+    parser.add_argument("--link-source", type=Path, help="Prospective package location for preflight")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--check", action="store_true")
+    mode.add_argument("--plan-json", action="store_true", help="Read-only transaction plan for the scoped package installer")
     parser.add_argument("--adopt-existing", action="store_true", help="Explicitly replace named existing files/links with backups; never directories")
     args = parser.parse_args()
+    ROOT = args.source_dir.expanduser().resolve()
+    LINK_ROOT = (args.link_source or ROOT).expanduser().absolute()
+    if args.link_source and not (args.dry_run or args.plan_json):
+        raise ValueError("--link-source is only supported for read-only preflight")
     home = args.home_dir.expanduser().absolute()
     manifest, actual_manifest = safe_path(home, ".agents/brief-workflow.json")
     safe_path(home, ".agents/brief-backups/preflight")
@@ -223,6 +232,10 @@ def main():
     prior_manifest = read_manifest(manifest)
     previous = prior_manifest.get("entries", {})
     plan, conflicts = make_plan(home, previous, args.adopt_existing and not args.check)
+    if args.plan_json:
+        print(json.dumps({"conflicts": conflicts, "plan": [{k: str(v) if isinstance(v, Path) else v for k, v in item.items()} for item in plan],
+                          "manifest": {"version": 1, "source": str(LINK_ROOT), "entries": {i["relative"]: i["expected"] for i in plan}}}))
+        return int(bool(conflicts))
     for problem in conflicts:
         print(f"CONFLICT {problem}", file=sys.stderr)
     for item in plan:
@@ -230,7 +243,7 @@ def main():
     if conflicts:
         return 1
     if args.check:
-        expected = {"version": 1, "source": str(ROOT), "entries": {i["relative"]: i["expected"] for i in plan}}
+        expected = {"version": 1, "source": str(LINK_ROOT), "entries": {i["relative"]: i["expected"] for i in plan}}
         return int(prior_manifest != expected or any(i["change"] for i in plan))
     if not args.dry_run:
         install(home, plan, manifest)

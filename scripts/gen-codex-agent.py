@@ -64,7 +64,7 @@ def toml_multiline(value):
 
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 4) or (len(sys.argv) == 4 and sys.argv[2] != "--label"):
         raise SystemExit(__doc__)
     src = Path(sys.argv[1])
     meta, body = parse(src.read_text())
@@ -88,7 +88,7 @@ def main():
               f"— approximated as sandbox_mode = \"{sandbox}\"", file=sys.stderr)
 
     out = [
-        f"# Generated from {src.resolve()} — do not edit.",
+        f"# Generated from {sys.argv[3] if len(sys.argv) == 4 else src.resolve()} — do not edit.",
         "# Edit the source and re-run this checkout’s build.sh instead.",
         "",
         f'name = "{name}"',

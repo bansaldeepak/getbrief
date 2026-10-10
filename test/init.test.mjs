@@ -9,7 +9,7 @@ import { initProject, matchesDetection, filterRelevantRules } from "../lib/init.
 import { runDoctor } from "../lib/doctor.mjs";
 
 const __testDirname = dirname(fileURLToPath(import.meta.url));
-const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
+const BRIEF_SKILLS_PATH = "../../.brief/workflow/skills/brief";
 
 describe("init.mjs — scaffold", () => {
   let tmpDir;
@@ -112,39 +112,29 @@ describe("init.mjs — manifest", () => {
     rmSync(tmpDir, { recursive: true });
   });
 
-  it("writes .brief/brief-manifest.json", async () => {
+  it("writes portable package provenance without machine paths", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const manifestPath = join(tmpDir, ".brief", "brief-manifest.json");
-    assert.ok(existsSync(manifestPath));
-    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief/workflow/manifest.json"), "utf8"));
+    assert.equal(manifest.schema, 1);
+    assert.equal(manifest.scope, "local");
     assert.equal(manifest.version, "0.2.0");
-    assert.ok(manifest.installed_at);
-    assert.ok(manifest.detection);
-    assert.ok(Array.isArray(manifest.symlinks));
-    assert.ok(Array.isArray(manifest.rules_installed));
-    for (const entry of manifest.symlinks) {
-      assert.equal(entry.target, BRIEF_SKILLS_PATH);
-      assert.equal(readlinkSync(join(tmpDir, entry.source)), entry.target);
-    }
+    assert.ok(manifest.files["skills/brief/SKILL.md"]);
+    assert.ok(manifest.registrations[".codex/skills/brief"]);
+    assert.ok(!JSON.stringify(manifest).includes(tmpDir));
     assert.equal(runDoctor(tmpDir).healthy, true);
   });
 
-  it("manifest contains detection results", async () => {
-    writeFileSync(join(tmpDir, "package.json"), JSON.stringify({
-      dependencies: { hono: "^4.0.0" },
-      devDependencies: { vitest: "^1.0.0" },
-    }));
+  it("still detects the stack when installing project rules", async () => {
+    writeFileSync(join(tmpDir, "package.json"), JSON.stringify({ dependencies: { hono: "^4.0.0" } }));
     await initProject(tmpDir, { nonInteractive: true });
-    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief", "brief-manifest.json"), "utf8"));
-    assert.ok(manifest.detection.frameworks.includes("hono"));
-    assert.ok(manifest.detection.testing.includes("vitest"));
-    assert.equal(manifest.detection.runtime, "node");
+    assert.ok(existsSync(join(tmpDir, ".claude/rules/backend-standards.md")));
   });
 
-  it("manifest mode is symlink when symlinks succeed", async () => {
+  it("keeps portable provenance unchanged on repeated init", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const manifest = JSON.parse(readFileSync(join(tmpDir, ".brief", "brief-manifest.json"), "utf8"));
-    assert.equal(manifest.mode, "symlink");
+    const file = join(tmpDir, ".brief/workflow/manifest.json"), before = readFileSync(file, "utf8");
+    await initProject(tmpDir, { nonInteractive: true });
+    assert.equal(readFileSync(file, "utf8"), before);
   });
 });
 
@@ -204,21 +194,18 @@ describe("init.mjs — gitignore", () => {
 
   it("adds entries to scoped .gitignore files (not root)", async () => {
     await initProject(tmpDir, { nonInteractive: true });
-    const agentsGi = readFileSync(join(tmpDir, ".agents", ".gitignore"), "utf8");
-    const claudeGi = readFileSync(join(tmpDir, ".claude", ".gitignore"), "utf8");
-    const briefGi = readFileSync(join(tmpDir, ".brief", ".gitignore"), "utf8");
-    assert.ok(agentsGi.includes("skills/brief"));
+    const briefGi = readFileSync(join(tmpDir, ".brief/.gitignore"), "utf8");
+    assert.ok(briefGi.includes("workflow-transaction.json"));
     assert.ok(briefGi.includes("brief-manifest.json"));
-    assert.ok(claudeGi.includes("skills/brief"));
     assert.ok(!existsSync(join(tmpDir, ".gitignore")));
+    assert.ok(!execSync("git check-ignore .agents/skills/brief .brief/workflow/manifest.json || true", { cwd: tmpDir, encoding: "utf8" }).trim());
   });
 
-  it("does not duplicate entries on re-run", async () => {
+  it("does not duplicate ignore entries on re-run", async () => {
     await initProject(tmpDir, { nonInteractive: true });
     await initProject(tmpDir, { nonInteractive: true });
-    const agentsGi = readFileSync(join(tmpDir, ".agents", ".gitignore"), "utf8");
-    const count = agentsGi.split("skills/brief").length - 1;
-    assert.equal(count, 1);
+    const content = readFileSync(join(tmpDir, ".brief/.gitignore"), "utf8");
+    assert.equal(content.split("workflow-transaction.json").length - 1, 1);
   });
 });
 

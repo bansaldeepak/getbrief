@@ -165,3 +165,33 @@ Use `brief log add "Session outcome" --session=<session> --agent=<agent> --story
 Every entry has a unique immutable file. Never append to historical `log.md`/`logs.md` or rewrite
 existing entries. Run `brief verify-records --base=<branch>` in review to enforce these constraints
 and detect tracked aggregate-view changes. This command does not replace a project's custom CI/hooks.
+
+### Portable workflow installation and updates
+
+`brief init --scope=local` (recommended; non-interactive default) installs a real, Git-trackable
+bundle in `.brief/workflow/`, with relative provider registrations and portable provenance. Commit
+that directory, registrations and instruction changes so a fresh clone has the same skills, rules
+and agents. Existing projects keep legacy record authority until explicitly migrated. New projects
+start with canonical records and ignored local tracker views.
+
+`brief init --scope=global` installs a separate machine package in `~/.brief/workflow/` and records
+the project choice. Every machine using global scope needs that package installed. Re-running init
+keeps existing packages pinned. The Brief CLI runtime is still installed separately.
+
+Updates use an available local package or CLI checkout; they never silently fetch upstream:
+
+```sh
+brief update --check
+brief update --dry-run --source=/path/to/brief
+brief update --apply --source=/path/to/brief
+brief update --dry-run --global --source=/path/to/brief
+brief update --apply --global --source=/path/to/brief
+```
+
+Updating the global package does not update project copies. Changed managed files are preserved;
+conflicting upstream replacements require explicit reconciliation. Unrelated edits remain intact.
+Update notices can be set with `brief update --notice=off|on|snooze` (snooze lasts one day).
+`brief doctor` checks package/registration health. An interrupted install retains recovery data;
+`brief update --recover` (add `--global` for a machine install) restores only transaction-owned
+files and refuses to overwrite later edits. Keep custom rules outside the managed workflow bundle
+when they should remain independent of upstream updates.
