@@ -88,8 +88,8 @@ def main():
               f"— approximated as sandbox_mode = \"{sandbox}\"", file=sys.stderr)
 
     out = [
-        f"# Generated from ~/.agents/agents/{src.name} by build.sh — do not edit.",
-        "# Edit the source and re-run ~/.agents/build.sh instead.",
+        f"# Generated from {src.resolve()} — do not edit.",
+        "# Edit the source and re-run this checkout’s build.sh instead.",
         "",
         f'name = "{name}"',
         f'description = "{description}"',

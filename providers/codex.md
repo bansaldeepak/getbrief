@@ -17,7 +17,7 @@ Skills in `~/.codex/skills/` (symlinked from `~/.agents/skills/`). Rules in `~/.
 
 | Workflow step | Codex equivalent |
 |---------------|-----------------|
-| `qa` agent | Run project-configured checks; missing commands are N/A, unavailable required checks block readiness |
+| `qa` agent | Run project-configured checks; inapplicable checks are N/A; missing or unavailable required checks block readiness |
 | `/pr-review` | Follow brief pr-review: classify origin, fix all new issues, record user decisions for existing debt |
 | `self-improving` | Follow brief memory-review and self-improving procedure: reconcile choices and apply authorized rules/skills/agents improvements |
 

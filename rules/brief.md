@@ -46,7 +46,7 @@ brief context show <slug>           # full context file
 # Update (--body replaces full content below metadata header)
 brief story update S-001 status=done pr=#42
 brief story update S-001 --body="new full content"
-brief story task update S-001-T2 status=completed
+brief story task update S-001-T2 status=done
 brief story task update S-001-T2 --body="new task content"
 brief story summary update S-001 --body="## What Changed\n..."
 brief todo update TODO-001 status=done "note=Resolution details"

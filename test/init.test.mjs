@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { initProject, matchesDetection, filterRelevantRules } from "../lib/init.mjs";
+import { runDoctor } from "../lib/doctor.mjs";
 
 const __testDirname = dirname(fileURLToPath(import.meta.url));
 const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
@@ -121,6 +122,11 @@ describe("init.mjs — manifest", () => {
     assert.ok(manifest.detection);
     assert.ok(Array.isArray(manifest.symlinks));
     assert.ok(Array.isArray(manifest.rules_installed));
+    for (const entry of manifest.symlinks) {
+      assert.equal(entry.target, BRIEF_SKILLS_PATH);
+      assert.equal(readlinkSync(join(tmpDir, entry.source)), entry.target);
+    }
+    assert.equal(runDoctor(tmpDir).healthy, true);
   });
 
   it("manifest contains detection results", async () => {

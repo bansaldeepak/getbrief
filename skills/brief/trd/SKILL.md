@@ -21,7 +21,7 @@ Translates approved PRD requirements into technical architecture and design deci
   - Performance-sensitive features
   - Security-sensitive features
 - For simple features (UI-only, config changes), skip TRD and go to `/brief plan`
-- Ask user: "This involves architecture changes. Should I write a TRD?"
+- Prepare the required TRD within authorized scope; reuse approval to begin this phase. Architecture approval remains required before implementation unless already explicitly authorized.
 
 ## Human Approval Gate
 
@@ -239,7 +239,7 @@ Keep the decision table and expanded design consistent with the actual approved 
 
 ## Open Technical Questions
 
-- [ ] <Question that needs answering during implementation>
+- [ ] <Unresolved question, affected tasks, and dependent-work block; resolve before execution. Label future observations separately.>
 
 ## Implementation Order (High-Level)
 

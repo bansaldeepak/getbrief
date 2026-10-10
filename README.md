@@ -1,288 +1,146 @@
-# ~/.agents — Unified AI Agent Configuration
+# Brief
 
-Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini CLI). One source of truth for workflow, skills, and rules — shared across providers.
+Brief provides a file-based project CLI and shared lifecycle skills for Claude, Codex, and Gemini.
+This checkout is the source for the workflow. Project-specific decisions and conventions stay in
+project repositories; shared improvements reach linked installations from this source.
 
-## Structure
+## Workflow
 
-```
-~/.agents/
-├── README.md            # This file
-├── MEMORY.md            # Memory index (points to documentation/memory/)
-├── WORKFLOW.md          # Shared workflow rules (all providers)
-├── build.sh            # Syncs WORKFLOW + provider overrides → provider configs
-├── providers/
-│   ├── claude.md       # Claude-specific additions → ~/.claude/CLAUDE.md
-│   ├── codex.md        # Codex-specific additions → ~/.codex/AGENTS.md
-│   └── gemini.md       # Gemini-specific additions → ~/.gemini/GEMINI.md
-├── brief/              # Project management + code search CLI (npm link)
-│   ├── cli.mjs         # Entry point — `brief <command>`
-│   ├── lib/
-│   │   ├── code-index.mjs      # Codegraph JS API wrapper (search/callers/edges)
-│   │   ├── context.mjs         # Graduated context (graduate/list/search)
-│   │   ├── commands/query.mjs  # Unified code+docs search
-│   │   ├── commands/context.mjs
-│   │   ├── init.mjs            # Project scaffold + codegraph index
-│   │   └── search.mjs          # Doc-only search
-│   └── test/            # node:test suite (34 tests)
-├── documentation/       # Project tracking (this repo's own work)
-│   ├── PROJECT-TRACKER.md
-│   ├── tracker.yaml
-│   ├── stories/         # Feature folders (PRD, TRD, story, tasks, retro)
-│   ├── memory/          # Agent memory files
-│   └── logs/            # One file per log entry (multi-agent safe)
-├── custom-skills/      # Skills we wrote — the publishable set
-│   ├── sdlc/                # router — owns the lifecycle graph
-│   │   ├── prd/  trd/  discover/  project-plan/
-│   │   └── pr-review/  retro/  decision-doc/  memory-review/
-│   ├── brief/               # project management CLI router
-│   └── project-memory/      # memory management skill
-├── agents/             # Subagent definitions — one source, two formats
-│   ├── qa.md  reviewer.md  researcher.md  self-improving.md
-├── scripts/
-│   ├── gen-codex-agent.py     # agents/*.md → Codex TOML
-│   ├── check-references.py    # every skill name and path must resolve
-│   ├── token-usage.py         # per-story cost, Claude + Codex, by branch
-│   ├── memory-checkpoint.sh   # UserPromptSubmit nudge (hook)
-│   ├── memory-reset-counter.sh# SessionStart counter reset (hook)
-│   └── record-session.sh      # optional SessionStart hook → .sessions.jsonl
-├── templates/          # Copied into repos on purpose — never linked
-│   └── rules/          # Rule templates installed by brief init (see manifest.json)
-├── skills/             # Third-party skills, owned by the `skills` CLI
-│   ├── gstack/         # via garrytan/gstack — routed, in use
-│   └── shadcn-ui/      # via google-labs-code/stitch-skills
-│                       # provenance tracked in .skill-lock.json
-└── rules/              # Auto-apply rules (glob-matched)
-    ├── brief.md             # brief CLI reference (auto-loads on docs)
-    ├── coding-standards.md  # modularity, naming, type safety, error handling
-    ├── documentation-standards.md  # doc modularity, ordering, diagrams
-    ├── git-workflow.md      # branch naming, push safety, commit convention
-    └── observability.md     # 4 signals, abstraction, failure isolation
+```mermaid
+flowchart LR
+    P[PRD and TRD with applied project guidance] --> L[Plan tasks and select execution mode]
+    L --> I[Implement and check]
+    I --> R[Review and fix all new issues]
+    R --> T[Retro and authorized guidance updates]
+    T --> V[Review changes and final verification]
+    V --> A[User approves push and PR]
+    A --> U[User tests and approves merge]
+    T --> P
 ```
 
-## How It Works
+Use `/brief <phase>`. The [router](skills/brief/SKILL.md) owns ordering; the
+[implement phase](skills/brief/implement/SKILL.md) defines story-scoped modes:
 
-### Provider Config Generation
+| Mode | Commit behavior | Human checkpoints |
+|------|-----------------|-------------------|
+| strict | Ask before every commit | Every commit and publication |
+| selective | Verified routine commits proceed | Critical changes, human/browser verification, publication |
+| auto | Finish authorized local story work | End-of-story publication gate |
 
-`build.sh` concatenates `WORKFLOW.md` + provider-specific overrides. A **pre-commit hook** runs it automatically on every commit — provider configs are always in sync:
+All modes ask when ambiguity remains, preserve protected-action controls, and require explicit
+publication approval. Recommend selective for critical/manual work and auto for clear code-only
+work with adequate automated checks. The user chooses; resume preserves that choice.
+
+[Review](skills/brief/pr-review/SKILL.md) fixes every confirmed introduced/worsened issue regardless
+of severity. Existing debt is the user's fix/defer choice. [Retro](skills/brief/retro/SKILL.md)
+finishes before publication by default; explicit urgency can defer with a durable follow-up. Later
+changes require affected review/checks and new learnings; a clean user test needs no repeat retro.
+
+[Planning context](skills/brief/references/planning-context.md) makes learned rules and decisions
+explicit in PRD/TRD/tasks so implementation can follow settled choices. [Memory](skills/brief/memory/SKILL.md)
+records user choices immediately at their stated scope. [Self-improving](agents/self-improving.md)
+reconciles captures and applies authorized rule, skill, and agent improvements.
+
+## Install the Shared Workflow
+
+From this checkout, inspect the proposed registrations first:
 
 ```bash
-~/.agents/build.sh
-# Output:
-# ✓ ~/.claude/CLAUDE.md
-# ✓ ~/.codex/AGENTS.md
-# ✓ ~/.gemini/GEMINI.md
-# ✓ ~/.claude/rules — N rule(s) linked
-# ✓ ~/.claude/agents — N linked · ~/.codex/agents — N generated
+./build.sh --dry-run
+./build.sh
+./check.sh
 ```
 
-Each provider gets identical workflow rules + its own tool mappings and memory conventions.
-
-### brief CLI — Project Management + Code Search
-
-`brief` is the unified interface for project tracking and code exploration. Installed globally via `npm link` from `~/.agents/brief/`.
+For an existing legacy installation, review conflicts and explicitly adopt only the named workflow
+artifacts. Existing files/links are backed up; conflicting directories are never deleted:
 
 ```bash
-# Code + doc search (primary lookup — use this by default)
-brief query "handleSubmit"          # shows callees + callers
-brief query --full "handleSubmit"   # full explore: source, edges, usages, impact
-
-# Project tracking
-brief story list                    # active stories
-brief todo list                     # open TODOs
-brief status                        # summary counts
-
-# Setup (in any project)
-brief init                          # scaffold docs + codegraph index
-brief init --reindex                # force-rebuild codegraph
+./build.sh --dry-run --adopt-existing
+./build.sh --adopt-existing
+./check.sh
 ```
 
-Bundles `@colbymchenry/codegraph` (code AST analysis) — no separate install needed. See `rules/brief.md` for full command reference.
+[Installer](scripts/install-workflow.py) manages:
 
-### Skills Distribution
+- One brief skill link in each supported discovery directory (universal, Claude, Codex).
+- The named brief, brief-lifecycle, git-workflow, and db-safety rules, plus the four shared agents.
+- Generated Codex agent definitions and a delimited workflow block in each provider's instruction file.
+- A source/target manifest and backups for replaced named artifacts.
 
-Our own skills live in `~/.agents/custom-skills/`; third-party skills stay in
-`~/.agents/skills/` under the `skills` CLI and its `.skill-lock.json`.
+Unrelated skills, user configuration, and custom project instructions are preserved. Whole provider
+files are not regenerated from the examples in [providers](providers/). Managed files changed outside
+this workflow are conflicts until explicitly adopted. `setup.sh` is an alias for this installation.
 
-`setup.sh` links **one symlink per skill**, never the whole directory — a
-directory symlink would bury each host's own entries (for example
-`~/.codex/skills/codex-primary-runtime`). Links point at the real directory, so
-editing a skill takes effect immediately with no re-install step.
+Links read this checkout live. Keep it at a stable location, validate edits before installing, and
+reload/start a new agent session after changes. A source edit is not a remote Git push or a release.
+Existing project links to this checkout continue working. Copied skills need explicit refresh;
+custom project restrictions may need reconciliation and are never silently overwritten.
 
-| Provider | Link |
-|----------|------|
-| Claude Code | `~/.claude/skills/<skill> → ~/.agents/custom-skills/<skill>` |
-| Codex | `~/.codex/skills/<skill> → ~/.agents/custom-skills/<skill>` |
+Backups are reported by the installer. To roll back, stop workflow edits, inspect its manifest and
+backup paths, restore only the affected named artifacts, and re-run verification. Source task commits
+can be reverted independently. No bulk migration of existing project repositories is performed.
 
-Third-party skills are linked in selectively, by hand.
+## Set Up a Project
 
-### Agents Distribution
-
-One definition in `agents/<name>.md`, two outputs:
-
-| Provider | Output | How |
-|----------|--------|-----|
-| Claude Code | `~/.claude/agents/<name>.md` | Symlink — edits are live |
-| Codex | `~/.codex/agents/<name>.toml` | **Generated** by `build.sh` — never hand-edit |
-| Gemini | — | No subagent concept |
-
-The formats aren't isomorphic. `model` maps through an alias table (`haiku` →
-`gpt-5.6-terra`/`low`, `sonnet` → `gpt-5.6`/`medium`, `opus` → `gpt-5.6`/`high`), and Codex has no
-per-tool allowlist — an agent without `Write`/`Edit` becomes `sandbox_mode = "read-only"`, which is
-coarser than Claude's `tools` list. `maxTurns` and `memory` have no equivalent and are dropped. The
-generator prints every approximation it makes; `check.sh` re-generates and diffs to catch a
-hand-edited or stale TOML.
-
-### Reference Checking
-
-`check.sh` verifies that provider configs *match* the source. `scripts/check-references.py` verifies
-they *point at things that exist* — a different failure, and the one that actually bites:
-
-```
-`name` skill  /  skill `name`   → the skill must exist (externals allowlisted in the script)
-~/.agents/<path>                → the path must resolve
-[text](relative/path)           → the link target must exist
-```
-
-Fenced blocks are skipped, and paths containing `<` are treated as placeholders, so templates and
-how-to snippets don't trip it.
-
-A rename or deletion orphans every mention of the old name, and nothing else here would notice. This
-check found a live one the first time it ran.
-
-### Hooks
-
-`memory-checkpoint.sh` (UserPromptSubmit) nudges a long session to capture memory every 15 messages;
-`memory-reset-counter.sh` (SessionStart) resets the count. They are wired in `~/.claude/settings.json`
-by absolute path — **not** distributed by `build.sh`, since Claude and Codex use different hook
-formats. Codex wiring is still manual.
-
-The nudge names the target on purpose. "Save to memory" without a destination is how a session ends
-up writing to the provider config directory, which the global `CLAUDE.md` forbids.
-
-### Token Accounting
-
-`scripts/token-usage.py` reports a story's real cost across **both** hosts. Claude and Codex each
-record the git branch in their session logs, so the branch is the scope — exact, retroactive, and
-needing no setup:
+Install the CLI from this checkout using your normal npm global-link workflow, then in a project:
 
 ```bash
-~/.agents/scripts/token-usage.py --branch feature/thing --project ~/Work/app
-~/.agents/scripts/token-usage.py --branch feature/thing --list   # which sessions matched
+brief init
+brief status
+brief doctor
 ```
 
-Date windows (`--after`) remain available but are approximate when stories overlap. For repos where
-one branch carries several stories, wire `scripts/record-session.sh` as a SessionStart hook and use
-`--sessions-file` — see the header of that script for the config snippets.
+[Initialization](lib/init.mjs) creates project documentation and direct skill links and records their
+actual source in its manifest. Existing installations have their own custom rules and harness
+content; inspect their state before refreshing them. Global installation above does not run init
+across projects.
 
-Accounting differs per host and the script accounts for it: Claude reports cache-create and
-cache-read separately, both billable input; Codex reports `cached_input_tokens` as a subset of
-`input_tokens`, so its total is input + output only.
-
-### Rules Distribution
-
-Rules in `~/.agents/rules/` auto-apply based on `globs` frontmatter:
-
-| Provider | Symlink |
-|----------|---------|
-| Claude Code | `~/.claude/rules/ → ~/.agents/rules/` |
-| Codex | `~/.codex/rules/ → ~/.agents/rules/` |
-
-## Setup
-
-### First-Time Install
+## CLI Examples
 
 ```bash
-# Clone or init
-git init ~/.agents
-
-# Link skills + rules and build provider configs, then verify
-~/.agents/setup.sh
-
-# gstack (optional) — set env vars in ~/.zshrc:
-export GSTACK_INSTALL_DIR="$HOME/.agents/skills/gstack"
-export GSTACK_SKILLS_DIR="$HOME/.agents/skills"
+brief query "handleSubmit"
+brief query --full "handleSubmit"
+brief search "database design"
+brief story list
+brief story tasks S-017
+brief story task update S-017-T1 status=done
+brief story update S-017 status=completed
+brief memory list
+brief memory show scoped-choice
+brief memory create "Scoped choice" --memtype=feedback --body="Source, scope, rationale, application"
+brief memory retire scoped-choice
+brief help
 ```
 
-### After Editing Workflow
+Use the CLI for tracked mutations. Memory files live in documentation/memory, with a concise
+MEMORY.md index; no provider-global project memory. Completed tasks use done, completed stories
+use completed. See [CLI guidance](rules/brief.md) for additional commands.
+
+## Source Map
+
+| Source | Responsibility |
+|--------|----------------|
+| [skills/brief](skills/brief/SKILL.md) | Router, phases, and planning context |
+| [agents](agents/) | Reviewer, QA, researcher, and self-improving definitions |
+| [rules](rules/) | Shared policy; only named workflow rules installed by build |
+| [templates](templates/) | Project harness/rule templates and shared provider adapter |
+| [lib](lib/) | Project CLI implementation |
+| [scripts](scripts/) | Installation, source validation, and agent generation |
+| [test](test/) | Node test suite and isolated installer/reference fixtures |
+
+## Verification
 
 ```bash
-# Edit shared rules
-vim ~/.agents/WORKFLOW.md
-
-# Rebuild all provider configs
-~/.agents/build.sh
+npm test
+npm run check:skills
+./check.sh
 ```
 
-### Adding a New Skill
+Tests cover CLI behavior and isolated installation safety. Active reference validation covers
+maintained skills, agents, rules, templates, providers, README, and AGENTS; historical story prose is
+not treated as executable policy. Metadata validation uses the existing YAML dependency and preserves
+supported multi-provider fields. Static checks do not prove model behavior; independent scenario
+results and limits are recorded with the [autonomous lifecycle work](documentation/stories/autonomous-lifecycle/PRD.md).
 
-```bash
-# Create skill directory with SKILL.md, then re-run setup.sh to link it
-mkdir ~/.agents/custom-skills/my-skill
-cat > ~/.agents/custom-skills/my-skill/SKILL.md << 'EOF'
----
-name: my-skill
-description: What it does and when to trigger
----
-Skill content here.
-EOF
-```
-
-### Adding a Third-Party Skill
-
-Use the `skills` CLI — it handles linking, so don't hand-roll symlinks. Run it from `$HOME`, not
-from inside a project, or it installs as a "project" skill of whatever directory you were in:
-
-```bash
-cd ~ && npx skills add <owner>/<repo> -g -a claude-code -a codex -s <skill-name> -y
-```
-
-- `-g` = user-level. The canonical copy lands in `~/.agents/skills/`, so it stays git-tracked here.
-- **`-a` must be repeated, not comma-separated** — `-a claude-code,codex` is rejected as an invalid
-  agent even though both names are valid on their own.
-- `-s` picks one skill out of a multi-skill repo; `-l` lists them without installing.
-- `npx skills update -g` keeps them current. Re-running `add` also updates in place.
-
-The two hosts are handled differently and both are correct: Claude Code gets a **symlink** at
-`~/.claude/skills/<name>`, while Codex is marked **universal** and gets nothing — it reads
-`$HOME/.agents/skills` natively, so a `~/.codex/skills/` link would be redundant.
-
-Two things the CLI does **not** do on `remove`: it leaves the entry in `.skill-lock.json`, and it
-only unlinks agents it registered itself — a symlink you created by hand is left dangling. Check
-both after removing.
-
-**Before installing, ask what the skill needs.** Most third-party skills are wrappers around an MCP
-server or a CLI; without that dependency they cannot function, but their description still occupies
-a slot in every session's skill listing. 14 skills were removed in one pass for exactly this reason.
-
-### Adding a New Rule
-
-```bash
-cat > ~/.agents/rules/my-rule.md << 'EOF'
----
-description: When this rule applies
-globs: ["src/**/*.ts"]
----
-Rule content here.
-EOF
-```
-
-## gstack Plugin
-
-[gstack](https://github.com/garrytan/gstack) installs into `~/.agents/skills/gstack/` and distributes sub-skills via `gstack-relink`.
-
-Required env vars (in `~/.zshrc`):
-
-```bash
-export GSTACK_INSTALL_DIR="$HOME/.agents/skills/gstack"
-export GSTACK_SKILLS_DIR="$HOME/.agents/skills"
-```
-
-After gstack upgrade: `gstack-relink` re-creates skill symlinks automatically.
-
-## Design Principles
-
-- **Single source of truth** — edit once, all providers get it
-- **Provider-agnostic workflow** — same lifecycle regardless of agent
-- **Provider-specific tools** — each agent gets appropriate tool mappings
-- **Git-tracked** — version control for your agent configuration
-- **Project instructions via `AGENTS.md`** — per-repo overrides live in the repo, not here
+To test installation without touching the real host configuration, pass `--home-dir` with an empty
+temporary directory to build/check. No environment variable override is required.

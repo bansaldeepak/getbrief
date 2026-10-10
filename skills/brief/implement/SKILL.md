@@ -68,7 +68,7 @@ to silently reinterpret the task.
 1. Pick the next unblocked task; verify branch/current constraints and mark it in progress.
 2. Implement approved behavior. Capture explicit user choices immediately via [memory](../memory/SKILL.md).
 3. Sync affected docs; run the project's required checks using QA or the same commands directly.
-   Missing commands are N/A; unavailable required verification is blocked, never passed.
+   Checks established as inapplicable are N/A; a missing required command or unavailable required verification is blocked, never passed.
 4. Fix clear failures inside approved scope and rerun relevant checks. Never weaken assertions or
    bypass hooks. For pre-existing failures, provide baseline evidence and request fix/defer disposition;
    do not silently waive a required check.
@@ -94,7 +94,8 @@ Requested approval: <specific commit or protected operation>
 ```
 
 Prepare reviewable work before asking. Approval to write/commit a migration is not approval to run
-it: follow the DB rule even for local/test databases. No mode waives destructive/deploy controls.
+it: read and follow the [DB safety rule](../../../rules/db-safety.md), including for local/test
+databases. No mode waives destructive/deploy controls.
 
 ## Finish Locally, Then Publish
 

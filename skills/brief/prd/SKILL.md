@@ -183,7 +183,7 @@ Write the PRD in this exact format. Save to `documentation/stories/<feature-name
 
 ## Open Questions
 
-- [ ] <Question that needs answering before or during implementation>
+- [ ] <Unresolved question and affected work; resolve before dependent implementation. Label future observations separately.>
 
 ## Timeline
 

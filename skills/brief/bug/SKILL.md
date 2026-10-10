@@ -64,7 +64,7 @@ If ANY risk is `blocks-fix`: address the mitigation before proceeding to Phase 4
 
 ## Phase 5: Verify
 
-Run the project-configured checks using QA or directly; missing commands are N/A, unavailable required checks block readiness. Verify affected browser flows when needed.
+Run the project-configured checks using QA or directly; inapplicable checks are N/A; missing or unavailable required checks block readiness. Verify affected browser flows when needed.
 
 ## Phase 6: Close
 
@@ -82,6 +82,9 @@ Run the project-configured checks using QA or directly; missing commands are N/A
    ```bash
    brief todo create "Address root cause of BUG-NNN" --body="..."
    ```
+
+Use the bug record for review/retro/publication evidence when there is no linked story. Append
+review and retrospective sections through the bug CLI; do not invent story files to complete a handoff.
 
 Before push/PR, hand off through the [router](../SKILL.md) for [review](../pr-review/SKILL.md), retro by default, final checks, and the [publication gate](../implement/SKILL.md). Fix all introduced/worsened findings; existing debt remains the user's choice.
 

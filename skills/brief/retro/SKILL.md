@@ -11,6 +11,10 @@ The [router](../SKILL.md) owns timing: normally after local review fixes and bef
 verification/publication. Do not wait for a PR or preview test to capture known implementation
 learnings. Preview/production outcomes remain pending until observed.
 
+For a standalone BUG without a story, use its bug record, reproduction, fix, and review evidence;
+append the retrospective to that record through the bug CLI. Do not invent story artifacts.
+The ordinary commit/publication controls still apply.
+
 ## Gather and Reconcile
 
 Read requirements, story/tasks in their existing format, summary/review evidence, decisions, and

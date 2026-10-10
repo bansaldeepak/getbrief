@@ -277,16 +277,11 @@ What makes a good "How" section:
 <Deferred items, future improvements>
 ```
 
-### Phase 5: Update Project Tracker
+### Phase 5: Verify Project Tracker
 
-**Primary** — if `brief` CLI is installed:
-```bash
-brief story create "<title>" --description="<context>" --feature=<folder>
-# Then for each task:
-brief story task create S-NNN "<task title>" --priority=P1 [--blocked-by=S-NNN-TN]
-```
-
-**Fallback** — add the story to `documentation/PROJECT-TRACKER.md` in the Planned section manually.
+Phase 4 already created the story/tasks. Verify their IDs, statuses, dependencies, and links using
+`brief story show <story>` and `brief story tasks <story>`. Update existing records if needed; do not
+create the same story/tasks again. With no CLI, inspect the existing tracker and files directly.
 
 ### Phase 6: Confirm
 

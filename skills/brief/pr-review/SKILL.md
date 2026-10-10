@@ -11,6 +11,9 @@ Run automatically during authorized story execution before push/PR, and for late
 another publication or merge. [Router](../SKILL.md) owns transitions;
 [implement](../implement/SKILL.md) owns commit/publication approval. This phase does not publish.
 
+For a standalone bug, use the bug record/reproduction as scope and save review evidence there;
+no story/PRD/TRD is fabricated. Use direct commit approval unless a mode explicitly covers the bug.
+
 ## Scope and Context
 
 Read project instructions, requirements/tasks, applicable rules and scoped user choices using
