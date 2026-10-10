@@ -38,7 +38,8 @@ describe("portable workflow packages", () => {
     assert.equal(recordMode(root), true);
     const old = bytes(root, `${WORKFLOW_DIR}/skills/brief/SKILL.md`);
     put(source, "skills/brief/SKILL.md", old + "\nAvailable revision\n");
-    await initProject(root, { source, nonInteractive: true, skipCodegraph: true });
+    const repeated = await initProject(root, { source, nonInteractive: true, skipCodegraph: true });
+    assert.ok(!repeated.created.includes("documentation/"));
     assert.equal(bytes(root, `${WORKFLOW_DIR}/skills/brief/SKILL.md`), old);
     assert.match(updateNotice(root, { source, home }), /available/);
     updateNotice(root, { setting: "off" }); assert.equal(updateNotice(root, { source, home }), null);
