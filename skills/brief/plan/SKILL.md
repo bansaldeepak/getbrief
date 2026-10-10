@@ -69,8 +69,8 @@ brief status
 ```
 
 **Fallback** — if CLI is not installed, read files directly:
-- `PROJECT-TRACKER.md` — active items only (lean, start here)
-- `tracker.yaml` — full history (only if you need completed/dropped context)
+- Canonical story/item Markdown in record mode; CLI views are current. Generated tracker views may be stale.
+- Legacy `documentation/tracker.yaml` only when no record-authority marker exists.
 - `memory/` files — prior learnings, constraints, gotchas for this area
 - Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar past work
 
@@ -131,11 +131,14 @@ brief story create "<title>" --description="<context>" --feature=<folder> --bran
 # Then for each task:
 brief story task create S-NNN "<task title>" --priority=P0 [--blocked-by=S-NNN-TN]
 ```
-This creates story.md, summary.md, tasks/ directory, and tracker entry automatically.
+Use the returned ID (for example, `feature-name/S-001`) in all task commands. This creates the canonical story, summary and tasks directory; legacy mode also updates its tracker.
 
 **Fallback** — create files manually following templates below.
 
-Determine the next story ID by scanning all `documentation/stories/*/S-NNN/` folders. IDs are sequential per project. Determine the feature folder name -- use an existing one if the story belongs to an in-progress feature, or create a new one (name matches branch slug).
+Read [record authority and IDs](../references/records-and-installation.md). In record mode, use CLI
+allocation within the selected feature; do not guess IDs or hand-create metadata. Without CLI access,
+restore the CLI before record-mode mutations. For legacy projects only, preserve existing global IDs
+and file formats. Choose an existing feature folder for related work or a new safe feature slug.
 
 #### `documentation/stories/<feature-name>/S-NNN/story.md`
 

@@ -36,8 +36,8 @@ brief status
 ```
 
 **Fallback** — if CLI is not installed, read files directly:
-- `PROJECT-TRACKER.md` — active items only (lean, start here)
-- `tracker.yaml` — full history (only if you need completed/dropped items)
+- Canonical story/item Markdown in record mode; CLI views are current. Generated tracker views may be stale.
+- Legacy `documentation/tracker.yaml` only when no record-authority marker exists.
 - `memory/` files — prior learnings, gotchas, retro findings
 - Recent retro files (`documentation/stories/*/retro.md`) — patterns from similar past work
 

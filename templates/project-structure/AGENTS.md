@@ -35,8 +35,8 @@ follow these rules when working in this codebase.
 ```
 MEMORY.md              # memory index (brief search is primary read path)
 documentation/
-  tracker.yaml         # structured source of truth for all items
-  PROJECT-TRACKER.md   # generated — active items only
+  tracker.yaml         # generated ignored local view in record mode
+  PROJECT-TRACKER.md   # generated ignored local view — active items only
   stories/             # feature folders (PRD, TRD, story, tasks)
   decisions/           # DEC-NNN.md files
   todo/                # TODO-NNN.md files

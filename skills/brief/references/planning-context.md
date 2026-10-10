@@ -1,5 +1,10 @@
 # Apply Project Knowledge Before Design and Execution
 
+Before PRD/TRD/tasks, read [records and installation](records-and-installation.md). Apply the actual
+project's selected install scope, record authority and qualified IDs; preserve immutable logs and
+pinned packages. Reuse settled choices and resolve any genuinely open choice before dependent work.
+
+
 Use during PRD, TRD, task planning, implementation, and review. Resolve context before asking
 questions already answered by the user or project. Keep retrieval targeted to the proposed work.
 

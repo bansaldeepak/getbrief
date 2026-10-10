@@ -1,10 +1,10 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, symlinkSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, symlinkSync, chmodSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { stringify } from "yaml";
-import { migrateRecordAuthority, rollbackRecordAuthority, readRecordItems, splitRecord, safeProjectPath } from "../lib/records.mjs";
+import { migrateRecordAuthority, rollbackRecordAuthority, readRecordItems, splitRecord, safeProjectPath, atomicText, createExclusive, createRecordText } from "../lib/records.mjs";
 import { readTracker, writeTracker, writeTrackerView, generateMarkdown } from "../lib/tracker.mjs";
 import { itemCommand } from "../lib/commands/item.mjs";
 import { storyCommand } from "../lib/commands/story.mjs";
@@ -80,13 +80,51 @@ describe("canonical record authority", () => {
   });
   it("detects duplicate identities, malformed metadata and interrupted transactions", () => {
     migrateRecordAuthority(root, { apply: true });
-    put("documentation/stories/copy/S-001/story.md", get(story));
+    put("documentation/stories/copy/S-001/story.md", get(story).replace(story, "documentation/stories/copy/S-001/story.md"));
     assert.throws(() => readTracker(root), /Duplicate record/);
     rmSync(join(root, "documentation/stories/copy"), { recursive: true });
     const journal = JSON.parse(get(".brief/records-migration.json")); journal.state = "pending";
     put(".brief/records-migration.json", JSON.stringify(journal));
     assert.throws(() => readTracker(root), /Incomplete record migration/);
     rollbackRecordAuthority(root);
+  });
+  it("blocks legacy mutations during an interruption before the authority marker exists", async () => {
+    migrateRecordAuthority(root, { apply: true });
+    const journal = JSON.parse(get(".brief/records-migration.json")); journal.state = "pending";
+    put(".brief/records-migration.json", JSON.stringify(journal));
+    rmSync(join(root, ".brief/records.json"));
+    const before = get(story);
+    assert.throws(() => readTracker(root), /Incomplete record migration/);
+    await assert.rejects(storyCommand(root, "create", ["Late story"], ["--body=No"]), /Incomplete record migration/);
+    assert.equal(get(story), before);
+    rollbackRecordAuthority(root);
+    for (const [file, text] of source) assert.equal(get(file), text);
+  });
+  it("rejects mappings outside scanner inventory and inconsistent canonical paths", () => {
+    const outside = "documentation/legacy-story.md";
+    put(outside, get(story)); rmSync(join(root, story));
+    items[0].story = outside; put("documentation/tracker.yaml", stringify({ items }));
+    assert.throws(() => migrateRecordAuthority(root, { apply: true }), /outside canonical inventory/);
+    assert.equal(existsSync(join(root, ".brief")), false);
+    put(story, get(outside)); rmSync(join(root, outside)); items[0].story = story;
+    put("documentation/tracker.yaml", stringify({ items })); migrateRecordAuthority(root, { apply: true });
+    put(story, get(story).replace(story, outside));
+    assert.throws(() => readTracker(root), /canonical story path/);
+  });
+  it("accepts Setext headings while refusing real conflict blocks", () => {
+    assert.equal(splitRecord("Heading\n=======\nText\n").body, "Heading\n=======\nText\n");
+    assert.throws(() => splitRecord("<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> peer\n"), /merge markers/);
+  });
+  it("publishes complete managed records exclusively and preserves file modes", () => {
+    const path = join(root, "exclusive.md");
+    const text = createRecordText("# New\n", { id: "TODO-001", type: "todo", status: "open" });
+    createExclusive(path, text);
+    assert.ok(splitRecord(readFileSync(path, "utf8")).data._brief.record_id);
+    assert.throws(() => createExclusive(path, "partial"), /EEXIST/);
+    assert.equal(readFileSync(path, "utf8"), text);
+    chmodSync(path, 0o664); const oldMask = process.umask(0o022);
+    try { atomicText(path, text + "Updated\n"); } finally { process.umask(oldMask); }
+    assert.equal(statSync(path).mode & 0o777, 0o664);
   });
   it("rejects dangling symlinks and path traversal", () => {
     symlinkSync(join(root, "absent"), join(root, "link"));

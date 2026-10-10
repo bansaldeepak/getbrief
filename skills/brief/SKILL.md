@@ -53,6 +53,12 @@ For `setup`, `migrate`, and `verify`: follow the instructions inline below (no s
 Invoked with no argument: infer the phase from the lifecycle position below, name your choice, and
 proceed. If two phases are equally plausible, ask rather than guess.
 
+## Records and Installation Contract
+
+For setup, migrate, verify, planning, implementation, review or curation, read
+[records and installation](references/records-and-installation.md). It owns canonical records,
+feature-scoped IDs, immutable logs and portable updates. Follow it in every execution mode.
+
 ## Branch Check — Before Writing Anything
 
 Every phase from `prd` onward writes files into the repo (PRD.md, TRD.md, story files, code). Before
@@ -132,16 +138,24 @@ Risk assessment is built into `/brief bug` (Phase 3) — no standalone pre-morte
 
 Run in a project directory to scaffold the brief structure.
 
-### Step 1 — Run the CLI
+### Step 1 — Resolve scope and run the CLI
+
+Reuse the existing scope from the project manifest or an explicit choice already supplied in this
+session. For a fresh project without a choice, offer local (recommended for teams) and global; ask
+the user before selecting. Then pass `--scope=<selected>` to `brief init`. A recommendation is not
+consent, and local must not override an existing global selection.
 
 ```bash
-brief init
+brief init   # preserves an existing scope; prompts for scope on a fresh interactive install
 ```
 
 This creates:
 - `documentation/` with subdirectories: stories, decisions, todo, logs, memory, context
-- `documentation/tracker.yaml` — item registry
-- `documentation/PROJECT-TRACKER.md` — generated markdown view
+- `.brief/workflow/` — local scope only: tracked pinned skills, rules, agents and portable registrations
+- `.brief/install.json` — global scope selection; that workflow package lives in the home directory
+- `.brief/records.json` — canonical Markdown record authority for fresh projects
+- `documentation/tracker.yaml` — ignored local view
+- `documentation/PROJECT-TRACKER.md` — ignored generated local view
 - `MEMORY.md` — memory index at project root
 - `AGENTS.md` — agent instructions with harness marker
 - `.claude/rules/` — rule templates matched by detected stack
@@ -181,44 +195,26 @@ sections with generic boilerplate.
 
 1. Confirm `brief status` returns counts
 2. If project has existing stories in `documentation/stories/`, run `/brief migrate`
-3. Add `documentation/logs/` to `.gitignore` if appropriate
+3. Keep new standalone logs tracked; never mutate historical monolithic logs. Run `brief verify-records`.
 4. Commit the scaffold: `chore: initialize brief project structure`
 
 ## /brief migrate
 
-One-time conversion of existing project data into brief's format.
+Convert legacy tracker authority only after inspecting the canonical file mappings:
 
-**What it converts:**
-1. Monolithic `TODOS.md` → individual `documentation/todo/TODO-NNN-<slug>.md` files
-2. Monolithic `log.md` → individual `documentation/logs/<timestamp>.md` files
-3. Existing story folders → `documentation/tracker.yaml` entries
-
-### Instructions
-
-**Step 1 — Assess what exists:**
 ```bash
-ls documentation/TODOS.md documentation/log.md documentation/tracker.yaml 2>&1
-brief status
+brief tracker migrate-authority --dry-run
+# After applicable user authorization:
+brief tracker migrate-authority --apply
+brief tracker generate --markdown
+brief verify-records
 ```
 
-**Step 2 — Run brief's built-in migration:**
-```bash
-brief migrate --dry-run
-brief migrate
-```
-
-**Step 3 — Verify:**
-```bash
-brief status
-brief story list
-brief todo list
-```
-
-**Step 4 — Commit:**
-```bash
-git add documentation/
-git commit -m "chore: migrate project data to brief format"
-```
+Follow the printed command to untrack previously tracked views after inspecting the result.
+Preserve all existing IDs, unknown metadata and historical log bytes. Missing or conflicting
+records require clarification/reconciliation before applying. Never invent placeholder records or
+rewrite logs to make migration pass. Recovery: `brief tracker rollback-authority --apply` refuses
+post-migration edits. The older `brief migrate` command only checks legacy format versions.
 
 ## /brief verify
 
@@ -230,7 +226,8 @@ brief status
 brief story list
 brief todo list
 brief search "<relevant keyword>"
-test -f documentation/tracker.yaml
+brief doctor
+brief verify-records
 ```
 
 **Report format:**
@@ -241,7 +238,7 @@ brief verify:
   ✓ Stories: N active
   ✓ TODOs: N open
   ✓ Search: functional
-  ✓ tracker.yaml: present
+  ✓ Records and installed workflow: validated (report actual checks)
 ```
 
 **If any check fails**, report the failure and suggest the fix (usually `brief init` or PATH issue).

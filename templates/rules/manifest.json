@@ -98,7 +98,7 @@
       "id": "brief-cli-ops",
       "name": "Brief CLI Operations",
       "description": "Mandatory brief CLI usage for documentation/ CRUD — prevents tracker drift",
-      "detect": ["documentation/tracker.yaml"],
+      "detect": ["*"],
       "paths": ["documentation/**"],
       "file": "brief-cli-ops.md"
     }

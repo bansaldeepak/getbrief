@@ -42,7 +42,10 @@ brief memory retire <slug>
 CLI supports feedback, project, reference, and user memory types; slug filenames are returned by
 create. For multiline bodies prefer stdin with `--body=-`. Verify the written content.
 If the active agent/curator lacks CLI access, hand mutations to the caller; if no CLI is available,
-edit the same canonical files directly and reconcile the index/tracker without dropping entries.
+read the same canonical files and restore CLI access before record-mode creation/status changes.
+For legacy-only projects, direct fallback edits must reconcile the legacy index/tracker without dropping entries.
+
+Follow [record/log storage](../references/records-and-installation.md); preserve reserved `_brief` metadata and use immutable new log entries.
 
 Current CLI files use `metadata.type`; accept historical top-level `type` when reading. Do not
 bulk-convert old records just to match a template. New direct-write fallback:

@@ -26,7 +26,7 @@ previous reviewed revision and whether new changes require broader coverage. Inv
 agent with scope, constraints, and verification evidence; if unavailable follow its procedure
 directly and report the fallback.
 
-Check correctness, security, performance, meaningful tests, coding/naming rules, maintainability,
+Read [record/log rules](../references/records-and-installation.md); run `brief verify-records --base=<review-base>` and resolve violations. Check correctness, security, performance, meaningful tests, coding/naming rules, maintainability,
 scope, and architecture. Do not manufacture issues or enforce personal taste as a requirement.
 
 ## Finding Contract

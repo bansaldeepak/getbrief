@@ -2,7 +2,7 @@
 // brief CLI — project management + knowledge graph.
 // Resource-based commands: brief <resource> <action> [args] [flags]
 
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { execSync } from "node:child_process";
 import { homedir } from "node:os";
@@ -225,7 +225,7 @@ if (command === "story") {
   console.log(JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 } else if (command === "next") {
-  const type = args[1] || "story";
+  const type = args.slice(1).find(arg => !arg.startsWith("--")) || "story";
   const { readTracker, nextId, TYPE_CONFIG } = await import("./lib/tracker.mjs");
   if (!TYPE_CONFIG[type]) {
     console.error(`Unknown type: ${type}. Valid: story, todo, decision, research, audit, bug, memory`);
@@ -258,7 +258,7 @@ if (command === "story") {
   else console.log(`\n✓ Project scaffolded at ${root}`);
 
 } else if (command === "update") {
-  const { planWorkflow, applyWorkflow, recoverWorkflow, updateNotice, WORKFLOW_MANIFEST, WORKFLOW_DIR, CLI_SOURCE } = await import("./lib/workflow-package.mjs");
+  const { planWorkflow, applyWorkflow, recoverWorkflow, updateNotice, workflowPreview, WORKFLOW_MANIFEST, WORKFLOW_DIR, CLI_SOURCE } = await import("./lib/workflow-package.mjs");
   const global = args.includes("--global"), target = global ? homedir() : root;
   const setting = args.find(a => a.startsWith("--notice="))?.slice(9);
   const modes = ["--check", "--dry-run", "--apply", "--recover"].filter(flag => args.includes(flag));
@@ -266,9 +266,10 @@ if (command === "story") {
   if (setting) { updateNotice(target, { setting }); console.log(`Update notices: ${setting}`); }
   else if (args.includes("--recover")) console.log(JSON.stringify(recoverWorkflow(target), null, 2));
   else {
+    if (!global && existsSync(join(root, ".brief/install.json")) && JSON.parse(readFileSync(join(root, ".brief/install.json"), "utf8")).scope === "global") throw new Error("This project uses the machine workflow package; run brief update --global to review or update that scope");
     const source = args.find(a => a.startsWith("--source="))?.slice(9) || (!global && existsSync(join(homedir(), WORKFLOW_MANIFEST)) ? join(homedir(), WORKFLOW_DIR) : CLI_SOURCE);
     const plan = planWorkflow(target, { source, scope: global ? "global" : "local" });
-    console.log(JSON.stringify({ scope: plan.scope, available: plan.available, changes: plan.changes.map(c => ({ file: c.file, action: !c.before ? "add" : !c.after ? "remove" : "update" })), conflicts: plan.conflicts }, null, 2));
+    console.log(JSON.stringify(workflowPreview(plan, { diff: args.includes("--dry-run") }), null, 2));
     if (args.includes("--apply")) applyWorkflow(plan);
     if (plan.conflicts.length) process.exitCode = 1;
   }

@@ -90,10 +90,10 @@ brief status
 brief doctor
 ```
 
-[Initialization](lib/init.mjs) creates project documentation and direct skill links and records their
-actual source in its manifest. Existing installations have their own custom rules and harness
-content; inspect their state before refreshing them. Global installation above does not run init
-across projects.
+[Initialization](lib/init.mjs) creates project documentation and a pinned local workflow bundle
+with relative registrations. Portable provenance records the package version, revision and hashes.
+Existing custom rules remain project-owned; updates are explicit and reviewable. Initialization
+never runs across unrelated repositories.
 
 ## CLI Examples
 

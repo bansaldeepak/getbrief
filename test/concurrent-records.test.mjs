@@ -23,6 +23,7 @@ describe("concurrent project records", () => {
   it("scopes new IDs and rejects ambiguous shorthand without changing files", async () => {
     for (const feature of ["cart", "billing"]) await storyCommand(root, "create", ["Story"], [`--feature=${feature}`, "--body=Scope"]);
     assert.deepEqual(readTracker(root).map(i => i.id), ["billing/S-001", "cart/S-001"]);
+    assert.equal(run(root, "next", "--feature=cart").trim(), "cart/S-002");
     await assert.rejects(storyCommand(root, "update", ["S-001", "status=done"], []), /Ambiguous.*billing\/S-001.*cart\/S-001/);
     await storyCommand(root, "update", ["cart/S-001", "status=in_progress"], ["--body=New scope"]);
     assert.equal(readTracker(root).find(i => i.id === "cart/S-001").status, "in_progress");
@@ -51,14 +52,32 @@ describe("concurrent project records", () => {
   });
   it("guards historical logs and tracked generated views", async () => {
     git(root, "init", "-q"); writeFileSync(join(root, "logs.md"), "History\n");
-    await logCommand(root, "add", ["Initial"], ["--body=Log"]); commit(root, "baseline");
+    await logCommand(root, "add", ["Initial"], ["--body=Log"]);
+    writeFileSync(join(root, "documentation/logs/historical.md"), "---\nnote: Completed: old unquoted note\n---\n");
+    commit(root, "baseline");
     const base = git(root, "rev-parse", "HEAD");
+    assert.equal(verifyRecords(root, { base }).ok, true);
+    await logCommand(root, "list", [], []);
     writeFileSync(join(root, "logs.md"), "Edited\n");
     const file = readdirSync(join(root, "documentation/logs"))[0];
     writeFileSync(join(root, "documentation/logs", file), "changed");
     writeFileSync(join(root, "documentation/tracker.yaml"), "items: []\n"); git(root, "add", "-f", "documentation/tracker.yaml");
     const result = verifyRecords(root, { base });
     assert.equal(result.ok, false); assert.match(result.errors.join("\n"), /monolithic/); assert.match(result.errors.join("\n"), /immutable/); assert.match(result.errors.join("\n"), /Untrack/);
+  });
+  it("requires immutable identities on new tasks and forbids removing or changing them", async () => {
+    git(root, "init", "-q");
+    await storyCommand(root, "create", ["Cart"], ["--feature=cart", "--body=Scope"]);
+    await storyCommand(root, "task", ["create", "cart/S-001", "Task"], ["--body=Work"]);
+    const file = join(root, "documentation/stories/cart/S-001/tasks/T-001.md"), original = readFileSync(file, "utf8");
+    commit(root, "base"); const base = git(root, "rev-parse", "HEAD");
+    writeFileSync(file, original.replace(/^---\n_brief_task:.*\n---\n/, ""));
+    assert.match(verifyRecords(root, { base }).errors.join("\n"), /identity changed\/removed/);
+    writeFileSync(file, original.replace(/^_brief_task:.*$/m, "_brief_task: changed"));
+    assert.match(verifyRecords(root, { base }).errors.join("\n"), /identity changed\/removed/);
+    writeFileSync(file, original);
+    writeFileSync(join(root, "documentation/stories/cart/S-001/tasks/T-002.md"), "# cart/S-001-T2: Missing identity\n\n**Status:** pending\n");
+    assert.match(verifyRecords(root, { base }).errors.join("\n"), /New task requires/);
   });
   it("merges independent clones without tracker conflicts and detects same-feature collisions", () => {
     git(root, "init", "-q"); commit(root, "base");

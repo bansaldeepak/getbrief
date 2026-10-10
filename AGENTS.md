@@ -17,7 +17,7 @@ Explicit user approval at its stated scope remains valid.
 ## Story-Based Execution
 
 - **Feature folder**: `documentation/stories/<feature-name>/` — groups PRD, TRD, stories, decisions
-- **Story ID**: `S-NNN`. **Task ID**: `S-NNN-T1`, `S-NNN-T2`, etc.
+- **Story ID**: new record-mode IDs are `feature/S-NNN`; tasks are `feature/S-NNN-T1`. Preserve existing IDs.
 - **One task = one commit** — atomic unit of work
 - **Mandatory PRD/TRD**: Always exist in every feature folder (skip-justified for trivial work)
 - **Story-first rule**: `story.md`, `tasks/T-NNN.md`, `summary.md` must exist BEFORE implementation
@@ -33,6 +33,18 @@ Explicit user approval at its stated scope remains valid.
 ## Plan Mode
 
 Planning explicitly applies relevant user choices, decisions, rules, skills, and agent guidance in PRD/TRD/tasks. Resolve known questions before execution. Implementation still checks current rules. Preserve required artifacts and applicable user approvals.
+
+## Concurrent Records and Portable Skills
+
+Read the installed Brief record/installation contract. New projects keep real pinned workflow files
+in `.brief/workflow/` (recommended local scope); global scope uses the independent home package.
+Updates are explicit and preserve customizations. Commit local bundles and relative registrations.
+Canonical Markdown owns records when `.brief/records.json` exists. Tracker YAML/Markdown are ignored
+local views; never routinely commit them or mutate shared task-progress pointers. Use the CLI and
+returned qualified IDs. Preserve legacy modes/IDs until explicitly migrated with a reviewed dry-run.
+Never modify historical log.md/logs.md or existing log entries. Use `brief log add` for a unique
+session/agent-associated file per entry. Run `brief verify-records --base=<base>` during verification;
+violations block readiness. Same-record conflicts still require ownership coordination.
 
 ## Memory
 

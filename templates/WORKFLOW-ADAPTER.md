@@ -13,6 +13,11 @@ constraints; surface unresolved conflicts rather than overriding them silently.
   before publication by default, followed by review of changes and final checks.
 - Explicit urgency can defer retro with a durable owner/revision/trigger. Later changes receive
   incremental review and affected verification; a clean user test needs no repeated retro.
+- Read @BRIEF_SOURCE@/skills/brief/references/records-and-installation.md for storage/install work.
+  Use qualified feature/story IDs and canonical records; keep generated trackers local. Never edit
+  historical monolithic logs or existing entries; use `brief log add` for new session/agent files.
+  Run `brief verify-records --base=<base>` during verification and resolve violations before readiness.
+  Respect pinned project packages and explicit global/local update scope; preserve customizations.
 - Capture scoped choices immediately in the current repo's knowledge store. Use brief memory
   for canonical documentation/memory files and MEMORY.md index; no provider-global memory store.
 - If named QA/reviewer/self-improving agents are unavailable, follow the same source procedures

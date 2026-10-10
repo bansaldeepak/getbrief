@@ -15,6 +15,9 @@ For a standalone BUG without a story, use its bug record, reproduction, fix, and
 append the retrospective to that record through the bug CLI. Do not invent story artifacts.
 The ordinary commit/publication controls still apply.
 
+Follow [record/log rules](../references/records-and-installation.md): use individual records and new
+immutable log entries; preserve canonical metadata and keep generated views out of routine commits.
+
 ## Gather and Reconcile
 
 Read requirements, story/tasks in their existing format, summary/review evidence, decisions, and

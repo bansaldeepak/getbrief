@@ -60,3 +60,8 @@ Always return structured findings:
 - Be thorough — check all relevant directories, not just obvious ones
 - If you can't find something, say so — don't guess
 - Bash is for `git log`, `git blame`, `ls`, package info only — never for file modification
+
+For Brief-managed work, read the installed record/installation contract. Use canonical Markdown
+records and returned feature-qualified IDs; generated tracker views can be stale and must stay local.
+Preserve historical monolithic logs and existing entries. Any new log uses a separate immutable file
+via `brief log add` with session/agent metadata. Respect project-local pinned workflow packages.

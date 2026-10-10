@@ -16,7 +16,7 @@ A mode changes approval frequency, not scope, requirements, checks, or protected
 1. Inspect Git status and branch. Resolve the actual default/base from project instructions or Git
    metadata. Branch out before edits if on the base; preserve unrelated work and use the story branch.
 2. Confirm story.md, summary.md, and tasks exist. Preserve legacy tasks.md/tasks/index.md formats.
-3. Read the story risk/verification summary and relevant tasks, rules, and code. Resolve missing
+3. Read [record/log rules](../references/records-and-installation.md), then the story risk/verification summary and relevant tasks, rules, and code. Resolve missing
    facts before recommending auto.
 4. Recommend a mode with evidence; ask the user to select unless they explicitly already did.
    Record selection and source in story.md. A recommendation or silence is not consent.
@@ -68,6 +68,7 @@ to silently reinterpret the task.
 1. Pick the next unblocked task; verify branch/current constraints and mark it in progress.
 2. Implement approved behavior. Capture explicit user choices immediately via [memory](../memory/SKILL.md).
 3. Sync affected docs; run the project's required checks using QA or the same commands directly.
+   Run `brief verify-records --base=<story-base>` for Brief-managed changes; do not commit tracker views or edit historical logs.
    Checks established as inapplicable are N/A; a missing required command or unavailable required verification is blocked, never passed.
 4. Fix clear failures inside approved scope and rerun relevant checks. Never weaken assertions or
    bypass hooks. For pre-existing failures, provide baseline evidence and request fix/defer disposition;

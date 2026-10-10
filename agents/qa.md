@@ -71,3 +71,10 @@ You are a quality assurance agent. Your job is to run all quality gates and repo
 - Bash timeout: 120s per command (300s for builds)
 - If tests need a database or external service, note missing prerequisites. Do not execute migrations or destructive setup without the applicable explicit approval.
 - Later changes invalidate affected evidence; rerun relevant checks after review fixes and retro changes.
+
+For Brief-managed work, read the installed record/installation contract. Use canonical Markdown
+records and returned feature-qualified IDs; generated tracker views can be stale and must stay local.
+Preserve historical monolithic logs and existing entries. Any new log uses a separate immutable file
+via `brief log add` with session/agent metadata. Respect project-local pinned workflow packages.
+The execution/QA caller must supply `brief verify-records --base=<base>` evidence; missing or failing
+record/log verification blocks readiness. Reviewers inspect evidence without violating read-only scope.

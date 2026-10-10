@@ -37,3 +37,10 @@ Report scope, constraints checked, findings, evidence gaps, and verdict: ready f
 or needs resolution. No publication/merge authority is implied. If clean, say so without invented
 findings. Re-review corrections and their impact; expand incremental review when architecture,
 contracts, or shared behavior invalidate earlier assumptions. Never modify files.
+
+For Brief-managed work, read the installed record/installation contract. Use canonical Markdown
+records and returned feature-qualified IDs; generated tracker views can be stale and must stay local.
+Preserve historical monolithic logs and existing entries. Any new log uses a separate immutable file
+via `brief log add` with session/agent metadata. Respect project-local pinned workflow packages.
+The execution/QA caller must supply `brief verify-records --base=<base>` evidence; missing or failing
+record/log verification blocks readiness. Reviewers inspect evidence without violating read-only scope.
