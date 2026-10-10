@@ -1,9 +1,17 @@
 ---
 name: feedback-lifecycle-retro-position
-description: "Retro runs after PR + user tests, before merge — same PR branch. Token usage tracking removed from all SDLC skills."
+description: Historical retro timing superseded on 2026-10-10; token-usage removal retained.
 metadata:
   type: feedback
 ---
+
+# Historical retro timing and token-tracking removal
+
+**Current status (2026-10-10):** The retro timing below is superseded by the user's explicitly approved [autonomous lifecycle controls](autonomous-lifecycle-controls-and-scoped-learning.md) and [retro policy](../stories/autonomous-lifecycle/RETRO-POLICY.md). The new shared brief default completes review/fixes and retro before publication, then reviews changes and verifies the resulting work. Explicit urgency can defer retro with a durable follow-up; after merge, use a fresh branch and linked PR.
+
+**Scope of supersession:** Timing and branch handling only. The independent historical removal of token-usage collection is retained; this update does not reinstate it. The original source date was not recorded in this legacy entry. Keep the original text below as history, not current execution guidance.
+
+## Original record (preserved)
 
 Retro is the last step before merge, NOT a separate story. It runs after:
 1. PR opened

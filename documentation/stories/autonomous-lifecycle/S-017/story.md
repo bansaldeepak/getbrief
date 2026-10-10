@@ -1,6 +1,6 @@
 # S-017: Autonomous lifecycle and explicit planning context
 
-**Status**: in_progress
+**Status**: completed
 **Branch**: feature/autonomous-lifecycle
 **Created**: 2026-10-10
 
@@ -14,9 +14,9 @@ Fewer runtime questions through explicit planning, mode-aware execution, review 
 and reusable scoped learning, with safe global installation.
 
 ## Acceptance Criteria
-- [ ] Execution, review, and retro follow the approved policy.
-- [ ] Planning applies learned guidance and implementation checks it.
-- [ ] Active sources and isolated rollout tests pass; installed shared sources are verified.
+- [x] Execution, review, and retro follow the approved policy.
+- [x] Planning applies learned guidance and implementation checks it.
+- [x] Active sources and isolated rollout tests pass; installed shared sources are verified.
 
 ## Scope
 **In scope:** Lifecycle skills, agents, policy rules, provider adapters, active reference validation, safe rollout.

@@ -290,10 +290,12 @@ items:
     pr: null
   - id: feedback_lifecycle-retro-position
     type: memory
-    title: Retro runs after PR + user tests, before merge — same PR branch. Token usage tracking removed from all SDLC skills.
+    title: Historical retro timing superseded on 2026-10-10; token-usage removal retained.
     status: active
     link: null
     pr: null
+    updated: 2026-10-10
+    description: Historical retro timing superseded on 2026-10-10; token-usage removal retained.
   - id: feedback_status-normalization
     type: memory
     title: Status fields in markdown files can be complex (e.g. 'Accepted (Option A) — validated by spike'). Only first word is extracted and mapped to known values.
@@ -369,10 +371,17 @@ items:
   - id: S-017
     type: story
     title: Autonomous lifecycle and explicit planning context
-    status: in_progress
+    status: completed
     branch: feature/autonomous-lifecycle
-    current_task: S-017-T3
+    current_task: null
     story: documentation/stories/autonomous-lifecycle/S-017/story.md
     link: null
     pr: null
-    last_task: S-017-T2
+    last_task: S-017-T3
+  - id: autonomous-lifecycle-controls-and-scoped-learning
+    type: memory
+    title: Autonomous lifecycle controls and scoped learning
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10

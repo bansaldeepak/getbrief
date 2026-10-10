@@ -21,10 +21,10 @@ expected answers. Six reasoning-only cases were evaluated before the final wordi
 | Starting request/state | Observed action | Result |
 |---|---|---|
 | Auto story with ambiguous rounding behavior | Investigated and requested clarification; dependent implementation paused | Pass |
-| Review containing new minor, existing debt, and unknown-origin findings | Fixed new minor; offered existing-debt choice; investigated unknown origin | Pass |
+| Review containing new minor, existing debt, and unknown-origin findings | Required new-minor correction; offered existing-debt choice; investigated unknown origin | Pass |
 | Reporting-only `accountKey` preference while planning authentication | Preserved feature scope; did not silently generalize naming | Pass |
 | Schema changes approved but migration execution unapproved | Kept execution approval separate | Pass |
-| Deferred retro after PR already merged | Used fresh follow-up branch; retained broader promotion gate | Pass |
+| Deferred retro after PR already merged | Required fresh follow-up branch; retained broader promotion gate | Pass |
 | Explicitly approved naming rule relevant to TRD | Applied it without repeating the settled decision | Pass |
 
 The evaluator identified ambiguous wording about unresolved TRD questions and unavailable checks;
@@ -50,5 +50,10 @@ directory refusal, edited generated files, idempotence, and active-reference fai
 - Global rollout is separately verified with the installer's source/target manifest. Generator
   warnings disclose Codex's approximation of unsupported per-tool/maxTurns controls.
 
-Review approval covers the resulting local source changes. Publication and merge remain subject
-to the user's explicit approval; this work does not claim live cross-provider model compliance.
+Source candidate `7382850` contains the reviewed implementation. Installation completed successfully:
+all 30 registrations passed `check.sh`, and each provider file retained its complete pre-install
+custom content. Displaced registrations are backed up; existing project overrides were preserved.
+Only documentation/memory/tracking changed afterward and receives incremental factual review.
+
+Review found the local source ready. Publication and merge remain subject to the user's explicit
+approval; this work does not claim live cross-provider model compliance.
