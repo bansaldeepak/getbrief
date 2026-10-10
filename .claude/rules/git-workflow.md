@@ -20,7 +20,7 @@ description: Project-specific git conventions — extends the global git-workflo
 
 ## CI Checks
 <!-- brief:auto section="ci-checks" version="0.2.0" generated="2026-09-01T00:00:00.000Z" -->
-- Required: `node --test` (183 tests, Node.js built-in runner)
+- Required: `node --test` (Node.js built-in runner)
 - No separate lint or typecheck step — plain `.mjs` with no TypeScript
 <!-- /brief:auto -->
 
