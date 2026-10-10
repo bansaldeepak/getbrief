@@ -34,6 +34,7 @@ brief search "<query>" --memory # memory only
 
 ## Active
 
+- [Portable concurrent workflows](documentation/stories/portable-concurrent-workflows/PRD.md) — draft scope; [user choices](documentation/memory/portable-installs-and-feature-scoped-concurrent-records.md) cover global/local installation, generated tracker views, and feature-scoped story IDs; implementation pending
 - [Autonomous lifecycle](documentation/stories/autonomous-lifecycle/PRD.md) — approved and implemented shared workflow; [validation](documentation/stories/autonomous-lifecycle/VALIDATION.md) records review, tests, installation, and limits
 - [Repo extraction](documentation/memory/project_repo-extraction.md) — brief is standalone at
   ~/Work/Arcitae/brief. BRIEF_SKILLS_PATH fixed; harness injection complete.

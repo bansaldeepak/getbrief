@@ -385,3 +385,18 @@ items:
     link: null
     pr: null
     updated: 2026-10-10
+  - id: portable-installs-and-feature-scoped-concurrent-records
+    type: memory
+    title: Portable installs and feature-scoped concurrent records
+    status: active
+    link: null
+    pr: null
+  - id: S-018
+    type: story
+    title: Portable installs and concurrent project records
+    status: in_progress
+    branch: feature/portable-concurrent-workflows
+    current_task: S-018-T1
+    story: documentation/stories/portable-concurrent-workflows/S-018/story.md
+    link: null
+    pr: null
