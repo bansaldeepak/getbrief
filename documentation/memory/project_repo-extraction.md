@@ -10,7 +10,7 @@ importance: 5
 
 ## Current status (2026-10-10)
 
-The source-path and managed-workflow changes are implemented. Installation now follows the [portable contract](../../skills/brief/references/records-and-installation.md). The account below records the 2026-08-27 extraction; its historical GitHub rename item has not been reverified by this work.
+The source-path and managed-workflow changes are implemented. Installation now follows the [portable contract](../../skills/brief/references/records-and-installation.md). On 2026-10-10, the user selected getbrief for the npm package and GitHub repository, preserving brief as the executable and skill name. The repository rename to bansaldeepak/getbrief was verified with PRIVATE visibility retained; no push/merge or npm publication occurred. This supersedes the historical suggested rename to brief below. See [the captured choice](portable-installs-and-feature-scoped-concurrent-records.md) for scope and rollout boundaries.
 
 ## Repo Extraction (2026-08-27)
 

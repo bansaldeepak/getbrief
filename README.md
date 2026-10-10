@@ -1,212 +1,302 @@
-# Brief
+# getbrief
 
-Brief provides a file-based project CLI and shared lifecycle skills for Claude, Codex, and Gemini.
-This checkout is the source for the workflow. Project-specific decisions and conventions stay in
-project repositories; shared improvements reach linked installations from this source.
+Brief brings planning, implementation, review, and project memory into one CLI and agent workflow.
+It stores stories, tasks, decisions, and learning as files in your repository, so the context travels
+with the code. Workflow guidance supports Claude, Codex, and Gemini.
 
-## Workflow
+- Turn requirements into stories and tasks with explicit acceptance checks.
+- Choose how much oversight each story needs: strict, selective, or auto.
+- Review new code and capture learning before publication, with user approval for push and merge.
+- Share pinned project skills through Git and keep independent agents off shared tracker/log files.
 
-```mermaid
-flowchart LR
-    P[PRD and TRD with applied project guidance] --> L[Plan tasks and select execution mode]
-    L --> I[Implement and check]
-    I --> R[Review and fix all new issues]
-    R --> T[Retro and authorized guidance updates]
-    T --> V[Review changes and final verification]
-    V --> A[User approves push and PR]
-    A --> U[User tests and approves merge]
-    T --> P
-```
+The npm package and repository are **getbrief**. The command and skill remain **`brief`**.
 
-Use `/brief <phase>`. The [router](skills/brief/SKILL.md) owns ordering; the
-[implement phase](skills/brief/implement/SKILL.md) defines story-scoped modes:
+## Requirements
 
-| Mode | Commit behavior | Human checkpoints |
-|------|-----------------|-------------------|
-| strict | Ask before every commit | Every commit and publication |
-| selective | Verified routine commits proceed | Critical changes, human/browser verification, publication |
-| auto | Finish authorized local story work | End-of-story publication gate |
+- Node.js and npm; Node.js 24 is recommended.
+- Git and Python 3 available on `PATH`. Python generates provider registrations during installation.
+- A supported coding-agent environment to use the skills. The CLI also works directly in a terminal.
 
-All modes ask when ambiguity remains, preserve protected-action controls, and require explicit
-publication approval. Recommend selective for critical/manual work and auto for clear code-only
-work with adequate automated checks. The user chooses; resume preserves that choice.
+Brief uses local files and CLI commands; it does not require an MCP server or a project database.
+Codegraph powers optional code indexing/query features; document tracking and memory use repository files.
 
-[Review](skills/brief/pr-review/SKILL.md) fixes every confirmed introduced/worsened issue regardless
-of severity. Existing debt is the user's fix/defer choice. [Retro](skills/brief/retro/SKILL.md)
-finishes before publication by default; explicit urgency can defer with a durable follow-up. Later
-changes require affected review/checks and new learnings; a clean user test needs no repeat retro.
+## Install
 
-[Planning context](skills/brief/references/planning-context.md) makes learned rules and decisions
-explicit in PRD/TRD/tasks so implementation can follow settled choices. [Memory](skills/brief/memory/SKILL.md)
-records user choices immediately at their stated scope. [Self-improving](agents/self-improving.md)
-reconciles captures and applies authorized rule, skill, and agent improvements.
-
-## Install the Shared Workflow
-
-From this checkout, inspect the proposed registrations first:
+Install the CLI from npm after the release is published:
 
 ```bash
-./build.sh --dry-run
-./build.sh
-./check.sh
+npm install --global getbrief
+brief --help
 ```
 
-For an existing legacy installation, review conflicts and explicitly adopt only the named workflow
-artifacts. Existing files/links are backed up; conflicting directories are never deleted:
+For an unpublished checkout, use the [local development](#local-development) instructions instead.
+Installing the npm package supplies the CLI; it does not automatically modify your agent configuration.
+
+Preview the machine workflow installation:
 
 ```bash
-./build.sh --dry-run --adopt-existing
-./build.sh --adopt-existing
-./check.sh
+brief install --dry-run
 ```
 
-[Installer](scripts/install-workflow.py) manages:
-
-- One brief skill link in each supported discovery directory (universal, Claude, Codex).
-- The named brief, brief-lifecycle, git-workflow, and db-safety rules, plus the four shared agents.
-- Generated Codex agent definitions and a delimited workflow block in each provider's instruction file.
-- A source/target manifest and backups for replaced named artifacts.
-
-Unrelated skills, user configuration, and custom project instructions are preserved. Whole provider
-files are not regenerated from the examples in [providers](providers/). Managed files changed outside
-this workflow are conflicts until explicitly adopted. `setup.sh` is an alias for this installation.
-
-Links read this checkout live. Keep it at a stable location, validate edits before installing, and
-reload/start a new agent session after changes. A source edit is not a remote Git push or a release.
-Existing project links to this checkout continue working. Copied skills need explicit refresh;
-custom project restrictions may need reconciliation and are never silently overwritten.
-
-Backups are reported by the installer. To roll back, stop workflow edits, inspect its manifest and
-backup paths, restore only the affected named artifacts, and re-run verification. Source task commits
-can be reverted independently. No bulk migration of existing project repositories is performed.
-
-## Set Up a Project
-
-Install the CLI from this checkout using your normal npm global-link workflow, then in a project:
+Review the proposed files and any conflicts, then install:
 
 ```bash
-brief install                    # once per machine: copy the home workflow package
-brief init --scope=local         # in each project: tracked, pinned workflow copy
+brief install
+```
+
+This creates `~/.brief/workflow/` and registers its skills, rules, and agents. Existing custom files
+are preserved; ownership conflicts require reconciliation. Repeated installation keeps the installed
+package pinned. To test a newer version on a machine already set up, follow [updates](#updates).
+
+## Set up a project
+
+From the root of a Git project:
+
+```bash
+brief init --scope=local
+brief doctor
+brief status
+```
+
+Local scope is recommended for teams. Commit the workflow files and registrations with the project
+so teammates, servers, and fresh clones receive the same instructions. Each machine still needs the CLI.
+
+| Scope | Workflow location | What travels with Git |
+| --- | --- | --- |
+| `local` | `.brief/workflow/` in the project | Pinned skills, rules, agents, and relative registrations |
+| `global` | `~/.brief/workflow/` on each machine | Project scope selection and instruction integration |
+
+Use `brief init --scope=global` to select the machine package instead. Existing scope/version choices
+are retained on repeat init; changing scope requires an explicit migration, not another init flag.
+
+New projects start with canonical record files and ignored tracker views. Existing projects retain
+their legacy tracker until you explicitly migrate it using the steps below.
+
+## Pilot an existing project
+
+Start with one project. Save unrelated work and pause other writers in that project during migration.
+
+### 1. Create a branch and install the project workflow
+
+```bash
+cd /path/to/project
+git status --short
+git switch -c chore/brief-adoption
+brief init --scope=local
+brief doctor
+```
+
+If a local package is already installed, init keeps it pinned. Review `brief update --dry-run` and
+apply the update with `brief update --apply` when you want to test the newer available workflow.
+
+### 2. Preview the record migration
+
+```bash
+brief tracker migrate-authority --dry-run
+```
+
+The report lists every record and affected file. Resolve reported conflicts against the project's
+recorded decisions before continuing. Do not rebuild the legacy tracker merely to silence a conflict.
+For example, a documented `deferred` item should not become `active` because of an old scanner result.
+
+### 3. Apply and verify
+
+After reviewing the preview:
+
+```bash
+brief tracker migrate-authority --apply
+git rm --cached --ignore-unmatch documentation/tracker.yaml documentation/PROJECT-TRACKER.md
+brief tracker generate --markdown
+brief verify-records --base=HEAD
 brief status
 brief doctor
 ```
 
-[Initialization](lib/init.mjs) creates project documentation and a pinned local workflow bundle
-with relative registrations. Portable provenance records the package version, revision and hashes.
-Existing custom rules remain project-owned; updates are explicit and reviewable. Initialization
-never runs across unrelated repositories.
+`git rm --cached` removes the two generated views from Git tracking while keeping local files.
+Existing record IDs, unknown metadata, and historical log bytes are preserved. Each record now owns
+its state; generated tracker files are local views rather than shared write targets.
 
-## CLI Examples
+### 4. Review and commit the migration
 
 ```bash
-brief query "handleSubmit"
-brief query --full "handleSubmit"
-brief search "database design"
-brief story list
-brief story tasks S-017
-brief story task update S-017-T1 status=done
-brief story update S-017 status=completed
+git status --short
+git diff --stat
+git diff
+git diff --cached
+```
+
+Stage only the installation/migration changes, including newly created files, then commit them.
+Inspect these artifacts:
+
+- `.brief/workflow/`, `.brief/records.json`, and the relevant ignore rules.
+- Provider registrations in `.agents/`, `.claude/`, and `.codex/`, plus managed instruction changes.
+- Canonical Markdown records in `documentation/` and the removal of tracked aggregate views.
+
+Custom project instructions should remain intact. Historical logs should have no changes.
+
+### 5. Observe the skills on one small, real change
+
+Start a fresh agent session in the project so it discovers the installed skills. Use `/brief` or the
+equivalent skill invocation in your agent. For example:
+
+```text
+Use the project's Brief workflow for this change: <describe a small real task>.
+Read the local workflow, project rules, and relevant decisions first.
+Plan the work, recommend an execution mode, and let me choose it.
+Ask about unresolved requirements. Complete review and retro before publication.
+Keep this pilot local; do not push or open a PR.
+```
+
+Check the behaviour, not just whether the CLI exits successfully:
+
+- Planning applies relevant rules and saved choices, and asks about genuine ambiguity.
+- Implementation follows the mode you selected and runs the project's required checks.
+- New stories use feature-scoped IDs; task/status changes update individual records.
+- Logs are new standalone files. Existing logs and generated tracker views are not routinely edited.
+- Review resolves all introduced/worsened findings; retro captures scoped learning before publication.
+- Push/PR and merge remain separate user-controlled steps.
+
+Use `brief verify-records --base=<pilot-migration-commit>` when reviewing the pilot change. A fresh
+session should be able to retrieve its new learning through `brief memory list` and `brief memory show`.
+Observe this in one project before rolling out to others.
+
+## Workflow and execution modes
+
+```text
+discover → PRD → TRD → plan → implement → review/fix → retro
+  → final checks → approved push/PR → user testing → approved merge
+```
+
+The [router](skills/brief/SKILL.md) owns phase order. Planning explicitly reads relevant project
+rules, decisions, and agent guidance. Requirements and technical choices are settled before execution.
+
+| Mode | Local commits | Human checkpoints |
+| --- | --- | --- |
+| strict | Ask before each commit | Every commit, plus publication |
+| selective | Commit verified routine work | Critical changes, planned manual/browser checks, publication |
+| auto | Complete authorized local story work | End-of-story publication gate |
+
+The agent recommends selective for critical/manual work and auto for clear work covered by automated
+checks; the user chooses. Every mode asks about unresolved ambiguity and preserves protected-operation
+approvals. A mode does not authorize deployment, data migration, push, or merge.
+
+[Review](skills/brief/pr-review/SKILL.md) fixes confirmed introduced/worsened issues at every severity.
+Existing debt remains the user's fix/defer choice. [Retro](skills/brief/retro/SKILL.md) and authorized
+guidance improvements finish before publication by default. Explicit urgency can defer retro with a
+recorded owner and completion trigger. Later changes receive incremental review and affected checks.
+
+## Records, logs, and memory
+
+Canonical Markdown authority is selected by `.brief/records.json`. The reserved `_brief` metadata
+preserves record identity and fields. Use the CLI for mutations and retain that metadata when editing prose.
+
+New story IDs are feature-scoped, such as `checkout/S-001`; tasks use `checkout/S-001-T1`. Existing IDs
+remain valid. Different features can reuse their story numbers. Concurrent edits to the same record,
+or separate allocations within the same feature, still need coordination.
+
+```bash
+brief story create "Checkout improvements" --feature=checkout
+brief story task create checkout/S-001 "Validate inputs" --body="Acceptance checks..."
+brief story task update checkout/S-001-T1 status=done
+brief log add "Validation complete" --session=checkout-session --agent=codex --story=checkout/S-001
+brief verify-records --base=HEAD
+```
+
+Use the IDs returned by the CLI; the example assumes the first story/task in a new feature.
+Every log entry is a separate immutable file. Keep historical `log.md`, `logs.md`, and previous entries intact.
+
+Project memory lives in `documentation/memory/`, indexed by `MEMORY.md`. Explicit user choices are
+captured with their source and scope; broader promotion needs user agreement. Planning consumes that
+knowledge so implementation can reuse settled decisions.
+
+```bash
 brief memory list
-brief memory show scoped-choice
-brief memory create "Scoped choice" --memtype=feedback --body="Source, scope, rationale, application"
-brief memory retire scoped-choice
+brief memory show your-memory-slug
+brief search "database design"
+brief query "handleSubmit"
 brief help
 ```
 
-Use the CLI for tracked mutations. Memory files live in documentation/memory, with a concise
-MEMORY.md index; no provider-global project memory. Completed tasks use done, completed stories
-use completed. See [CLI guidance](rules/brief.md) for additional commands.
+See the [CLI guide](rules/brief.md), [memory contract](skills/brief/memory/SKILL.md), and
+[record/install contract](skills/brief/references/records-and-installation.md) for details.
 
-## Source Map
+## Updates
 
-| Source | Responsibility |
-|--------|----------------|
-| [skills/brief](skills/brief/SKILL.md) | Router, phases, and planning context |
-| [agents](agents/) | Reviewer, QA, researcher, and self-improving definitions |
-| [rules](rules/) | Shared policy; only named workflow rules installed by build |
-| [templates](templates/) | Project harness/rule templates and shared provider adapter |
-| [lib](lib/) | Project CLI implementation |
-| [scripts](scripts/) | Installation, source validation, and agent generation |
-| [test](test/) | Node test suite and isolated installer/reference fixtures |
+Update the CLI through npm, then review the available machine workflow update:
 
-## Verification
+```bash
+npm install --global getbrief@latest
+brief update --dry-run --global
+```
+
+After reviewing the changes:
+
+```bash
+brief update --apply --global
+```
+
+Inside each project with a local package:
+
+```bash
+brief update --check
+brief update --dry-run
+```
+
+Apply the reviewed project update with `brief update --apply`, run `brief doctor`, and commit its diff.
+Global updates do not silently replace pinned project copies. A global-scope project instead uses
+the updated machine package. Reload agent sessions after changing installed instructions.
+
+No `--source` is required for normal npm or npm-linked use. Project init/update checks the home package,
+then installed CLI assets. Global install/update uses CLI assets. To test a local checkout, unpacked
+package, or directory symlink, explicitly pass `--source=/path/to/getbrief`. Remote URLs are not fetched.
+
+Update notices support `brief update --notice=on`, `off`, or `snooze` (one day). These checks compare
+available local packages; they do not poll npm or automatically download releases.
+
+## Recovery
+
+- An interrupted workflow installation/update blocks further writes. Use `brief update --recover`
+  for a project, or add `--global` for the machine package. Recovery refuses to overwrite later edits.
+- Record migration rollback is `brief tracker rollback-authority --apply`. It restores original inputs
+  only when no later edits or new records would be lost. Inspect Git staging afterward; re-stage restored
+  tracker files if you previously untracked them.
+- Customized or unowned files are preserved. Inspect reported conflicts and reconcile their intended
+  content; do not delete directories or historical logs to make installation pass.
+
+## Local development
+
+Before the npm release, or when working on Brief itself:
+
+```bash
+git clone https://github.com/bansaldeepak/getbrief.git
+cd getbrief
+npm ci
+npm link
+brief --help
+```
+
+The linked `brief` command reads this checkout. Workflow copies remain pinned until explicitly updated.
+Use `brief install --dry-run` for first setup, or `brief update --dry-run --global` for an existing home
+package, before applying the corresponding operation.
 
 ```bash
 npm test
 npm run check:skills
-./check.sh
+npm pack --dry-run
 ```
 
-Tests cover CLI behavior and isolated installation safety. Active reference validation covers
-maintained skills, agents, rules, templates, providers, README, and AGENTS; historical story prose is
-not treated as executable policy. Metadata validation uses the existing YAML dependency and preserves
-supported multi-provider fields. Static checks do not prove model behavior; independent scenario
-results and limits are recorded with the [autonomous lifecycle work](documentation/stories/autonomous-lifecycle/PRD.md).
+Tests cover CLI behaviour, record integrity, ownership/recovery, concurrent work, and portable packages.
+They do not replace the real-agent pilot above. [Implementation evidence](documentation/stories/portable-concurrent-workflows/S-018/summary.md)
+records the tested revisions and remaining publication boundaries.
 
-To test installation without touching the real host configuration, pass `--home-dir` with an empty
-temporary directory to build/check. No environment variable override is required.
+For maintainers who intentionally need live workflow links to a checkout, `build.sh` remains available.
+Keep this separate from the pinned npm installation flow. Its `--adopt-existing` option is only for
+reviewed legacy ownership conflicts, with backups; it is not a general overwrite flag.
+Test that installer without touching the real home configuration:
 
-### Concurrent records (explicit opt-in for existing projects)
-
-`brief tracker migrate-authority --dry-run` inventories legacy tracker metadata and its canonical
-Markdown files. After reviewing the report, `--apply` preserves complete metadata in each file's
-`_brief` frontmatter. Conflicting or missing files block migration. New record-mode updates touch
-only the affected record; `brief tracker generate --markdown` rebuilds ignored local views.
-For a conflict, compare the reported Markdown and tracker values against the recorded decision;
-reconcile that record explicitly before retrying. Do not regenerate the entire legacy tracker to
-bypass a conflict. Narrative status in memory or a research experiment is not record lifecycle state.
-Untrack previously committed views using the command in the migration report. Historical logs stay
-unchanged. `brief tracker rollback-authority --apply` restores exact inputs if no later edits or new
-records exist; an interrupted migration blocks record commands until recovery.
-
-In record mode, create stories with `brief story create "Checkout" --feature=checkout` to obtain
-`checkout/S-001`. Tasks use `checkout/S-001-T1`. Existing IDs stay valid; ambiguous bare IDs fail
-with qualified alternatives. Progress derives from individual task files, so different tasks do
-not rewrite a shared story pointer. Independent clones creating the same feature/story number
-still require conflict resolution; Brief reports identity conflicts rather than hiding them.
-
-Use `brief log add "Session outcome" --session=<session> --agent=<agent> --story=checkout/S-001`.
-Every entry has a unique immutable file. Never append to historical `log.md`/`logs.md` or rewrite
-existing entries. Run `brief verify-records --base=<branch>` in review to enforce these constraints
-and detect tracked aggregate-view changes. This command does not replace a project's custom CI/hooks.
-
-### Portable workflow installation and updates
-
-`brief install` copies workflow assets from the installed npm package (or npm-linked checkout) into
-`~/.brief/workflow/` and registers them with supported agents. Preview with `brief install --dry-run`.
-Repeated installs keep that package pinned; `brief update --global` reviews/applies upgrades.
-Installing the npm CLI itself does not run a home-writing postinstall hook. Brief is CLI-only;
-the old MCP server/configuration commands have been removed.
-
-`brief init --scope=local` (recommended; non-interactive default) installs a real, Git-trackable
-bundle in `.brief/workflow/`, with relative provider registrations and portable provenance. Commit
-that directory, registrations and instruction changes so a fresh clone has the same skills, rules
-and agents. Existing projects keep legacy record authority until explicitly migrated. New projects
-start with canonical records and ignored local tracker views.
-
-`brief init --scope=global` installs a separate machine package in `~/.brief/workflow/` and records
-the project choice. Every machine using global scope needs that package installed. Re-running init
-keeps existing packages pinned. The Brief CLI runtime is still installed separately.
-
-No `--source` is needed in normal use. Project init/update uses the home package when available,
-otherwise the installed CLI assets. Global install/update uses the installed CLI assets. An explicit
-`--source=/path/to/brief` overrides this for a local checkout, unpacked package or directory symlink.
-HTTP/Git URLs are not fetched; clone or download first. Existing project packages remain pinned on init.
-
-After updating the CLI through npm, review/apply the home update, then each project's update:
-
-```sh
-brief update --dry-run --global
-brief update --apply --global
-brief update --check
-brief update --dry-run
-brief update --apply
+```bash
+brief_test_home=$(mktemp -d)
+./build.sh --home-dir "$brief_test_home" --dry-run
+./build.sh --home-dir "$brief_test_home"
+./check.sh --home-dir "$brief_test_home"
 ```
-
-Updating the global package does not update project copies. Changed managed files are preserved;
-conflicting upstream replacements require explicit reconciliation. Unrelated edits remain intact.
-Update notices can be set with `brief update --notice=off|on|snooze` (snooze lasts one day).
-`brief doctor` checks package/registration health. An interrupted install retains recovery data;
-`brief update --recover` (add `--global` for a machine install) restores only transaction-owned
-files and refuses to overwrite later edits. Keep custom rules outside the managed workflow bundle
-when they should remain independent of upstream updates.

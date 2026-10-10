@@ -43,3 +43,11 @@ User clarification on 2026-10-10: Brief is CLI-only; the old MCP server was remo
 
 
 Implementation verified in S-018-T5: brief install creates the pinned home workflow package from installed CLI assets. MCP routes/configuration and the obsolete knowledge-database lookup are removed. Project init/update defaults to the available home package, then CLI assets; global operations default to CLI assets. Explicit sources are local directories or directory symlinks; URLs are not fetched. Packed npm installation was exercised in temporary prefixes/homes. See the S-018 summary for current verification; this does not constitute npm publication or a real-home migration.
+
+### Note (2026-10-10)
+
+User selected getbrief on 2026-10-10 as the shared npm package and GitHub repository name for this Brief release. Keep the executable brief. Scope: release naming, metadata and documentation; preserve prior project IDs, .brief storage and skill names. User will pilot one project and observe skills before push/merge.
+
+### Note (2026-10-10)
+
+Verified on 2026-10-10: GitHub repository renamed from bansaldeepak/agents-setup to bansaldeepak/getbrief and origin updated; PRIVATE visibility retained. Npm package/lock metadata now use getbrief with executable brief. No push, merge, npm publication or real-project pilot was performed by this naming change.

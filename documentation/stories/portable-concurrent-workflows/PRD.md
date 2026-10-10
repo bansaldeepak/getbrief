@@ -116,3 +116,9 @@ npm or npm-linked use requires no source argument. Explicit local directory/syml
 development overrides, not remote downloads. Keep updates explicit and project copies pinned.
 Test both source modes and an actual packed npm installation in isolated homes/projects. No real
 home migration or npm publication is authorized by these tests.
+
+## Release naming and pilot documentation — user choice, 2026-10-10
+
+Use getbrief for the npm package and GitHub repository; preserve brief as the command and skill name.
+Publish reader-facing setup/update/migration instructions and a one-project real-agent pilot before
+push/merge. The selected repository rename does not change its visibility or publish branch contents.
