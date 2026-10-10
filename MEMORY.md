@@ -34,6 +34,7 @@ brief search "<query>" --memory # memory only
 
 ## Active
 
+- [Autonomous lifecycle](documentation/stories/autonomous-lifecycle/PRD.md) — draft upgrade requirements; [audit](documentation/stories/autonomous-lifecycle/AUDIT.md) records confirmed user choices on autonomy, ambiguity, review debt, and scoped learning
 - [Repo extraction](documentation/memory/project_repo-extraction.md) — brief is standalone at
   ~/Work/Arcitae/brief. BRIEF_SKILLS_PATH fixed; harness injection complete.
 - [brief CLI](documentation/memory/project_next-steps-scaffold.md) — architecture, commands (incl.

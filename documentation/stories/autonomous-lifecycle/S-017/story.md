@@ -1,0 +1,34 @@
+# S-017: Autonomous lifecycle and explicit planning context
+
+**Status**: in_progress
+**Branch**: feature/autonomous-lifecycle
+**Created**: 2026-10-10
+
+## Context
+
+Apply the approved [PRD](../PRD.md) and [technical approach](../TRD.md) to shared brief sources.
+User explicitly authorized implementation and cross-project availability on 2026-10-10.
+
+## Goal
+Fewer runtime questions through explicit planning, mode-aware execution, review before publication,
+and reusable scoped learning, with safe global installation.
+
+## Acceptance Criteria
+- [ ] Execution, review, and retro follow the approved policy.
+- [ ] Planning applies learned guidance and implementation checks it.
+- [ ] Active sources and isolated rollout tests pass; installed shared sources are verified.
+
+## Scope
+**In scope:** Lifecycle skills, agents, policy rules, provider adapters, active reference validation, safe rollout.
+**Out of scope:** Remote push/PR/merge, unrelated project edits, historical cleanup, a new memory database.
+
+## Execution Policy
+
+- Mode: selective — explicitly selected by user in this conversation.
+- Recommendation: selective because these shared rules control approvals and workflow behavior.
+- Retro timing: before publication (approved PRD default).
+- Policy-changing edits: authorized by the approved PRD; no repeated approval required within scope.
+- Push/PR: not authorized; stop before remote publication.
+- Global installation: authorized; sandbox escalation may still be required for home-directory writes.
+- Verification: Node tests, source integrity, independent scenario checks, isolated installation, installed-source verification.
+- Open clarifications: none; describeRoute message was confirmed accidental.
