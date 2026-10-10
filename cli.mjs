@@ -95,7 +95,8 @@ Search:
     --retro            Filter to retro findings
 
 Utilities:
-  next [type]          Print next available ID (default: story)
+  next [type]          Print next available ID (--feature=<slug> for scoped stories)
+  verify-records       Validate records/logs; --base=<ref> checks immutable history
 
 Project Setup:
   init                 Scaffold canonical project structure
@@ -209,6 +210,11 @@ if (command === "story") {
   await contextCommand(root, args.slice(1), rawArgs);
 
 // Next ID query
+} else if (command === "verify-records") {
+  const { verifyRecords } = await import("./lib/verify-records.mjs");
+  const result = verifyRecords(root, { base: args.find(a => a.startsWith("--base="))?.slice(7) });
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
 } else if (command === "next") {
   const type = args[1] || "story";
   const { readTracker, nextId, TYPE_CONFIG } = await import("./lib/tracker.mjs");
@@ -217,7 +223,10 @@ if (command === "story") {
     process.exit(1);
   }
   const items = readTracker(root);
-  const id = nextId(items, type, root, { _peek: true });
+  const { recordMode } = await import("./lib/records.mjs");
+  const { nextFeatureStory } = await import("./lib/identifiers.mjs");
+  const feature = args.find(a => a.startsWith("--feature="))?.slice(10);
+  const id = type === "story" && recordMode(root) ? nextFeatureStory(root, feature) : nextId(items, type, root, { _peek: true });
   console.log(id);
 
 // Init / Generate / Migrate

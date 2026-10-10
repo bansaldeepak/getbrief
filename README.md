@@ -154,3 +154,14 @@ only the affected record; `brief tracker generate --markdown` rebuilds ignored l
 Untrack previously committed views using the command in the migration report. Historical logs stay
 unchanged. `brief tracker rollback-authority --apply` restores exact inputs if no later edits or new
 records exist; an interrupted migration blocks record commands until recovery.
+
+In record mode, create stories with `brief story create "Checkout" --feature=checkout` to obtain
+`checkout/S-001`. Tasks use `checkout/S-001-T1`. Existing IDs stay valid; ambiguous bare IDs fail
+with qualified alternatives. Progress derives from individual task files, so different tasks do
+not rewrite a shared story pointer. Independent clones creating the same feature/story number
+still require conflict resolution; Brief reports identity conflicts rather than hiding them.
+
+Use `brief log add "Session outcome" --session=<session> --agent=<agent> --story=checkout/S-001`.
+Every entry has a unique immutable file. Never append to historical `log.md`/`logs.md` or rewrite
+existing entries. Run `brief verify-records --base=<branch>` in review to enforce these constraints
+and detect tracked aggregate-view changes. This command does not replace a project's custom CI/hooks.
