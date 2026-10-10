@@ -32,7 +32,7 @@ that base path to resolve the file.
 | `plan` | `plan/SKILL.md` | Alias for project-plan |
 | `implement` | `implement/SKILL.md` | Working through a story's tasks — commit and push gates |
 | `pr-review` | `pr-review/SKILL.md` | Branch is ready for review, before a PR |
-| `retro` | `retro/SKILL.md` | User tested build, before merge |
+| `retro` | `retro/SKILL.md` | Before publication by default; deferred or incremental learning |
 | `decision-doc` | `decision/SKILL.md` | A non-obvious choice was made, any time |
 | `decision` | `decision/SKILL.md` | Alias for decision-doc |
 | `memory-review` | `memory-review/SKILL.md` | Memory needs flushing or curating, any time |
@@ -75,24 +75,28 @@ resuming a later phase of the same story), switch to it instead of creating a ne
 and reversible. Everything that happens *after* the switch still follows the commit/push gates owned
 by `implement`.
 
-`retro` runs on the story branch after user testing, before merge — the retro commit is part of the
-same PR. It audits: confirm every commit for the story landed on the story's branch, not `main`,
-and flag it as a finding if not (see `retro`'s Phase 1).
-
 ## The Graph
 
-```
-discover → prd (🔒) → trd (🔒) → project-plan → implement → pr-review (🔒) → retro → merge (🔒)
-             │          │                       │      │
-      gstack plan-  gstack plan-          qa agent   every commit (🔒)
-      ceo-review    eng-review            per task   every push (🔒)
+```text
+discover → prd (approval) → trd (approval when architecture changes) → project-plan
+  → implement (selected mode) → pr-review + fixes → retro + curation
+  → review retro changes + final checks → push/PR (approval) → user tests → merge (approval)
 ```
 
-🔒 = **human approval gate.** Stop and get explicit approval. Never pass one on inferred consent.
-Implement carries the most gates of any phase — one per commit and one per push, not one per story.
+This router owns phase order. Implement owns mode/commit/publication authority; review owns finding
+closure; retro owns learning. During an authorized story, automatically continue through the local
+execution/review/retro/check loop. Do not require a new invocation at each handoff. Honor explicit
+user scope/approval and stop at unresolved questions or outstanding human gates.
 
-**Plan-review gates** run through the gstack router: `/gstack plan-ceo-review` on the PRD after `prd`
-and before `trd`; `/gstack plan-eng-review` on the TRD after `trd` and before `project-plan`.
+Retro defaults before publication. An explicit urgency choice may defer it with a durable owner,
+revision, reason, and completion trigger. Later changes require incremental review, affected checks,
+and new learnings only; after merge use a fresh branch and linked follow-up. Successful user testing
+without changes permits direct user merge.
+
+Plan-review gates use the available gstack router: plan-ceo-review for PRD and plan-eng-review for TRD.
+If unavailable, report that limitation and perform the relevant review directly; never invent a pass.
+An explicit user instruction to apply approved requirements authorizes that scoped work; do not
+repeat approvals already provided. Capture technical decisions and story/task artifacts before edits.
 
 ### Entry point by scope
 
@@ -111,18 +115,18 @@ Risk assessment is built into `/brief bug` (Phase 3) — no standalone pre-morte
 
 ## After a Phase
 
-Announce the next phase and why, then wait if the transition crosses a 🔒 gate:
-
 | Finished | Next |
 |----------|------|
-| `discover` | `prd` — or straight to `project-plan` if trivial |
-| `prd` 🔒 | `/gstack plan-ceo-review`, then `trd` if architecture changes, else `project-plan` |
-| `trd` 🔒 | `/gstack plan-eng-review`, then `project-plan` |
-| `project-plan` | `implement` — task by task, `qa` agent, gated commits |
-| `implement` | `pr-review` once every task is done and pushed 🔒 |
-| `pr-review` 🔒 | PR opened, user tests the build |
-| user tests | `retro` — captures learnings, updates docs/status, commits to same PR |
-| `retro` | merge 🔒 — retro includes self-improving as its final step; retro done = all done |
+| discover | PRD, or user-authorized trivial planning |
+| PRD | User approval; plan review, then TRD if architecture changes, otherwise justified technical note |
+| TRD | User approval for architecture; engineering review, then project-plan |
+| project-plan | Confirm unresolved scope/choices, select mode, execute tasks |
+| implement | Automatically pr-review before any push or PR |
+| pr-review | Resolve all new findings; retro by default, or recorded explicit deferral |
+| retro | Review its changes and run relevant final checks; no repeat retro without new learning |
+| final checks | Implement publication gate: present evidence and ask to push/open or update PR |
+| publication | User verifies build; changes return to incremental review/checks and learning |
+| successful user test | Merge approval; no additional retro when unchanged |
 
 ## /brief setup
 
@@ -245,8 +249,8 @@ brief verify:
 ## Rules
 
 - Always read the phase file; never improvise a phase from this table
-- Never skip a phase because the work "seems small" — say so and let the user decide
+- Preserve required artifacts and explicit approvals; justify inapplicable phases and honor user-authorized scope
 - Never pass a 🔒 gate without explicit approval in the conversation
-- One phase per invocation; chain by announcing the next, not by running it unasked
+- Continue authorized local story handoffs automatically; do not cross unanswered approval gates
 - Always `--dry-run` first for destructive migrations
 - Ask user before deleting legacy source files

@@ -58,21 +58,17 @@ If ANY risk is `blocks-fix`: address the mitigation before proceeding to Phase 4
 
 ## Phase 4: Fix
 
-1. Check branch: `git branch --show-current`. If on `main`, branch out first.
+1. Check branch and worktree; branch out if on the actual default/base branch. Resolve ambiguous intent before edits.
 2. Implement the fix.
 3. Keep changes minimal — fix the bug, don't refactor adjacent code.
 
 ## Phase 5: Verify
 
-Run the qa agent:
-- Typecheck passes
-- Lint passes
-- Related tests pass
-- If the fix touches UI: manual browser verification
+Run the project-configured checks using QA or directly; missing commands are N/A, unavailable required checks block readiness. Verify affected browser flows when needed.
 
 ## Phase 6: Close
 
-1. **Commit gate** (🔒 — get explicit approval):
+1. Use the linked story's explicit execution mode for commits, or ask for commit approval if none exists:
    ```
    type(scope): subject
 
@@ -87,6 +83,8 @@ Run the qa agent:
    brief todo create "Address root cause of BUG-NNN" --body="..."
    ```
 
+Before push/PR, hand off through the [router](../SKILL.md) for [review](../pr-review/SKILL.md), retro by default, final checks, and the [publication gate](../implement/SKILL.md). Fix all introduced/worsened findings; existing debt remains the user's choice.
+
 ## Escalation
 
 If during investigation the bug turns out to be a feature gap (not a defect):
@@ -100,4 +98,4 @@ If during investigation the bug turns out to be a feature gap (not a defect):
 - Always record first (Phase 1), even if the fix is obvious
 - Never skip risk assessment when auto-trigger criteria match
 - One bug = one commit. Don't bundle unrelated fixes.
-- The commit gate (🔒) applies — get approval before committing.
+- Commit authority follows an explicitly applicable story mode or direct approval; no implicit push/merge consent.

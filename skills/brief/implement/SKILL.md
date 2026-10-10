@@ -1,186 +1,134 @@
 ---
 name: implement
-description: "Execution policy for working through a story's tasks — the loop from an approved plan to a merged PR. Covers the per-commit and per-push approval gates, what to report at each, and what to do when a check fails or a task spec turns out to be wrong."
+description: "Execute approved stories with user-selected strict, selective, or auto commits; handle ambiguity, checks, resume state, and final publication approval."
 user_invocable: true
 model: opus
 ---
 
-# /brief implement — Execution Loop
+# /brief implement — Story Execution
 
-Runs between `project-plan` and `pr-review`: one task at a time, with a human gate at every commit
-and every push.
+The [router](../SKILL.md) owns phase order; this phase owns mode selection, commits, and publication.
+Read the story, requirements, project instructions, and [planning context](../references/planning-context.md).
+A mode changes approval frequency, not scope, requirements, checks, or protected-operation authority.
 
-Universal git and scope rules come from `AGENTS.md`; code shape from `coding-style` and
-`safe-modifications`. **Commands,
-scripts, and deploy behaviour are project-specific — read the repo's `AGENTS.md` for those.** This
-skill covers only *when you are allowed to commit, push, and open a PR*.
+## Start or Resume
 
-## The One Rule
+1. Inspect Git status and branch. Resolve the actual default/base from project instructions or Git
+   metadata. Branch out before edits if on the base; preserve unrelated work and use the story branch.
+2. Confirm story.md, summary.md, and tasks exist. Preserve legacy tasks.md/tasks/index.md formats.
+3. Read the story risk/verification summary and relevant tasks, rules, and code. Resolve missing
+   facts before recommending auto.
+4. Recommend a mode with evidence; ask the user to select unless they explicitly already did.
+   Record selection and source in story.md. A recommendation or silence is not consent.
+5. On resume reuse the selection for this story, reconciling Git/task state and outstanding gates.
+   A saved mode does not answer an open question or extend to a new story.
 
-**You never commit, push, or open a PR on your own. A human approves each one, every time.**
+| Mode | Local commits | Human checkpoints |
+|------|---------------|-------------------|
+| strict | Approval before each commit, including bookkeeping, review fixes, and retro | Every commit with a concrete verification point |
+| selective | Automatically commit verified routine work | Before committing critical changes and at planned human/browser checkpoints |
+| auto | Complete authorized tasks, fixes, checks, and local commits | End-of-story report before publication; ambiguity/protected actions still pause |
 
-Silence is not approval. "Looks good" on a previous task is not approval for this one. Approval to
-commit is not approval to push.
+Recommend **selective** for migrations/data transformations, auth/permissions, consent/payments,
+breaking external contracts, or human browser checks. Group checks around completed flows; a flow
+may span routine commits, but keep verification pending until actually checked. Recommend **auto**
+for clear code-only work with adequate automated verification and no critical/manual checkpoints.
+Recommend **strict** for requested granular oversight or weak verification. Weak evidence never
+authorizes guessing.
 
-## Gate 0 — Branch Check, Every Time You Enter the Loop
+The user chooses. Explain new risks and recommend a mode change without silently changing it.
+Reuse existing explicit approval for concrete changes at its stated scope; selective mode does
+not require asking for the same critical decision again.
 
-Before picking up the first task, and again any time you resume this loop in a new session, run:
+Record in story.md (ordinary Markdown; no tracker schema change needed):
 
-```bash
-git branch --show-current
+```text
+Execution mode: strict | selective | auto
+Selected by: <explicit user instruction and date>
+Recommendation: <risk and verification evidence>
+Retro timing: before publication | explicitly deferred (<reason/owner/trigger>)
+Critical/manual checkpoints: <task or completed flow and evidence>
+Open questions/approvals: <none or unresolved items>
 ```
 
-If it prints `main`, **stop and branch out before touching any file** — even for "just one small
-task." Use the branch named in `story.md`'s **Branch** field (`git checkout -b <name>` if it doesn't
-exist yet, `git checkout <name>` if it does). This is the check most likely to get skipped when a
-task looks trivial — that's exactly when it matters, because a "quick" task is how work ends up
-committed to `main` unnoticed.
+Offer retro-first (default) and urgent deferral when selecting execution policy. Reuse a timing
+choice already made; a mode alone does not authorize deferral.
 
-## The Loop
+## Ambiguity — All Modes
 
-```
-   verify branch != main (gate 0)
-                  ▼
-   pick the next pending task from tasks/T-NNN.md files
-                  ▼
-   check project context for files being touched (see below)
-                  ▼
-             implement it
-                  ▼
-      run the project's checks (typecheck · lint · tests)
-                  ▼
-      sync docs the change affects
-                  ▼
-   ┌──────────────────────────────────────┐
-   │  STOP. Report. Ask to verify.        │  ◀── gate 1
-   └──────────────────┬───────────────────┘
-                  ▼  human says "commit"
-       commit (one task = one commit)
-                  ▼
-   update task status header (**Status:** → completed — a separate edit from the
-   Acceptance Criteria checkboxes and Result section, verify by grepping the
-   file for the literal string) + summary.md → commit separately
-                  ▼
-       more tasks? ──yes──▶ loop
-                  │ no
-                  ▼
-   ┌──────────────────────────────────────┐
-   │  STOP. Story done. Ask to push.      │  ◀── gate 2
-   └──────────────────┬───────────────────┘
-                  ▼  human says "push"
-        push, then open a PR into main
-```
+Inspect approved plans, choices, rules, and code first. If intended behavior or scope remains unclear,
+explain the concrete uncertainty and options, recommend if justified, and ask. Pause dependent edits,
+commits, and operations until answered; independent work may continue. Confidence, timeouts, and
+silence are not answers. Do not re-ask settled questions. Capture the answer and update affected
+requirements, decisions, tasks, and tests before resuming. A wrong spec is a finding, not permission
+to silently reinterpret the task.
 
-## Project Context Check — Before Each Task
+## Task Loop
 
-Before implementing a task, check if there are decisions, constraints, or known gotchas for the files
-you're about to touch.
+1. Pick the next unblocked task; verify branch/current constraints and mark it in progress.
+2. Implement approved behavior. Capture explicit user choices immediately via [memory](../memory/SKILL.md).
+3. Sync affected docs; run the project's required checks using QA or the same commands directly.
+   Missing commands are N/A; unavailable required verification is blocked, never passed.
+4. Fix clear failures inside approved scope and rerun relevant checks. Never weaken assertions or
+   bypass hooks. For pre-existing failures, provide baseline evidence and request fix/defer disposition;
+   do not silently waive a required check.
+5. Apply the mode's commit gate. One task = one implementation commit. Give concise progress updates
+   for automatic commits; use the checkpoint report when human action is required.
+6. Update status, acceptance/result evidence, and summary; commit bookkeeping separately under the
+   same mode. Verify the actual status field, not just checked boxes.
+7. Continue. Distinguish implemented/committed from reviewed, verified, published, or merged.
 
-**Primary** — if `brief` CLI is installed (`which brief`):
-```bash
-brief search "<file or module name>"
-brief story task update S-NNN-TN status=in_progress   # mark task started
+Use the project's vocabulary: the brief CLI uses `brief story task update <task> status=done`
+for finished tasks. Preserve legacy formats rather than migrating during execution. Report actual
+commit counts including bookkeeping.
+
+## Human Checkpoint
+
+```text
+Task/checkpoint: <ID and completed flow>
+Changed: <what and why>
+Checks: <commands/results/limitations>
+Verify: <URL/click path or files and expected result>
+Risk: <data/migration, auth/payment, contract/env changes, deletions, or none>
+Requested approval: <specific commit or protected operation>
 ```
 
-**Fallback** — if CLI is not installed, read files directly:
-- `PROJECT-TRACKER.md` — active decisions (DEC-NNN) that constrain this area
-- `memory/` files — gotchas or constraints related to these files
+Prepare reviewable work before asking. Approval to write/commit a migration is not approval to run
+it: follow the DB rule even for local/test databases. No mode waives destructive/deploy controls.
 
-Skip context check if the task spec already inlines all relevant context.
+## Finish Locally, Then Publish
 
-## After Each Task Commit
+Hand off automatically through the router to [pr-review](../pr-review/SKILL.md). Resolve every
+introduced/worsened finding, run retro by default, review its changes, and run final verification.
+Review/retro commits retain the selected mode. Deferred retro needs a durable obligation first.
 
-```bash
-brief story task update S-NNN-TN status=completed
-brief log "Completed: <what was done>" --story=S-NNN --tag=progress
+Keep summary.md evidence identifying base and candidate HEAD (or tree plus pending files), commands,
+human checks, finding dispositions, and limitations. The candidate must match the evidence at
+publication. Inspect record-only bookkeeping diffs without repeating unrelated tests.
+
+```text
+Story: <ID, completed tasks, actual commits>
+Review: <base/candidate; new findings resolved; user dispositions for existing debt>
+Retro: <complete or explicitly deferred with owner/trigger>
+Verification: <actual results and preview-only gaps>
+Changes since human verification: <impact and retest needed>
+Push triggers: <known CI/deploy behavior>
+Approve push and opening/updating PR against <base>?
 ```
 
-## Gate 1 — Before Every Commit
+No push or PR without explicit approval for the presented changes. A combined approval is valid
+when both actions were named; never infer merge approval. Preview-only checks must be disclosed
+before push and completed before merge. If content changes after approval, refresh affected evidence
+and approval for the changed scope. A successful user test without changes permits direct user merge.
 
-Post this and stop. Keep it short — the human is deciding whether to go look, not reading a report.
+For later changes run incremental review, relevant checks, and any affected human flows; broaden
+review when architecture/contracts/shared behavior invalidate earlier assumptions. Add only new
+retro learnings. If already merged, use a fresh branch from current base and linked follow-up through
+normal gates; never replay merged commits or resurrect a merged PR.
 
-```
-Task:      S-NNN-TN — <title>
-Changed:   <file> — <what and why>
-           <file> — <what and why>
-Checks:    typecheck ✅  lint ✅  tests ✅ (N passed)
-Verify by: <exact URL and what to click>  — or —  <which file to read>
-Risky:     <migrations · env vars · API shape · deletions>  — or —  none
-```
+## Invariants
 
-**Always name a verification point.** If it's browser-checkable, give the URL and the click path. If
-it isn't, say which file to read and what to look for — reading the diff is a valid verification.
-"Tests pass" is not a verification point; it's a check, and it only proves what someone already
-thought to assert.
-
-**Call out anything a browser check would miss**, loudly and by name:
-
-- a schema migration — say what it alters and whether it reverses
-- a new or renamed environment variable — say which deploy surface needs it
-- an API request or response shape change
-- a deleted file, route, or exported symbol
-- anything touching auth, consent, or payments
-
-Then wait. **Do not commit while waiting.**
-
-## Gate 2 — Before Push and PR
-
-Push happens **once, when the whole story is done** — not per task — unless the human says otherwise.
-Pushing usually triggers CI, and CI may deploy, so the human tests the finished story first.
-
-```
-Story S-NNN complete — N tasks, N commits.
-Test:      <URLs and flows to exercise>
-Watch for: <the specific regressions this story could cause>
-Push runs: <which workflows will fire>
-Push + open PR to main?
-```
-
-On approval: `git push -u origin <branch>`, then open the PR into `main`.
-
-## Never, Regardless of Approval
-
-`AGENTS.md` covers the standing prohibitions — `main`, force-push, repo-wide auto-fix, working
-outside the task's scope. Two more that belong to this loop:
-
-- **`git commit --no-verify`** — unless the human asked for it and you say why in the same message
-- **Committing while a gate is open** — an unanswered gate is a no, not a timeout
-
-## What Your Repo's AGENTS.md Must Add
-
-This skill defines the gates; it cannot know what your checks mean. Each repo's `AGENTS.md` carries
-that — **as a section in `AGENTS.md`, not a separate file.** `AGENTS.md` is already loaded in every
-session, and these gates are global, so a second always-imported file is one more thing to drift.
-
-Four things a gate report cannot be honest about without them:
-
-- **The exact check commands** — what CI actually runs, which is often not what the README says
-- **What each check does and doesn't prove** — a tool that reads committed state is meaningless from
-  a dirty tree; a tool that stamps its own "verified" date is a rubber stamp. Say so, or the ✅ lies.
-- **What push triggers** — which workflows fire, and whether any of them deploy. This is the whole
-  reason gate 2 exists in that repo.
-- **Verification surfaces** — the URL and click path per area, or the file to read where there's no UI
-
-## If a Check Fails
-
-Report the failure with its **actual output**. Do not commit, do not fix it "quickly" outside the
-task's scope, do not skip or weaken the test. A red test is information, not an obstacle.
-
-## If the Task Spec Is Wrong
-
-Task specs are written before implementation and are sometimes wrong. If reality contradicts the
-spec, **stop and say so** — do not quietly implement something different and describe it as the task.
-A spec that turns out to be wrong is a finding worth more than the task it replaced.
-
-Same for a spec that claims something about another story, or asserts that something is untested or
-missing: verify before acting on it, and report what you found.
-
-## Rules
-
-- Verify `git branch --show-current` isn't `main` before every task, not just the first
-- One task, one commit; story bookkeeping commits separately
-- Every commit and every push is individually approved — silence is never approval
-- Every gate-1 report names a concrete verification point
-- Risky changes are named explicitly, not left for the human to notice in the diff
-- A failing check stops the loop; it is never worked around
-- A wrong spec stops the loop and gets reported, never silently reinterpreted
+- No direct base commits, force-push, or hook bypass without explicit applicable authorization.
+- Unanswered gates stay open; modes never expand scope or learned preferences.
+- Required checks and all introduced/worsened findings must be resolved before publication.
+- Reuse valid choices and approvals; ask about unresolved or changed conditions.

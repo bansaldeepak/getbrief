@@ -1,123 +1,76 @@
 ---
 name: pr-review
-description: "Code review before PR/merge. Structured review covering correctness, security, performance, tests, and docs. Human approval gate before merge."
+description: "Review local changes before push or PR; classify finding origin, resolve all introduced issues, and re-review later changes with current evidence."
 user_invocable: true
 model: opus
 ---
 
-# /brief pr-review -- Code Review
+# /brief pr-review — Before Publication
 
-Structured code review that runs before creating a PR or merging. Catches issues across correctness, security, performance, and standards compliance.
+Run automatically during authorized story execution before push/PR, and for later changes before
+another publication or merge. [Router](../SKILL.md) owns transitions;
+[implement](../implement/SKILL.md) owns commit/publication approval. This phase does not publish.
 
-**Usage**: `/brief pr-review` (reviews current branch changes) or `/brief pr-review <branch-name>`
+## Scope and Context
 
-**Source**: Adapted from NeoLabHQ subagent-driven-development review pattern.
+Read project instructions, requirements/tasks, applicable rules and scoped user choices using
+[planning context](../references/planning-context.md). Resolve the actual base branch. Inspect Git
+status, merge-base-to-HEAD diff, staged/unstaged changes, and relevant untracked files. A committed
+diff alone must not hide new content. Record base, candidate revision/tree, and included dirty files.
 
-## When Claude Should Auto-Invoke
+Read changed files and affected callers/tests, not just hunks. For incremental review identify the
+previous reviewed revision and whether new changes require broader coverage. Invoke the reviewer
+agent with scope, constraints, and verification evidence; if unavailable follow its procedure
+directly and report the fallback.
 
-- Before creating a PR (`gh pr create`)
-- When all story tasks are complete
-- Ask user: "All tasks are done. Running code review before PR."
+Check correctness, security, performance, meaningful tests, coding/naming rules, maintainability,
+scope, and architecture. Do not manufacture issues or enforce personal taste as a requirement.
 
-## Human Approval Gate
+## Finding Contract
 
-**Merge requires explicit human approval.** Present review findings and ask: "Review complete. Ready to create the PR?"
+| Field | Required evidence |
+|-------|-------------------|
+| ID / location | Stable identifier, file/line and defect/reproduction |
+| Severity | Critical, important, or minor; concrete consequence |
+| Origin | Introduced, worsened, pre-existing, or unknown; base/history evidence |
+| Resolution | Correction or user's disposition for existing debt |
+| Verification | How the correction was checked and on which candidate |
 
-## Instructions
+Severity communicates impact; origin determines deferral authority. An existing defect made worse
+or newly exposed by changed behavior is worsened. Investigate unknown origin rather than labeling
+it old debt. Unsupported taste-only suggestions are advisory, not confirmed findings.
 
-### Phase 1: Gather Changes
+## Resolution
 
-```bash
-# Get the diff against the base branch
-git diff main...HEAD --stat
-git diff main...HEAD
-git log main..HEAD --oneline
+- **Introduced/worsened, every severity:** fix, review the correction and verify before publication.
+  A minor label or a TODO is not permission to ship a confirmed new defect.
+- **Pre-existing:** present findings together with severity/evidence for user fix-now/defer choice.
+  Record the disposition and follow-up. Do not silently change unrelated code, waive required
+  failing checks, or label deferred debt fixed.
+- **Unknown:** investigate baseline/history. Keep unresolved origin visible and block the dependent
+  readiness claim until resolved.
+- **Requirement/scope conflict:** seek clarity before choosing new behavior or altering the design.
+
+Correction commits follow the selected mode, including strict approvals and selective critical
+checkpoints. Re-review fixes; update requirements/tasks/tests when an approved design changes.
+
+## Report and Handoff
+
+Save a concise record in summary.md, or link a larger review artifact:
+
+```text
+Scope: <base, candidate revision/tree, dirty/untracked files>
+Constraints checked: <applicable rules and user choices>
+Findings: <ID/severity/origin/evidence/resolution/verification>
+Existing debt: <explicit user dispositions>
+Advisory suggestions: <optional or none>
+Checks: <actual results and limits>
+Verdict: ready for next local phase | blocked (<unresolved items>)
 ```
 
-Read all changed files completely — don't just look at diffs.
-
-### Phase 2: Review Checklist
-
-Invoke the `reviewer` agent to analyze changes. The review covers:
-
-#### Correctness
-- [ ] Logic is correct — no off-by-ones, null refs, race conditions
-- [ ] Edge cases handled — empty inputs, max values, concurrent access
-- [ ] Error handling is appropriate — no swallowed errors, proper HTTP codes
-- [ ] Types are correct — no `any` casts, proper generics
-
-#### Security
-- [ ] No secrets in code (API keys, passwords, tokens)
-- [ ] Input validation at system boundaries
-- [ ] Auth/AuthZ checks present where needed
-- [ ] No SQL injection, XSS, CSRF vectors
-- [ ] OWASP top 10 considered
-
-#### Performance
-- [ ] No N+1 queries
-- [ ] No unnecessary re-renders (React)
-- [ ] Large datasets paginated
-- [ ] Expensive operations cached or deferred
-
-#### Tests
-- [ ] New code has tests
-- [ ] Tests cover happy path AND error cases
-- [ ] Tests are meaningful (not just coverage padding)
-- [ ] Existing tests still pass
-
-#### Standards
-- [ ] Follows project coding standards
-- [ ] Naming is consistent with codebase
-- [ ] No dead code or commented-out blocks
-- [ ] Documentation updated where needed
-
-#### Architecture
-- [ ] Changes align with PRD/TRD (if they exist)
-- [ ] No unintended scope creep beyond the story
-- [ ] Design decisions documented
-
-### Phase 3: Findings Report
-
-Categorize findings by severity:
-
-```markdown
-## Review Summary
-
-**Branch**: <branch-name>
-**Changes**: <N files changed, +X/-Y lines>
-**Story**: <S-NNN if applicable>
-
-### 🔴 Critical (must fix before merge)
-- <finding with file:line reference>
-
-### 🟡 Important (fix before next task)
-- <finding with file:line reference>
-
-### 🔵 Minor (note for future)
-- <finding with file:line reference>
-
-### ✅ What looks good
-- <positive observations — reinforce good patterns>
-```
-
-### Phase 4: Resolution
-
-- **Critical findings**: Fix immediately, re-review
-- **Important findings**: Fix in a follow-up commit on the same branch
-- **Minor findings**: Note in PR description or create a follow-up issue
-
-### Phase 5: PR Creation
-
-After all critical/important findings are resolved:
-- Run quality gates (typecheck, lint, test, build)
-- Create PR with `summary.md` content as description
-- Ask user: "PR ready for your review. Approve and merge?"
-
-## Rules
-
-- Never skip review — even for "small" changes
-- Read full files, not just diffs — context matters
-- Critical findings block merge — no exceptions
-- Always highlight positive patterns (not just problems)
-- Reference specific file:line for every finding
-- If the review is clean, say so — don't manufacture issues
+Return to the router for retro by default, review of its changes, and final verification before
+the publication gate. Do not call an unreviewed/unverified candidate ready. After publication,
+explain the delta and run incremental review plus affected checks/human flows. Expand to full
+review when architecture, contracts, or shared behavior invalidate earlier assumptions. Notes
+need factual/scope/reference review, not unrelated browser retesting. No changes after successful
+user testing require no repeated review or retro.
