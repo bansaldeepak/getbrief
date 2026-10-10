@@ -78,6 +78,63 @@ describe("canonical record authority", () => {
     rmSync(join(root, story));
     assert.throws(() => migrateRecordAuthority(root, { apply: true }), /ENOENT/);
   });
+  it("preserves narrative memory status during migration and later updates", async () => {
+    const file = "documentation/memory/choice.md";
+    const body = "\n**Status:** Explicitly decided; implementation verified.\n\n## Notes\nKeep context.\n";
+    put(file, get(file) + body);
+    migrateRecordAuthority(root, { apply: true });
+    const before = splitRecord(get(file)).body;
+    await itemCommand(root, "memory", "update", ["choice", "status=retired"], []);
+    assert.equal(splitRecord(get(file)).body, before);
+    assert.equal(readTracker(root).find(i => i.id === "choice").status, "retired");
+  });
+  it("preserves section-local experiment status when research status changes", async () => {
+    const file = "documentation/research/RES-001-notes.md";
+    items.push({ id: "RES-001", type: "research", title: "Study", status: "open" });
+    put("documentation/tracker.yaml", stringify({ items }));
+    put(file, "---\nid: RES-001\ntitle: Study\nstatus: open\n---\n# Study\n\n## Experiment\n**Status**: Running (2026-08-20)\n");
+    migrateRecordAuthority(root, { apply: true });
+    const before = splitRecord(get(file)).body;
+    await itemCommand(root, "research", "update", ["RES-001", "status=done"], []);
+    assert.equal(splitRecord(get(file)).body, before);
+    assert.equal(splitRecord(get(file)).data.status, "done");
+    assert.equal(readTracker(root).find(i => i.id === "RES-001").status, "done");
+  });
+  it("reports real status conflicts with both values without changing records", () => {
+    const file = "documentation/todo/TODO-014.md";
+    items.push({ id: "TODO-014", type: "todo", title: "Keep", status: "active" });
+    put("documentation/tracker.yaml", stringify({ items }));
+    put(file, "---\nid: TODO-014\ntitle: Keep\nstatus: deferred\n---\nKeep this choice.\n");
+    const before = get(file);
+    assert.throws(() => migrateRecordAuthority(root), /TODO-014\.md: Markdown="deferred", metadata="active"/);
+    assert.equal(get(file), before);
+    assert.equal(existsSync(join(root, ".brief")), false);
+    items.at(-1).status = "deferred";
+    put("documentation/tracker.yaml", stringify({ items }));
+    assert.equal(migrateRecordAuthority(root).records, 3);
+  });
+  it("still rejects conflicting record-header status even with frontmatter", () => {
+    put(story, "---\nstatus: planned\n---\n" + source.get(story).replace("planned", "done"));
+    assert.throws(() => migrateRecordAuthority(root), /Conflicting visible status/);
+  });
+  it("validates and updates indented or inline header status without changing adjacent fields", () => {
+    for (const header of ["  **Status:** planned", "**Priority:** P1 | **Status:** planned | **Blocked By:** --"]) {
+      const text = `# S-001: Cart\n\n${header}\n\n## Goal\nKeep body.\n`;
+      put(story, text.replace("planned", "done"));
+      assert.throws(() => migrateRecordAuthority(root), /Conflicting visible status/);
+      put(story, text);
+      migrateRecordAuthority(root, { apply: true });
+      const fresh = readTracker(root);
+      fresh.find(i => i.id === "S-001").status = "done";
+      writeTracker(root, fresh);
+      assert.equal(splitRecord(get(story)).body, text.replace("planned", "done"));
+      // Read fresh metadata for the second write, then restore the migration inputs.
+      const restored = readTracker(root);
+      restored.find(i => i.id === "S-001").status = "planned";
+      writeTracker(root, restored);
+      rollbackRecordAuthority(root);
+    }
+  });
   it("detects duplicate identities, malformed metadata and interrupted transactions", () => {
     migrateRecordAuthority(root, { apply: true });
     put("documentation/stories/copy/S-001/story.md", get(story).replace(story, "documentation/stories/copy/S-001/story.md"));

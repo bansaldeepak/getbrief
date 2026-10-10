@@ -151,6 +151,9 @@ temporary directory to build/check. No environment variable override is required
 Markdown files. After reviewing the report, `--apply` preserves complete metadata in each file's
 `_brief` frontmatter. Conflicting or missing files block migration. New record-mode updates touch
 only the affected record; `brief tracker generate --markdown` rebuilds ignored local views.
+For a conflict, compare the reported Markdown and tracker values against the recorded decision;
+reconcile that record explicitly before retrying. Do not regenerate the entire legacy tracker to
+bypass a conflict. Narrative status in memory or a research experiment is not record lifecycle state.
 Untrack previously committed views using the command in the migration report. Historical logs stay
 unchanged. `brief tracker rollback-authority --apply` restores exact inputs if no later edits or new
 records exist; an interrupted migration blocks record commands until recovery.

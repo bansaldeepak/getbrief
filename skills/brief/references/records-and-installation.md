@@ -31,6 +31,9 @@ Brief-managed changes. The selected execution mode never relaxes these storage r
   `brief tracker migrate-authority --dry-run`; inspect mappings and preserve all unknown metadata.
   Apply only within user-authorized scope, then untrack views using the printed command. Conflicting,
   missing or malformed records stop migration. Historical logs remain untouched.
+  Resolve reported field differences against recorded decisions; do not regenerate the legacy
+  tracker to silence conflicts. Record status comes from frontmatter or record-header metadata;
+  narrative memory status and section-local experiment statuses remain prose.
 - `brief tracker rollback-authority --apply` restores exact migration inputs only when no later edits
   or new records would be lost. Incomplete migrations block normal work until recovery.
 

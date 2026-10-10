@@ -251,7 +251,7 @@ items:
   - id: TODO-014
     type: todo
     title: Delete rules-gen.mjs dead code
-    status: active
+    status: deferred
     priority: P3
     created: 2026-09-01
     link: null
@@ -266,8 +266,8 @@ items:
     pr: null
   - id: RES-001
     type: research
-    title: "RES-001: Bundle codegraph + brief context"
-    status: active
+    title: Bundle codegraph into brief setup + unified context command
+    status: open
     link: null
     pr: null
   - id: design-pivots-mid-impl-need-immediate-test-updates
@@ -416,3 +416,12 @@ items:
     link: null
     pr: null
     last_task: S-018-T4
+  - id: BUG-001
+    type: bug
+    title: Legacy scanner drift and narrative status parsing block record migration
+    status: in_progress
+    priority: P1
+    link: null
+    pr: null
+    severity: major
+    story: S-018
