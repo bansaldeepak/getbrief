@@ -70,6 +70,12 @@ so teammates, servers, and fresh clones receive the same instructions. Each mach
 Use `brief init --scope=global` to select the machine package instead. Existing scope/version choices
 are retained on repeat init; changing scope requires an explicit migration, not another init flag.
 
+Each instruction file has one managed Brief lifecycle block, marked `brief:workflow` with its version
+and last-update date. Init repairs registrations from the pinned package and consolidates recognized
+stock legacy harnesses. Unchanged content keeps its date. Custom legacy instructions require
+reconciliation before replacement; surrounding project instructions and other rule sections are preserved.
+Doctor tolerates blank lines at the block boundaries and still reports changes to instruction text.
+
 New projects start with canonical record files and ignored tracker views. Existing projects retain
 their legacy tracker until you explicitly migrate it using the steps below.
 
@@ -99,6 +105,8 @@ brief tracker migrate-authority --dry-run
 The report lists every record and affected file. Resolve reported conflicts against the project's
 recorded decisions before continuing. Do not rebuild the legacy tracker merely to silence a conflict.
 For example, a documented `deferred` item should not become `active` because of an old scanner result.
+Legacy regeneration reads both `**Status**:` and `**Status:**` (and related metadata labels), preserves
+tracker-only fields, and stops if an existing tracker entry has no corresponding scanned record.
 
 ### 3. Apply and verify
 

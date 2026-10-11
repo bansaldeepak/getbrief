@@ -10,11 +10,11 @@ import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
+sys.dont_write_bytecode = True
+from workflow_blocks import integrate as integrate_block, inspect as inspect_block, canonical
 
 ROOT = Path(__file__).resolve().parent.parent
 LINK_ROOT = ROOT
-OPEN = "<!-- brief:workflow -->"
-CLOSE = "<!-- /brief:workflow -->"
 AGENTS = ("qa", "reviewer", "researcher", "self-improving")
 RULES = ("brief", "brief-lifecycle", "git-workflow", "db-safety")
 CONFIGS = (".claude/CLAUDE.md", ".codex/AGENTS.md", ".gemini/GEMINI.md")
@@ -38,23 +38,6 @@ def atomic_write(path, text):
             os.unlink(temporary)
 
 
-def block_bounds(text):
-    if OPEN not in text and CLOSE not in text:
-        return None
-    if text.count(OPEN) != 1 or text.count(CLOSE) != 1 or text.index(CLOSE) < text.index(OPEN):
-        raise ValueError("malformed or duplicate brief workflow markers")
-    return text.index(OPEN), text.index(CLOSE) + len(CLOSE)
-
-
-def integrate_config(text, block):
-    bounds = block_bounds(text)
-    if bounds:
-        start, end = bounds
-        return text[:start] + block + text[end:]
-    # Ownership applies only to the managed block; preserve all surrounding bytes as text.
-    return text + ("\n" if text.endswith("\n") else "\n\n") + block + "\n"
-
-
 def targets():
     result = {}
     for host in (".agents", ".claude", ".codex"):
@@ -73,7 +56,7 @@ def targets():
         result[f".codex/agents/{name}.toml"] = ("file", generated.stdout)
     adapter = (ROOT / "templates/WORKFLOW-ADAPTER.md").read_text().replace("@BRIEF_SOURCE@", str(LINK_ROOT))
     for path in CONFIGS:
-        result[path] = ("block", OPEN + "\n" + adapter.rstrip() + "\n" + CLOSE)
+        result[path] = ("block", adapter.rstrip())
     return result
 
 
@@ -115,6 +98,9 @@ def read_manifest(path):
 
 def make_plan(home, previous, adopt):
     plan, conflicts, seen = [], [], {}
+    package = ROOT / "package.json"
+    provenance = ROOT / "manifest.json"
+    version = json.loads((package if package.exists() else provenance).read_text()).get("version", "unknown") if package.exists() or provenance.exists() else "unknown"
     for relative, (kind, payload) in targets().items():
         path, actual = safe_path(home, relative)
         key = str(actual)
@@ -127,27 +113,35 @@ def make_plan(home, previous, adopt):
         exists = os.path.lexists(path)
         expected = {"kind": kind, "target": payload} if kind == "link" else {"kind": kind, "sha256": digest(payload)}
         content, owned, matches = payload, False, False
+        if kind == "block":
+            if exists and (path.is_symlink() or not path.is_file()):
+                conflicts.append(f"{relative}: expected a regular generated/config file")
+                continue
+            current = path.read_text() if exists else ""
+            try:
+                old_block = inspect_block(current, old.get("sha256"))
+                # Explicit adoption can replace an edited current block, but never discard an
+                # unrecognized legacy harness or malformed structure.
+                expected_hash = digest(canonical(old_block["block"])) if adopt and old_block["block"] else old.get("sha256")
+                rendered = integrate_block(current, payload, version, expected_hash)
+            except ValueError as error:
+                conflicts.append(f"{relative}: {error}")
+                continue
+            content = rendered["content"]
+            matches, owned = current == content, True
+            expected = {"kind": kind, "sha256": rendered["sha256"]}
         if kind == "link":
             if not (ROOT / Path(payload).relative_to(LINK_ROOT)).exists():
                 raise ValueError(f"missing source: {payload}")
             matches = path.resolve() == Path(payload).resolve() and exists
             owned = path.is_symlink() and old.get("kind") == "link" and os.readlink(path) == old.get("target")
-        elif exists:
+        elif exists and kind != "block":
             if path.is_symlink() or not path.is_file():
                 conflicts.append(f"{relative}: expected a regular generated/config file")
                 continue
             current = path.read_text()
-            if kind == "block":
-                bounds = block_bounds(current)
-                current_block = current[slice(*bounds)] if bounds else None
-                matches = current_block == payload
-                owned = bounds is None or (old.get("kind") == "block" and digest(current_block) == old.get("sha256"))
-                content = integrate_config(current, payload)
-            else:
-                matches = current == payload
-                owned = old.get("kind") == "file" and digest(current) == old.get("sha256")
-        elif kind == "block":
-            content = payload + "\n"
+            matches = current == payload
+            owned = old.get("kind") == "file" and digest(current) == old.get("sha256")
         if exists and not matches:
             if path.is_dir() and not path.is_symlink():
                 conflicts.append(f"{relative}: refusing to replace a directory")

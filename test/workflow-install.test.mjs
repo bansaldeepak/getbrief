@@ -26,6 +26,22 @@ describe("shared workflow installation", () => {
   afterEach(() => rmSync(fixture, { recursive: true }));
   const install = (...args) => run(installer, ["--home-dir", home, ...args]);
 
+  it("consolidates legacy home instructions and tolerates boundary formatting without churn", () => {
+    const stock = JSON.parse(readFileSync(join(root, "templates/legacy-harnesses.json"), "utf8"))[2].content;
+    mkdirSync(join(home, ".codex"));
+    const config = join(home, ".codex/AGENTS.md");
+    writeFileSync(config, `Custom home guidance\n<!-- brief:auto section="harness" -->\n${stock}\n<!-- /brief:auto -->\n`);
+    let result = install(); assert.equal(result.status, 0, result.stderr);
+    const value = readFileSync(config, "utf8");
+    assert.ok(value.startsWith("Custom home guidance\n")); assert.doesNotMatch(value, /section="harness"/);
+    assert.match(value, /brief:workflow version="[^"]+" updated="[^"]+Z"/);
+    writeFileSync(config, value.replace("-->\n\n##", "-->\n\n\n##"));
+    const formatted = readFileSync(config, "utf8");
+    result = install("--check"); assert.equal(result.status, 0, result.stderr);
+    result = install(); assert.equal(result.status, 0, result.stderr);
+    assert.equal(readFileSync(config, "utf8"), formatted);
+  });
+
   it("dry-run plans registrations without writing anything", () => {
     const result = install("--dry-run");
     assert.equal(result.status, 0, result.stderr);

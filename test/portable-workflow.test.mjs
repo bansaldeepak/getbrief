@@ -20,6 +20,64 @@ describe("portable workflow packages", () => {
     put(source, "package.json", '{"version":"1.0.0"}\n');
   });
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
+  it("consolidates stock legacy harnesses, keeps custom surroundings and stamps only content updates", async () => {
+    const stock = JSON.parse(bytes(CLI_SOURCE, "templates/legacy-harnesses.json")).find(item => item.revision === "da5d12c").content;
+    const legacy = `<!-- brief:auto section="harness" version="0.2.0" generated="2026-01-01" -->\n${stock}\n<!-- /brief:auto -->`;
+    const prefix = "Custom project instructions\n", suffix = '\n<!-- brief:auto section="naming" -->\nKeep domain names\n<!-- /brief:auto -->\n';
+    put(root, "AGENTS.md", prefix + legacy + suffix);
+    const plan = planWorkflow(root, { source });
+    assert.deepEqual(plan.conflicts, []); assert.equal(bytes(root, "AGENTS.md"), prefix + legacy + suffix);
+    applyWorkflow(plan);
+    const installed = bytes(root, "AGENTS.md");
+    assert.ok(installed.startsWith(prefix)); assert.ok(installed.endsWith(suffix));
+    assert.doesNotMatch(installed, /section="harness"/);
+    assert.match(installed, /brief:workflow version="1.0.0" updated="[^"]+Z"/);
+    assert.equal((installed.match(/<!-- brief:workflow\b/g) || []).length, 1);
+    await initProject(root, { source, nonInteractive: true, skipCodegraph: true });
+    assert.equal(bytes(root, "AGENTS.md"), installed);
+    assert.deepEqual(planWorkflow(root, { source }).changes, []);
+  });
+  it("repairs old formatted registrations and duplicate stock harnesses from a pinned bundle", async () => {
+    applyWorkflow(planWorkflow(root, { source }));
+    const manifest = JSON.parse(bytes(root, WORKFLOW_MANIFEST));
+    const current = bytes(root, "AGENTS.md");
+    const old = current.replace(/<!-- brief:workflow[^>]*-->/, "<!-- brief:workflow -->").replace("-->\n\n##", "-->\n##").replace("\n\n<!-- /brief:workflow", "\n<!-- /brief:workflow");
+    const { createHash } = await import("node:crypto");
+    manifest.registrations["AGENTS.md"].sha256 = createHash("sha256").update(old.trim()).digest("hex");
+    put(root, WORKFLOW_MANIFEST, JSON.stringify(manifest, null, 2) + "\n");
+    const formatted = old.replace("-->\n##", "-->\n\n##").replace("\n<!-- /brief:workflow", "\n\n<!-- /brief:workflow");
+    put(root, "AGENTS.md", formatted);
+    assert.equal(inspectWorkflow(root).healthy, true);
+    const stock = JSON.parse(bytes(CLI_SOURCE, "templates/legacy-harnesses.json"))[0].content;
+    put(root, "AGENTS.md", `<!-- brief:auto section="harness" -->\n${stock}\n<!-- /brief:auto -->\n` + formatted);
+    assert.equal(inspectWorkflow(root).healthy, false);
+    put(source, "templates/WORKFLOW-ADAPTER.md", bytes(source, "templates/WORKFLOW-ADAPTER.md") + "\nUnselected upstream update\n");
+    await initProject(root, { source, nonInteractive: true, skipCodegraph: true });
+    assert.equal(inspectWorkflow(root).healthy, true);
+    assert.doesNotMatch(bytes(root, "AGENTS.md"), /section="harness"|Unselected upstream/);
+    assert.deepEqual(JSON.parse(bytes(root, WORKFLOW_MANIFEST)).files, manifest.files);
+  });
+  it("blocks customized legacy and current instructions before any writes", () => {
+    const stock = JSON.parse(bytes(CLI_SOURCE, "templates/legacy-harnesses.json"))[0].content;
+    const custom = `<!-- brief:auto section="harness" -->\n${stock}\nKeep my additional gate\n<!-- /brief:auto -->\n`;
+    put(root, "AGENTS.md", custom);
+    let plan = planWorkflow(root, { source });
+    assert.match(plan.conflicts.join("\n"), /Customized legacy/);
+    assert.throws(() => applyWorkflow(plan), /conflicts/); assert.equal(bytes(root, "AGENTS.md"), custom);
+    put(root, "AGENTS.md", "Custom outside\n"); applyWorkflow(planWorkflow(root, { source }));
+    const changed = bytes(root, "AGENTS.md").replace("User selects", "Owner always selects");
+    put(root, "AGENTS.md", changed);
+    assert.equal(inspectWorkflow(root).healthy, false);
+    plan = planWorkflow(root, { source }); assert.match(plan.conflicts.join("\n"), /Customized Brief workflow/);
+    assert.equal(bytes(root, "AGENTS.md"), changed);
+  });
+  it("ignores fenced marker examples and rejects duplicate or unclosed real markers", () => {
+    const examples = "```html\n<!-- brief:workflow -->\n<!-- /brief:workflow -->\n```\n";
+    put(root, "AGENTS.md", examples); applyWorkflow(planWorkflow(root, { source }));
+    assert.equal(inspectWorkflow(root).healthy, true); assert.ok(bytes(root, "AGENTS.md").startsWith(examples));
+    put(root, "AGENTS.md", bytes(root, "AGENTS.md") + "\n<!-- brief:workflow -->\n");
+    assert.match(planWorkflow(root, { source }).conflicts.join("\n"), /Unclosed|duplicate/);
+  });
   it("previews without writes and produces a complete portable copy with relative registrations", () => {
     const plan = planWorkflow(root, { source });
     assert.deepEqual(readdirSync(root), []); assert.deepEqual(plan.conflicts, []);
