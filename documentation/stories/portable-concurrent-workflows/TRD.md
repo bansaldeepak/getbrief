@@ -1,5 +1,17 @@
 # TRD: Portable Installs and Concurrent Project Records
 
+## Pilot compatibility refinement — 2026-10-11
+
+Share record-header parsing between scanner and validator: recognize colon placement inside/outside
+bold, constrain fields to the record header, and preserve tracker-only keys during legacy regeneration.
+One `brief:workflow` block carries version and updated attributes, with stable metadata on no-op runs.
+Use a shared block implementation for local/global installation, registration repair and doctor.
+Accept harmless marker-boundary blank lines, while detecting meaningful edits and malformed markers.
+Recognize complete shipped legacy harness bodies (formatting normalized for comparison only); remove
+only recognized stock bodies. Custom legacy bodies are conflicts and remain byte-for-byte intact.
+Repair registrations from the pinned package without adopting custom bundle hashes or updating content.
+No new legacy-log exemption or actual Astro/home mutation is included.
+
 **Date:** 2026-10-10 · **PRD:** [Approved scope](PRD.md)
 **Authority:** User explicitly directed implementation of the selected model and combined local
 testing. Selective mode chosen. This records technical decisions within that scope; unplanned

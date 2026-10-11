@@ -123,3 +123,14 @@ Use Brief for the product and documentation brand, getbrief for the npm package 
 and brief for the command and skill name.
 Publish reader-facing setup/update/migration instructions and a one-project real-agent pilot before
 push/merge. The selected repository rename does not change its visibility or publish branch contents.
+
+## Pilot compatibility refinement — user approval, 2026-10-11
+
+Read both `**Status**:` and `**Status:**` header forms, including related metadata labels, consistently
+when scanning and validating records. Regeneration must preserve tracker-only metadata.
+Keep one managed Brief lifecycle block per instruction file, with version and last-content-update
+metadata; inner markers are optional only when necessary. Consolidate recognized stock legacy
+harnesses without discarding custom instructions; unresolved custom content blocks replacement.
+Formatting at marker boundaries must not produce false doctor failures. Unchanged init/update must
+not churn timestamps or silently change pinned workflow content. Historical logs are unchanged;
+the user will commit their existing Astro logs and recheck. Actual project/home migration is separate.
