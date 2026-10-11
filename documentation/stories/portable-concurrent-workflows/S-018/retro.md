@@ -76,3 +76,15 @@ memories reconciled; 18 retained. Real-project pilot, public release, push and m
 
 Final user clarification preserves Brief as the product/documentation brand while getbrief names npm
 and GitHub. Applied to README/PRD and the existing memory; 18 records retained with no new promotion.
+
+## Incremental pilot retro — 2026-10-11
+
+Covered 64c7532 and 706baad before publication. User chose both metadata label formats and one
+managed lifecycle block with stable version/date metadata; captured in the existing portable memory
+and applied explicitly in PRD/TRD/T7/T8. Shared header parsing prevents generator/validator drift.
+Real-project formatting exposed overly strict block hashes and missing stock-harness consolidation;
+the shared local/global helper now covers both, with custom-content refusal and no-op tests.
+Reviewer caught stale values surviving explicit null clears; the fix and regression are complete.
+306 tests, source checks, isolated record checks and extracted-package install/check passed.
+Curation: 18 memories retained, no removals or broader promotion; no additional rule/agent change needed.
+Actual migration remains user-owned, including Astro's malformed TODO-014 YAML and historical logs.

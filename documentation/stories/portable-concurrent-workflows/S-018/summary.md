@@ -43,7 +43,8 @@ readable and unchanged; new entries use valid serialized YAML and immutable iden
 ## Final Local Verification
 
 - Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
-- Package metadata candidate: `fd7e084`; runtime remains `b737777`. Subsequent changes are README branding clarification and story/memory/retro records only.
+- Current runtime candidate: `706baad`, including parser fix `64c7532`; pilot evidence follows below.
+- Prior package metadata candidate: `fd7e084`, with runtime `b737777`; its evidence is retained below.
 - Runtime `npm test` at `b737777`: **294 passed, 0 failed**. The packed npm artifact was installed into a temporary prefix and passed source-less, local/symlink override, global/local, pinned-update and removed-MCP smoke checks. Those artifact checks were repeated successfully after renaming the package to getbrief.
 - Prior BUG-001 candidate `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
 - `npm test` at `29794a2`: **280 passed, 0 failed**, including parent lifecycle tests and all new regressions. After `5a22552`, the affected portable suite was rerun: **13 passed**, including repeat-init output.
@@ -123,3 +124,29 @@ documentation commit. The earlier handoff evidence does not establish readiness 
 Record verification passes for the isolated five-file branding candidate against `eff04ad` contents.
 The live working tree currently fails verification because both generated tracker views remain tracked;
 that migration step is still outside this documentation commit.
+
+## T7/T8 pilot corrections — 2026-10-11
+
+User approved both metadata label forms and one managed lifecycle block with version/update metadata.
+T7 (`64c7532`) shares header parsing, preserves tracker-only fields and explicit null clears, and refuses
+unmatched records or malformed YAML before regeneration writes. T8 (`706baad`) consolidates recognized
+stock legacy harnesses, preserves outside content, rejects custom legacy replacements, and repairs
+pinned registrations without updating the package. Boundary blank lines no longer fail doctor;
+unchanged blocks keep their update date. Local and global installers share the block implementation.
+
+Review: named reviewer deployment returned 404; a fallback agent followed agents/reviewer.md.
+Its one introduced finding (explicit null fields retaining stale tracker values) is fixed with a
+regenerate/migrate regression. No remaining confirmed introduced findings in T7/T8.
+Final Node 24.21.0 suite: **306 passed, 0 failed**. Source checks: **56 files / 14 skills, 0 errors**.
+The isolated intended candidate (7878ebf contents plus these scoped changes) passed record verification
+against its baseline and diff checks. It excludes the user's uncommitted migration. Packed getbrief
+includes both new helper assets; installer and check passed from the extracted artifact in a temp home.
+No actual Astro/home install, migration, push, PR or merge was performed.
+
+Read-only Astro preflight: both update and pinned registration repair have no conflicts; the three
+root instruction files each consolidate to one block. S-003 header parses in_progress, branch and date.
+Full scanning additionally reports pre-existing malformed YAML in Astro TODO-014 (`title: CI: ...`);
+that file needs reconciliation before regeneration/migration. User owns committing historical Astro
+logs and rechecking. Finder metadata filtering remains an outstanding packaging observation.
+User's Brief-repo migration and mixed memory file remain uncommitted/separate. With final bookkeeping,
+this branch has 20 local commits above the published parent. Further pilot/publication decisions remain open.
