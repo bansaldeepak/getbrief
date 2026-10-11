@@ -88,3 +88,12 @@ Reviewer caught stale values surviving explicit null clears; the fix and regress
 306 tests, source checks, isolated record checks and extracted-package install/check passed.
 Curation: 18 memories retained, no removals or broader promotion; no additional rule/agent change needed.
 Actual migration remains user-owned, including Astro's malformed TODO-014 YAML and historical logs.
+
+## Incremental T9 retro — 2026-10-11
+Covered `52e4b53` before publication. User rejected inferred status mappings; full text is preserved
+and older normalization memory is explicitly superseded with history retained (18 memories/19 links).
+Research status readers had drifted; shared header parsing now covers both. Review also caught flat
+research identity/allocation collisions and registered Epic exclusion; all four findings are closed.
+322 tests plus full copied-Astro130 generation/migration/rollback and isolated record checks passed.
+Actual story progress remains user-owned; only the approved TODO-014 quoting repair touched Astro.
+No additional rule/agent promotion. User pilot and publication remain pending; no push or PR performed.

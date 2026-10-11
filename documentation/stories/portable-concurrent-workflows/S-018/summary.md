@@ -43,7 +43,7 @@ readable and unchanged; new entries use valid serialized YAML and immutable iden
 ## Final Local Verification
 
 - Base: published parent `02a345763f40fb1adbacf096c911a86d88060bc5`.
-- Current runtime candidate: `706baad`, including parser fix `64c7532`; pilot evidence follows below.
+- Current runtime candidate: `52e4b53`; complete T9 pilot evidence follows below.
 - Prior package metadata candidate: `fd7e084`, with runtime `b737777`; its evidence is retained below.
 - Runtime `npm test` at `b737777`: **294 passed, 0 failed**. The packed npm artifact was installed into a temporary prefix and passed source-less, local/symlink override, global/local, pinned-update and removed-MCP smoke checks. Those artifact checks were repeated successfully after renaming the package to getbrief.
 - Prior BUG-001 candidate `aee2f64`: **287 passed, 0 failed**. Real-project migration dry-run passed for **47 records**; migration and byte-exact rollback also passed on a temporary copy of the actual documentation.
@@ -150,3 +150,32 @@ that file needs reconciliation before regeneration/migration. User owns committi
 logs and rechecking. Finder metadata filtering remains an outstanding packaging observation.
 User's Brief-repo migration and mixed memory file remain uncommitted/separate. With final bookkeeping,
 this branch has 20 local commits above the published parent. Further pilot/publication decisions remain open.
+
+## T9 complete legacy migration preflight — 2026-10-11
+
+Implemented at `52e4b53`. Research regeneration now reads Markdown status just as migration does.
+All recorded statuses retain full text/qualifiers/emoji, with exact conflict detection instead of
+alias equivalence. User rejected inferred progress mappings and will reconcile Astro story states
+separately, including S-090. Existing research IDs follow explicit canonical/flat identities before
+unique title matching; new allocation reserves all declared IDs. Unregistered feature Epic overviews
+remain untouched, while explicitly registered Epic records migrate.
+
+Review closed T9-R1/R4 (flat research identity/allocation collisions), R2 (registered Epic exclusion),
+and R3 (status alias/qualifier equivalence), each with regression coverage. No remaining confirmed
+introduced findings. Node 24.21.0: **322 tests passed, 0 failed**, including 49 targeted tests.
+Source checks: **56 reference files / 14 skills, 0 errors**. Typecheck/lint/npm build/browser N/A for
+this ESM CLI change. Isolated intended-change record verification passed in legacy mode; the user's
+separate Brief authority migration remains unstaged and its generated views remain tracked.
+
+On a temporary copy of the full Astro documentation, generation and dry-run/apply passed for
+**130 records**. IDs, status strings, unknown metadata and legacy progress pointers were preserved;
+record bodies, 23 historical logs and the unregistered Epic overview were unchanged. Regeneration
+in record mode succeeded; guarded rollback restored every documentation byte. The only actual
+Astro write was the separately approved TODO-014 title quote correction with backup. No Astro
+status edits or actual authority migration were applied here. Fixture success does not prove
+actual story progress or user application testing.
+
+Curation retained 18 memories and all 19 index links. Existing status-normalization guidance is
+superseded with history retained; the current user choice is retrievable in the portable workflow
+memory and PRD/TRD/T9. Memory content remains unstaged with the user's migration envelopes.
+No extra rule/agent policy or cross-project promotion was needed. No push, PR or merge performed.

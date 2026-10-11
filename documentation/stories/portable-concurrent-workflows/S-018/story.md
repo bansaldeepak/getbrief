@@ -30,7 +30,7 @@ Retro before follow-up publication; no merge until combined local verification a
 - [x] Both lifecycle and portability changes pass combined local checks.
 
 ## Local completion
-All eight tasks are done; combined local verification passed. Story remains open for publication/user
+All nine tasks are done; combined local verification passed. Story remains open for publication/user
 testing/merge decisions. No follow-up push, PR, or merge has occurred. See summary and retro.
 
 User clarified CLI-only npm onboarding on 2026-10-10. T5 removes obsolete MCP remnants, makes
@@ -42,3 +42,8 @@ brief is retained. Repository rename verified with private visibility unchanged.
 T7/T8 address the Astro pilot feedback: both metadata label formats, preservation during regeneration,
 and one managed lifecycle block with stable version/update metadata and pinned registration repair.
 306 tests pass; actual Astro migration still requires data reconciliation and user verification.
+
+T9 preserves full status text and stable research identities, reads research Markdown status,
+and distinguishes unregistered epic overviews from explicitly registered records. 322 tests pass;
+130 copied Astro records migrate and roll back without changing body/log bytes. Actual progress
+reconciliation and migration remain user-owned.
