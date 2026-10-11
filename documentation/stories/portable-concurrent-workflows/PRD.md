@@ -134,3 +134,15 @@ harnesses without discarding custom instructions; unresolved custom content bloc
 Formatting at marker boundaries must not produce false doctor failures. Unchanged init/update must
 not churn timestamps or silently change pinned workflow content. Historical logs are unchanged;
 the user will commit their existing Astro logs and recheck. Actual project/home migration is separate.
+
+## Full pilot preflight follow-up — 2026-10-11
+
+The Astro run exposed additional legacy cases after the label fix: invalid unquoted title text,
+descriptive statuses, research IDs allocated by an old scan rather than stored in filenames, and
+an explicitly labeled feature epic overview named story.md. Preview the complete real-document set
+on a copy. Preserve research IDs through unique identity/title mappings; refuse ambiguity rather than
+reassigning IDs by directory order. Preserve epic overview bytes outside the individual-record inventory.
+User rejected the proposed status mappings and chose to preserve existing recorded status text.
+Do not infer project progress or normalize descriptive labels during regeneration/migration. The
+user will reconcile actual Astro story progress separately. Actual migration remains a separate
+reviewed operation.

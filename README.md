@@ -107,6 +107,9 @@ recorded decisions before continuing. Do not rebuild the legacy tracker merely t
 For example, a documented `deferred` item should not become `active` because of an old scanner result.
 Legacy regeneration reads both `**Status**:` and `**Status:**` (and related metadata labels), preserves
 tracker-only fields, and stops if an existing tracker entry has no corresponding scanned record.
+It preserves full status text, including qualifiers and emoji; migration rejects differing status
+strings instead of treating aliases as equal. Regeneration copies recorded values, so it cannot
+determine whether a story's stated progress is accurate. Review that separately in the source record.
 
 ### 3. Apply and verify
 

@@ -12,6 +12,18 @@ only recognized stock bodies. Custom legacy bodies are conflicts and remain byte
 Repair registrations from the pinned package without adopting custom bundle hashes or updating content.
 No new legacy-log exemption or actual Astro/home mutation is included.
 
+Research regeneration reads the same top-level Markdown status labels as migration validation,
+preserving descriptive text exactly; section-local component statuses remain excluded.
+Validation compares full status strings; aliases or different qualifiers remain conflicts.
+Research identity lookup checks explicit canonical/flat legacy IDs before unique-title fallback.
+Explicitly registered feature-level epic records remain in the migration inventory.
+The later T9 pilot preflight adds unique-title fallback for legacy research files lacking embedded or
+filename IDs. Regeneration receives existing tracker items so adding a file cannot reassign old IDs.
+Explicit identity takes precedence; duplicate titles/identities require reconciliation. Only a feature-level
+story.md explicitly headed Epic, without record metadata, is treated as an overview; other unexpected
+story files still block migration. Status strings remain verbatim (including qualifiers/emoji), rather
+than being mapped to inferred lifecycle categories. No Astro status edits or normalizations are authorized.
+
 **Date:** 2026-10-10 · **PRD:** [Approved scope](PRD.md)
 **Authority:** User explicitly directed implementation of the selected model and combined local
 testing. Selective mode chosen. This records technical decisions within that scope; unplanned
