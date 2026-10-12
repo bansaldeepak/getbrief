@@ -177,7 +177,7 @@ describe("canonical record authority", () => {
     const text = createRecordText("# New\n", { id: "TODO-001", type: "todo", status: "open" });
     createExclusive(path, text);
     assert.ok(splitRecord(readFileSync(path, "utf8")).data._brief.record_id);
-    assert.throws(() => createExclusive(path, "partial"), /EEXIST/);
+    assert.throws(() => createExclusive(path, "partial"), /Record already exists/);
     assert.equal(readFileSync(path, "utf8"), text);
     chmodSync(path, 0o664); const oldMask = process.umask(0o022);
     try { atomicText(path, text + "Updated\n"); } finally { process.umask(oldMask); }

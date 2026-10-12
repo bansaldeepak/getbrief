@@ -241,7 +241,11 @@ if (command === "story") {
   if (setting) { updateNotice(target, { setting }); console.log(`Update notices: ${setting}`); }
   else if (args.includes("--recover")) console.log(JSON.stringify(recoverWorkflow(target), null, 2));
   else {
-    if (!global && existsSync(join(root, ".brief/install.json")) && JSON.parse(readFileSync(join(root, ".brief/install.json"), "utf8")).scope === "global") throw new Error("This project uses the machine workflow package; run brief update --global to review or update that scope");
+    if (!global && existsSync(join(root, ".brief/install.json"))) {
+      let installScope;
+      try { installScope = JSON.parse(readFileSync(join(root, ".brief/install.json"), "utf8")).scope; } catch {}
+      if (installScope === "global") throw new Error("This project uses the machine workflow package; run brief update --global to review or update that scope");
+    }
     const source = resolveWorkflowSource({ source: args.find(a => a.startsWith("--source="))?.slice(9), global });
     const plan = planWorkflow(target, { source, scope: global ? "global" : "local" });
     console.log(JSON.stringify(workflowPreview(plan, { diff: args.includes("--dry-run") }), null, 2));
