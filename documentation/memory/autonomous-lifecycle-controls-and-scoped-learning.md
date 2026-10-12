@@ -7,6 +7,18 @@ created: 2026-10-10
 updated: 2026-10-10
 valid_until: permanent
 importance: 5
+_brief:
+  version: 1
+  record_id: d3abad5a-6c67-4fa8-b7d3-f3f85c46d5b9
+  item:
+    id: autonomous-lifecycle-controls-and-scoped-learning
+    type: memory
+    title: Autonomous lifecycle controls and scoped learning
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Autonomous lifecycle controls and scoped learning
 ---
 
 # Approved lifecycle controls and scoped learning

@@ -1,11 +1,26 @@
 ---
 name: repo-extraction
-description: Historical Brief repository extraction with current portable installation and source-path status
+description: Historical Brief repository extraction with current portable
+  installation and source-path status
 type: project
 created: 2026-08-27
 updated: 2026-10-10
 valid_until: 2026-11-27
 importance: 5
+_brief:
+  version: 1
+  record_id: 403f4a18-0c0a-430a-8d1d-676d38ae9cf5
+  item:
+    id: project_repo-extraction
+    type: memory
+    title: Historical Brief repository extraction with current portable installation
+      and source-path status
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Historical Brief repository extraction with current portable
+      installation and source-path status
 ---
 
 ## Current status (2026-10-10)

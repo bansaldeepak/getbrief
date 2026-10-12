@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: 1d06fc8a-b1bc-444d-a6ec-ba60d4006df6,
+      item:
+        {
+          id: S-008,
+          type: story,
+          title: Brief CLI Enhancements,
+          status: done,
+          feature: skills-cleanup-consolidation,
+          branch: feature/skills-cleanup-consolidation,
+          category: feat,
+          created: 2026-08-22,
+          tasks: 4,
+          story: documentation/stories/skills-cleanup-consolidation/S-008/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-008: Brief CLI Enhancements
 
 **Status**: done

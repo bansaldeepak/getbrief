@@ -1,11 +1,26 @@
 ---
 name: cross-reference-drift
-description: Historical cross-reference drift findings with active source reference validation now implemented
+description: Historical cross-reference drift findings with active source
+  reference validation now implemented
 type: project
 created: 2026-07-29
 updated: 2026-10-10
 valid_until: 2026-10-29
 importance: 5
+_brief:
+  version: 1
+  record_id: 12bf15e1-a7ca-437b-9d08-301b1365610a
+  item:
+    id: project_cross-reference-drift
+    type: memory
+    title: Historical cross-reference drift findings with active source reference
+      validation now implemented
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Historical cross-reference drift findings with active source
+      reference validation now implemented
 ---
 
 ## Current validation (2026-10-10)

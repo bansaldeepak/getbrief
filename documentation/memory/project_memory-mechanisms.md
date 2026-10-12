@@ -1,11 +1,26 @@
 ---
 name: memory-mechanisms
-description: Project repository memory is authoritative; historical host-hook investigation remains unverified
+description: Project repository memory is authoritative; historical host-hook
+  investigation remains unverified
 type: project
 created: 2026-07-29
 updated: 2026-10-10
 valid_until: 2026-10-29
 importance: 4
+_brief:
+  version: 1
+  record_id: 3977ce2c-a7ee-4956-b246-c83619a6612a
+  item:
+    id: project_memory-mechanisms
+    type: memory
+    title: Project repository memory is authoritative; historical host-hook
+      investigation remains unverified
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Project repository memory is authoritative; historical host-hook
+      investigation remains unverified
 ---
 
 ## Current authority (2026-10-10)

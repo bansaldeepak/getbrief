@@ -1,8 +1,21 @@
 ---
 name: discover-must-persist
-description: /brief discover must always create a DISCOVERY.md file in the feature folder — conversation output alone violates project-local memory premise
+description: /brief discover must always create a DISCOVERY.md file in the
+  feature folder — conversation output alone violates project-local memory
+  premise
 metadata:
   type: feedback
+_brief:
+  version: 1
+  record_id: 40beaeb3-0e62-4dc0-a907-69c0ebe5f7aa
+  item:
+    id: feedback_discover-must-persist
+    type: memory
+    title: /brief discover must always create a DISCOVERY.md file in the feature
+      folder — conversation output alone violates project-local memory premise
+    status: active
+    link: null
+    pr: null
 ---
 
 The discover skill must always produce a `DISCOVERY.md` file in `documentation/stories/<feature>/`, not just conversation output.

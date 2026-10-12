@@ -1,3 +1,24 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: ff1c1a5c-5079-4f2e-87da-af6859d44a73,
+      item:
+        {
+          id: S-017,
+          type: story,
+          title: Autonomous lifecycle and explicit planning context,
+          status: completed,
+          branch: feature/autonomous-lifecycle,
+          story: documentation/stories/autonomous-lifecycle/S-017/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null, last_task: S-017-T3 }
+    }
+}
+---
 # S-017: Autonomous lifecycle and explicit planning context
 
 **Status**: completed

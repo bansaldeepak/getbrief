@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: 22ed4bc6-39e1-4858-ae9e-132d8bb7b7bc,
+      item:
+        {
+          id: S-009,
+          type: story,
+          title: SDLC Enrichment,
+          status: done,
+          feature: skills-cleanup-consolidation,
+          branch: feature/skills-cleanup-consolidation,
+          category: feat,
+          created: 2026-08-22,
+          tasks: 5,
+          story: documentation/stories/skills-cleanup-consolidation/S-009/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-009: SDLC Enrichment
 
 **Status**: done

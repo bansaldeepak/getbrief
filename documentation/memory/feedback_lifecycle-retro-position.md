@@ -3,6 +3,20 @@ name: feedback-lifecycle-retro-position
 description: Historical retro timing superseded on 2026-10-10; token-usage removal retained.
 metadata:
   type: feedback
+_brief:
+  version: 1
+  record_id: 2cfbbb84-1827-416c-b9e2-b2d1523c4079
+  item:
+    id: feedback_lifecycle-retro-position
+    type: memory
+    title: Historical retro timing superseded on 2026-10-10; token-usage removal
+      retained.
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Historical retro timing superseded on 2026-10-10; token-usage
+      removal retained.
 ---
 
 # Historical retro timing and token-tracking removal

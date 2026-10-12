@@ -1,11 +1,26 @@
 ---
 name: project-next-steps-scaffold
-description: Brief CLI with canonical Markdown and local views in record mode, legacy compatibility and portable workflow packages
+description: Brief CLI with canonical Markdown and local views in record mode,
+  legacy compatibility and portable workflow packages
 type: project
 created: 2026-08-13
 updated: 2026-10-10
 valid_until: 2026-11-01
 importance: 5
+_brief:
+  version: 1
+  record_id: 0acdae9e-52eb-4129-9950-b962f2b412fd
+  item:
+    id: project_next-steps-scaffold
+    type: memory
+    title: Brief CLI with canonical Markdown and local views in record mode, legacy
+      compatibility and portable workflow packages
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Brief CLI with canonical Markdown and local views in record mode,
+      legacy compatibility and portable workflow packages
 ---
 
 ## Current contract (2026-10-10)

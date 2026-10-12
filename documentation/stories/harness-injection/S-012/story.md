@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: e85744d3-0eb4-47ef-ad4d-f41233b76ca0,
+      item:
+        {
+          id: S-012,
+          type: story,
+          title: Harness Injection & Init Rework,
+          status: done,
+          feature: harness-injection,
+          branch: feature/harness-injection,
+          category: feat,
+          created: 2026-09-01,
+          tasks: 7,
+          story: documentation/stories/harness-injection/S-012/story.md,
+          link: null,
+          pr: https://github.com/bansaldeepak/agents-setup/pull/26
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-012: Harness Injection & Init Rework
 
 **Status**: done

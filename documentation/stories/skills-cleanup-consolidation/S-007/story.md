@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: e935da85-1ea0-4127-a1da-4141a742f7f3,
+      item:
+        {
+          id: S-007,
+          type: story,
+          title: Harness & Core Rules Restructure,
+          status: done,
+          feature: skills-cleanup-consolidation,
+          branch: feature/skills-cleanup-consolidation,
+          category: feat,
+          created: 2026-08-22,
+          tasks: 3,
+          story: documentation/stories/skills-cleanup-consolidation/S-007/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-007: Harness & Core Rules Restructure
 
 **Status**: done

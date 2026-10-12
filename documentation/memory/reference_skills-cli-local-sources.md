@@ -1,11 +1,26 @@
 ---
 name: skills-cli-local-sources
-description: Brief pinned local/global packages and portable registrations, with historical live-link behavior retained
+description: Brief pinned local/global packages and portable registrations, with
+  historical live-link behavior retained
 type: reference
 created: 2026-07-29
 updated: 2026-10-10
 valid_until: 2027-02-27
 importance: 4
+_brief:
+  version: 1
+  record_id: 46e88c9f-581d-4d76-abb1-08ac21ebaad3
+  item:
+    id: reference_skills-cli-local-sources
+    type: memory
+    title: Brief pinned local/global packages and portable registrations, with
+      historical live-link behavior retained
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Brief pinned local/global packages and portable registrations, with
+      historical live-link behavior retained
 ---
 
 ## Current installation contract (2026-10-10)

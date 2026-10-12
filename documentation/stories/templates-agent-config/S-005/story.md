@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: 12ccc8a3-8ca2-4065-b6da-d78150167a6d,
+      item:
+        {
+          id: S-005,
+          type: story,
+          title: "Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical",
+          status: done,
+          feature: templates-agent-config,
+          branch: feature/templates-agent-config,
+          category: feat,
+          created: 2026-08-22,
+          tasks: 4,
+          story: documentation/stories/templates-agent-config/S-005/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-005: Templates & Agent Config — Remove Knowledge Graph, Make Brief Canonical
 
 **Status**: done

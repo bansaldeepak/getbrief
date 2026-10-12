@@ -1,12 +1,34 @@
 ---
 name: portable-installs-and-feature-scoped-concurrent-records
-description: Approved Brief local/global packages, pinned updates, canonical records, scoped IDs and immutable logs
+description: Approved Brief local/global packages, pinned updates, canonical
+  records, scoped IDs and immutable logs
 metadata:
   type: feedback
 created: 2026-10-10
-updated: 2026-10-10
+updated: 2026-10-11
 valid_until: permanent
 importance: 5
+_brief:
+  version: 1
+  record_id: 3cf0567a-3818-40d9-b21c-635e29d6eca2
+  item:
+    id: portable-installs-and-feature-scoped-concurrent-records
+    type: memory
+    title: Approved Brief local/global packages, pinned updates, canonical records,
+      scoped IDs and immutable logs
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-11
+    description: Approved Brief local/global packages, pinned updates, canonical
+      records, scoped IDs and immutable logs
+    note: User rejected inferred Astro status mappings on 2026-10-11 and chose
+      preservation of existing recorded status text. Generator and migration
+      must not interpret labels as actual progress; user will audit each Astro
+      story separately (including S-090). No cross-project status changes or
+      global alias promotion is authorized. Preserve descriptive strings and
+      qualifiers verbatim. This supersedes the proposed normalization plan for
+      the pilot.
 ---
 
 # Approved portable installation and concurrent-record choices
@@ -51,3 +73,15 @@ User selected getbrief on 2026-10-10 as the shared npm package and GitHub reposi
 ### Note (2026-10-10)
 
 Verified on 2026-10-10: GitHub repository renamed from bansaldeepak/agents-setup to bansaldeepak/getbrief and origin updated; PRIVATE visibility retained. Npm package/lock metadata now use getbrief with executable brief. No push, merge, npm publication or real-project pilot was performed by this naming change.
+
+### Note (2026-10-10)
+
+User confirmed final branding on 2026-10-10: product name and documentation heading are Brief; npm package and GitHub repository are getbrief; executable and skill are brief. The distribution-name constraint does not rename the product. Scope: Brief release branding and documentation.
+
+### Note (2026-10-11)
+
+User approved pilot follow-ups on 2026-10-11: read both bold-label colon formats when generating metadata; maintain one managed Brief lifecycle block per instruction file, with version/update metadata and inner markers only when needed. Preserve project customizations and keep unchanged installs stable. User will commit historical Astro logs and recheck; no log rewrite or legacy-log exemption change requested. Scope: Brief parser and installation behavior; actual Astro/home updates remain separate.
+
+### Note (2026-10-11)
+
+User rejected inferred Astro status mappings on 2026-10-11 and chose preservation of existing recorded status text. Generator and migration must not interpret labels as actual progress; user will audit each Astro story separately (including S-090). No cross-project status changes or global alias promotion is authorized. Preserve descriptive strings and qualifiers verbatim. This supersedes the proposed normalization plan for the pilot.

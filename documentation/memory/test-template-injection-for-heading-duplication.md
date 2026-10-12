@@ -1,12 +1,24 @@
 ---
 name: test-template-injection-for-heading-duplication
-description: When injecting templates with markdown headers, test for heading duplication — prefix + template h1 can create doubles
+description: When injecting templates with markdown headers, test for heading
+  duplication — prefix + template h1 can create doubles
 metadata:
   type: feedback
 created: 2026-09-01
 updated: 2026-09-01
 valid_until: permanent
 importance: 4
+_brief:
+  version: 1
+  record_id: a8099a2a-1a85-4e37-bad3-061f12e3a35d
+  item:
+    id: test-template-injection-for-heading-duplication
+    type: memory
+    title: When injecting templates with markdown headers, test for heading
+      duplication — prefix + template h1 can create doubles
+    status: active
+    link: null
+    pr: null
 ---
 
 ## Rule

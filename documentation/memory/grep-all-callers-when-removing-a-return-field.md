@@ -1,12 +1,24 @@
 ---
 name: grep-all-callers-when-removing-a-return-field
-description: Before removing a return field from a function, grep all callers to ensure nothing is left broken
+description: Before removing a return field from a function, grep all callers to
+  ensure nothing is left broken
 metadata:
   type: feedback
 created: 2026-09-01
 updated: 2026-09-01
 valid_until: permanent
 importance: 4
+_brief:
+  version: 1
+  record_id: 5faea7d4-4a03-4132-b0ad-8ec65bcbaa57
+  item:
+    id: grep-all-callers-when-removing-a-return-field
+    type: memory
+    title: Before removing a return field from a function, grep all callers to
+      ensure nothing is left broken
+    status: active
+    link: null
+    pr: null
 ---
 
 ## Rule

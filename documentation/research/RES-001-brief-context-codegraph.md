@@ -4,6 +4,16 @@ title: "Bundle codegraph into brief setup + unified context command"
 status: open
 priority: P1
 created: 2026-08-20
+_brief:
+  version: 1
+  record_id: 72da1637-9ff3-4931-bf0d-15d7b5684539
+  item:
+    id: RES-001
+    type: research
+    title: Bundle codegraph into brief setup + unified context command
+    status: open
+    link: null
+    pr: null
 ---
 
 # RES-001: Bundle codegraph + brief context

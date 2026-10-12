@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: c9ed2d3b-599a-47c1-8408-23afea6223cb,
+      item:
+        {
+          id: S-010,
+          type: story,
+          title: Rule Templates + Init,
+          status: done,
+          feature: skills-cleanup-consolidation,
+          branch: feature/skills-cleanup-consolidation,
+          category: feat,
+          created: 2026-08-22,
+          tasks: 3,
+          story: documentation/stories/skills-cleanup-consolidation/S-010/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-010: Rule Templates + Init
 
 **Status**: done

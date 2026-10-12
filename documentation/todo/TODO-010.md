@@ -6,6 +6,18 @@ status: open
 created: 2026-08-21
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: 8afa0839-744e-403e-9eb6-573dfe0bd951
+  item:
+    id: TODO-010
+    type: todo
+    title: brief v0.3 — Backlog & Roadmap (7 epics)
+    status: open
+    priority: P1
+    created: 2026-08-21
+    link: null
+    pr: null
 ---
 
 ## What

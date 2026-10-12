@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: 1e1c61d8-48b9-4662-9f6d-f67654be02cd,
+      item:
+        {
+          id: S-011,
+          type: story,
+          title: Brief Project Setup & Scoped Skills Architecture,
+          status: done,
+          feature: brief-project-setup,
+          branch: feature/brief-project-setup,
+          category: feat,
+          created: 2026-08-25,
+          tasks: 8,
+          story: documentation/stories/brief-project-setup/S-011/story.md,
+          link: null,
+          pr: https://github.com/bansaldeepak/agents-setup/pull/24
+        },
+      legacy: { current_task: S-011-T2 }
+    }
+}
+---
 # S-011: Brief Project Setup & Scoped Skills Architecture
 
 **Status**: done

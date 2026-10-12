@@ -1,3 +1,24 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: acaa5a61-7cd8-4b89-b1cd-ce5e342c0161,
+      item:
+        {
+          id: S-018,
+          type: story,
+          title: Portable installs and concurrent project records,
+          status: in_progress,
+          branch: feature/portable-concurrent-workflows,
+          story: documentation/stories/portable-concurrent-workflows/S-018/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null, last_task: S-018-T6 }
+    }
+}
+---
 # S-018: Portable installs and concurrent project records
 
 **Status**: in_progress

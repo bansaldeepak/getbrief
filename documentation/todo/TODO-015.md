@@ -5,6 +5,18 @@ priority: P2
 status: open
 created: 2026-09-04
 source: S-014 eng review (Codex outside voice)
+_brief:
+  version: 1
+  record_id: febce347-e675-4a63-9d81-c3207b71460f
+  item:
+    id: TODO-015
+    type: todo
+    title: Expand detectStack() for observability and analytics packages
+    status: open
+    priority: P2
+    created: 2026-09-04
+    link: null
+    pr: null
 ---
 
 ## Problem

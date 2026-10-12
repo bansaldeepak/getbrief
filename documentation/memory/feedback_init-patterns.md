@@ -1,11 +1,26 @@
 ---
 name: init-patterns
-description: Init lessons covering atomic writes, marker preservation, legacy mtime checks, ownership and guarded recovery
+description: Init lessons covering atomic writes, marker preservation, legacy
+  mtime checks, ownership and guarded recovery
 type: feedback
 created: 2026-08-27
 updated: 2026-10-10
 valid_until: permanent
 importance: 3
+_brief:
+  version: 1
+  record_id: 1c964082-bb10-485d-825d-625f96456a29
+  item:
+    id: feedback_init-patterns
+    type: memory
+    title: Init lessons covering atomic writes, marker preservation, legacy mtime
+      checks, ownership and guarded recovery
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Init lessons covering atomic writes, marker preservation, legacy
+      mtime checks, ownership and guarded recovery
 ---
 
 ## Patterns that worked

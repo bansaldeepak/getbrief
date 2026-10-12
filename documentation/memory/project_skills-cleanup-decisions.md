@@ -1,11 +1,23 @@
 ---
 name: skills-cleanup-decisions
-description: Key architectural decisions for skills cleanup epic — no rename (D8), item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
+description: Key architectural decisions for skills cleanup epic — no rename
+  (D8), item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
 type: project
 created: 2026-08-22
 updated: 2026-08-27
 valid_until: 2026-12-01
 importance: 5
+_brief:
+  version: 1
+  record_id: ee552688-7329-491c-8e57-268d5537717a
+  item:
+    id: project_skills-cleanup-decisions
+    type: memory
+    title: Key architectural decisions for skills cleanup epic — no rename (D8),
+      item.mjs delegation, copy-all init, enrichment aligned to gstack reviews
+    status: active
+    link: null
+    pr: null
 ---
 
 Decisions from discovery + PRD + TRD + eng review (2026-08-22):
