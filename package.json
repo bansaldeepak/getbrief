@@ -1,13 +1,22 @@
 {
-  "name": "brief",
+  "name": "getbrief",
   "version": "0.2.0",
   "type": "module",
-  "description": "Project management CLI — stories, TODOs, decisions, research, audits. File-based, zero-dependency, globally installed.",
+  "description": "CLI and agent skills for planning, implementing, reviewing, and learning from software work in Git.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bansaldeepak/getbrief.git"
+  },
+  "homepage": "https://github.com/bansaldeepak/getbrief#readme",
+  "bugs": {
+    "url": "https://github.com/bansaldeepak/getbrief/issues"
+  },
   "bin": {
     "brief": "./cli.mjs"
   },
   "scripts": {
-    "test": "node --test 'test/**/*.test.mjs'"
+    "test": "node --test 'test/**/*.test.mjs'",
+    "check:skills": "python3 scripts/check-references.py && node scripts/validate-skills.mjs"
   },
   "dependencies": {
     "@colbymchenry/codegraph": "1.5.0",

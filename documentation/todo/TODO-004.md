@@ -6,6 +6,18 @@ status: done
 created: 2026-08-20
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: dd5f5b3a-36aa-45e0-b058-9b702165157c
+  item:
+    id: TODO-004
+    type: todo
+    title: Enrich update — status transitions, add comments, update description fields
+    status: done
+    priority: P1
+    created: 2026-08-20
+    link: null
+    pr: null
 ---
 
 ## What

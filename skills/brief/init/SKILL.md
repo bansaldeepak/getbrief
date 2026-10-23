@@ -16,18 +16,17 @@ your code and fills those markers with real conventions.
 
 ### Step 1: Verify Brief is Installed
 
-Check `.brief/brief-manifest.json` exists. If not: tell the user to run `brief init` first.
-
-```bash
-cat .brief/brief-manifest.json
-```
+Read [installation and records](../references/records-and-installation.md), then run `brief doctor`.
+Local installs use `.brief/workflow/manifest.json`; global-selected projects record scope in
+`.brief/install.json`. Old `.brief/brief-manifest.json` is supported only for legacy installs.
+Do not assume a missing legacy manifest means a portable install is absent.
 
 ### Step 2: Understand What's Present
 
-From the manifest, determine:
-- Which agents are configured (`detection.agents`)
-- Which rules were installed (`rules_installed`)
-- What tech stack was detected (`detection.frameworks`, `detection.languages`)
+Inspect project rule directories and package configuration to identify installed rule skeletons,
+providers and the actual tech stack. Portable provenance records package hashes/ownership, not
+machine-specific stack detection. Respect the selected scope and pinned package; filling project
+rule skeletons is separate from an explicit package update.
 
 ### Step 3: Read Project Code
 
@@ -52,7 +51,7 @@ Only include conventions you can confidently infer from the code. Omit anything 
 
 ### Step 5: Fill Each Rule File
 
-For each rule file listed in `rules_installed`:
+For each applicable project rule skeleton found:
 
 1. Read the file (check all agent locations: `.claude/rules/`, `AGENTS.md`, `.agents/rules/`)
 2. Look for `<!-- brief:auto section="..." -->` ... `<!-- /brief:auto -->` markers

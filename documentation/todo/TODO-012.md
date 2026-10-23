@@ -6,6 +6,18 @@ status: open
 created: 2026-08-25
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: f8b4e1ad-02c2-4818-848a-07aa409ebb92
+  item:
+    id: TODO-012
+    type: todo
+    title: Verify Gemini .agents/rules/ compatibility with live test
+    status: open
+    priority: P2
+    created: 2026-08-25
+    link: null
+    pr: null
 ---
 
 ## What

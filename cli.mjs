@@ -2,8 +2,8 @@
 // brief CLI — project management + knowledge graph.
 // Resource-based commands: brief <resource> <action> [args] [flags]
 
-import { existsSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { join, basename } from "node:path";
 import { execSync } from "node:child_process";
 import { homedir } from "node:os";
 
@@ -27,28 +27,6 @@ for (let i = 0; i < rawArgs.length; i++) {
 const command = args[0];
 
 // --- Project root detection ---
-
-function findProjectRoot(startDir) {
-  if (explicitRoot) {
-    if (existsSync(join(explicitRoot, ".project/knowledge.db"))) return explicitRoot;
-    return null;
-  }
-  try {
-    const gitRoot = execSync("git rev-parse --show-toplevel", {
-      cwd: startDir,
-      encoding: "utf8",
-      stdio: ["pipe", "pipe", "pipe"],
-    }).trim();
-    if (existsSync(join(gitRoot, ".project/knowledge.db"))) return gitRoot;
-  } catch {}
-
-  let dir = startDir;
-  while (dir !== dirname(dir)) {
-    if (existsSync(join(dir, ".project/knowledge.db"))) return dir;
-    dir = dirname(dir);
-  }
-  return null;
-}
 
 function findGitRoot() {
   if (explicitRoot) return explicitRoot;
@@ -95,16 +73,18 @@ Search:
     --retro            Filter to retro findings
 
 Utilities:
-  next [type]          Print next available ID (default: story)
+  next [type]          Print next available ID (--feature=<slug> for scoped stories)
+  verify-records       Validate records/logs; --base=<ref> checks immutable history
 
 Project Setup:
-  init                 Scaffold canonical project structure
+  install [--dry-run] [--source=<path>]  Install the home workflow package
+  init [--scope=local|global] [--source=<path>]  Set up a project (local recommended)
+  update --check|--dry-run|--apply [--global] [--source=<path>]
+                       Review or apply an explicit workflow package update
+  update --recover     Roll back an interrupted installation (--global for machine)
+  update --notice=on|off|snooze  Configure local update notices
   doctor [--json]      Check project health (symlinks, manifest, rules)
   migrate              Check/apply brief format upgrades
-
-MCP Server:
-  serve --mcp          Start MCP server (stdio transport)
-  install [--write]    Show/write MCP config
 
 Options:
   --root <path>        Explicit project root
@@ -124,6 +104,11 @@ if (command === "version" || command === "--version" || command === "-V") {
 }
 
 const root = findGitRoot();
+if (["status", "pending", "active"].includes(command)) {
+  const { updateNotice } = await import("./lib/workflow-package.mjs");
+  const notice = updateNotice(root);
+  if (notice) console.error(notice);
+}
 
 // Resource commands
 if (command === "story") {
@@ -209,15 +194,23 @@ if (command === "story") {
   await contextCommand(root, args.slice(1), rawArgs);
 
 // Next ID query
+} else if (command === "verify-records") {
+  const { verifyRecords } = await import("./lib/verify-records.mjs");
+  const result = verifyRecords(root, { base: args.find(a => a.startsWith("--base="))?.slice(7) });
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.ok) process.exitCode = 1;
 } else if (command === "next") {
-  const type = args[1] || "story";
+  const type = args.slice(1).find(arg => !arg.startsWith("--")) || "story";
   const { readTracker, nextId, TYPE_CONFIG } = await import("./lib/tracker.mjs");
   if (!TYPE_CONFIG[type]) {
     console.error(`Unknown type: ${type}. Valid: story, todo, decision, research, audit, bug, memory`);
     process.exit(1);
   }
   const items = readTracker(root);
-  const id = nextId(items, type, root, { _peek: true });
+  const { recordMode } = await import("./lib/records.mjs");
+  const { nextFeatureStory } = await import("./lib/identifiers.mjs");
+  const feature = args.find(a => a.startsWith("--feature="))?.slice(10);
+  const id = type === "story" && recordMode(root) ? nextFeatureStory(root, feature) : nextId(items, type, root, { _peek: true });
   console.log(id);
 
 // Init / Generate / Migrate
@@ -225,7 +218,9 @@ if (command === "story") {
   const reindex = rawArgs.includes("--reindex");
   const nonInteractive = rawArgs.includes("--non-interactive");
   const { initProject } = await import("./lib/init.mjs");
-  const { created, skipped } = await initProject(root, { reindex, nonInteractive });
+  const scope = args.find(a => a.startsWith("--scope="))?.slice(8);
+  const source = args.find(a => a.startsWith("--source="))?.slice(9);
+  const { created, skipped } = await initProject(root, { reindex, nonInteractive, scope, source });
   if (created.length) {
     console.log("Created:");
     for (const f of created) console.log(`  + ${f}`);
@@ -237,6 +232,26 @@ if (command === "story") {
   if (!created.length) console.log("Nothing to do — project already initialized.");
   else console.log(`\n✓ Project scaffolded at ${root}`);
 
+} else if (command === "update") {
+  const { planWorkflow, applyWorkflow, recoverWorkflow, updateNotice, workflowPreview, resolveWorkflowSource } = await import("./lib/workflow-package.mjs");
+  const global = args.includes("--global"), target = global ? homedir() : root;
+  const setting = args.find(a => a.startsWith("--notice="))?.slice(9);
+  const modes = ["--check", "--dry-run", "--apply", "--recover"].filter(flag => args.includes(flag));
+  if (modes.length > 1 || (setting && modes.length)) throw new Error("Choose one update operation");
+  if (setting) { updateNotice(target, { setting }); console.log(`Update notices: ${setting}`); }
+  else if (args.includes("--recover")) console.log(JSON.stringify(recoverWorkflow(target), null, 2));
+  else {
+    if (!global && existsSync(join(root, ".brief/install.json"))) {
+      let installScope;
+      try { installScope = JSON.parse(readFileSync(join(root, ".brief/install.json"), "utf8")).scope; } catch {}
+      if (installScope === "global") throw new Error("This project uses the machine workflow package; run brief update --global to review or update that scope");
+    }
+    const source = resolveWorkflowSource({ source: args.find(a => a.startsWith("--source="))?.slice(9), global });
+    const plan = planWorkflow(target, { source, scope: global ? "global" : "local" });
+    console.log(JSON.stringify(workflowPreview(plan, { diff: args.includes("--dry-run") }), null, 2));
+    if (args.includes("--apply")) applyWorkflow(plan);
+    if (plan.conflicts.length) process.exitCode = 1;
+  }
 } else if (command === "migrate") {
   const { migrateProject } = await import("./lib/migrate.mjs");
   const { added, totalItems } = migrateProject(root);
@@ -257,33 +272,9 @@ if (command === "story") {
   printDoctorResult(root, result, json);
   process.exit(result.exitCode || 0);
 
-// MCP Server
-} else if (command === "serve") {
-  const dbRoot = findProjectRoot(process.cwd());
-  if (dbRoot) process.env.KNOWLEDGE_ROOT = dbRoot;
-  await import("./serve.mjs");
-
 } else if (command === "install") {
-  const target = args[1] || "claude";
-  const config = {
-    type: "stdio",
-    command: "brief",
-    args: ["serve", "--mcp"],
-  };
-  console.log(`# Add to ~/.claude.json (or equivalent for ${target}):\n`);
-  console.log(JSON.stringify({ mcpServers: { knowledge: config } }, null, 2));
-
-  if (rawArgs.includes("--write")) {
-    const { readFileSync, writeFileSync } = await import("node:fs");
-    const claudeJson = join(homedir(), ".claude.json");
-    const existing = existsSync(claudeJson)
-      ? JSON.parse(readFileSync(claudeJson, "utf8"))
-      : {};
-    existing.mcpServers = existing.mcpServers || {};
-    existing.mcpServers.knowledge = config;
-    writeFileSync(claudeJson, JSON.stringify(existing, null, 2) + "\n");
-    console.log(`\n✓ Written to ${claudeJson}`);
-  }
+  const { installCommand } = await import("./lib/commands/install.mjs");
+  installCommand(args.slice(1));
 
 } else {
   console.error(`Unknown command: ${command}. Run: brief help`);

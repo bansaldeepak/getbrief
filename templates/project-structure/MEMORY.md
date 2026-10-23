@@ -4,13 +4,13 @@
 Use `brief memory` commands instead of reading files directly:
 - `brief memory list` — concise index of all memories
 - `brief memory show <name>` — view a specific memory
-- `brief memory create <name> --type=<type>` — create a new memory
+- `brief memory create <name> --memtype=<type>` — create a new memory
 - `brief memory update <name>` — update an existing memory
 
 Do NOT read `documentation/memory/*.md` files directly — use the commands above.
 <!-- /brief:memory-harness -->
 
-Memory is stored in `memory/` as individual markdown files with frontmatter.
+Memory is stored in `documentation/memory/` as individual markdown files with frontmatter.
 
 ## How to access
 
@@ -34,4 +34,4 @@ brief search "<query>"          # searches everything (stories, todos, decisions
 ## Index
 
 <!-- One line per memory, under ~40 lines total. Format: -->
-<!-- - [slug](memory/slug.md) — one-line summary -->
+<!-- - [slug](documentation/memory/<slug>.md) — one-line summary -->

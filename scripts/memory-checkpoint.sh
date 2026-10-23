@@ -28,7 +28,7 @@ echo "$COUNT" > "$COUNTER_FILE" 2>/dev/null || exit 0
 if [ $((COUNT % THRESHOLD)) -eq 0 ]; then
   echo "Memory checkpoint (message #$COUNT). Has this session produced anything durable — a decision and the alternatives it rejected, a user correction, a gotcha that cost real time, or a constraint not derivable from the code?"
   echo ""
-  echo "If yes, write it to the CURRENT REPO: MEMORY.md at the root (index, under ~40 lines) plus one file per fact in memory/. Never to the provider config directory. Format: the project-memory skill."
+  echo "If yes, write it to the CURRENT REPO: MEMORY.md at the root (index, under ~40 lines) plus one file per fact in documentation/memory/. Never to the provider config directory. Use brief memory for format and scoped capture; record explicit user choices immediately, not only at checkpoints."
   echo ""
   echo "If nothing is notable, say \"No new memory at this checkpoint\" and continue — a skipped gate should stay visible."
 fi

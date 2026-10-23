@@ -25,6 +25,8 @@ Produces a tight, actionable PRD that becomes the single source of truth for wha
 
 ## Instructions
 
+Before drafting, follow [planning context](../references/planning-context.md). Explicitly apply relevant user decisions, rules, skills, and agent guidance; record an Applied Constraints table with their effect. Resolve known questions before execution and capture new choices immediately via [memory](../memory/SKILL.md).
+
 ### Phase 0: Branch Check
 
 Run the branch check from `brief`'s router before writing `PRD.md` — if `git branch --show-current`
@@ -41,8 +43,8 @@ brief status
 ```
 
 **Fallback** — if CLI is not installed, read files directly:
-- `PROJECT-TRACKER.md` — active items only (lean, start here)
-- `tracker.yaml` — full history (only if you need completed/dropped context)
+- Canonical story/item Markdown in record mode; CLI views are current. Generated tracker views may be stale.
+- Legacy `documentation/tracker.yaml` only when no record-authority marker exists.
 - `memory/` files — prior learnings, retro findings relevant to this feature
 - Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar work
 
@@ -120,6 +122,11 @@ Write the PRD in this exact format. Save to `documentation/stories/<feature-name
 
 <Concise description of the solution. Use a Mermaid diagram for any flow.>
 
+### Applied Constraints
+
+| Source | Scope/status | Effect on requirements | Unresolved choice |
+|--------|--------------|------------------------|-------------------|
+
 ### Requirements
 
 | # | Requirement | Priority | Notes |
@@ -176,7 +183,7 @@ Write the PRD in this exact format. Save to `documentation/stories/<feature-name
 
 ## Open Questions
 
-- [ ] <Question that needs answering before or during implementation>
+- [ ] <Unresolved question and affected work; resolve before dependent implementation. Label future observations separately.>
 
 ## Timeline
 

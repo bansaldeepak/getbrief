@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: c8a026af-d575-49db-b87b-7b3c9067d887,
+      item:
+        {
+          id: S-014,
+          type: story,
+          title: Project-Scoped Rules & Smart Init,
+          status: done,
+          feature: project-scoped-rules,
+          branch: feature/project-scoped-rules,
+          category: feat,
+          created: 2026-09-04,
+          tasks: 9,
+          story: documentation/stories/project-scoped-rules/S-014/story.md,
+          link: null,
+          pr: https://github.com/bansaldeepak/agents-setup/pull/27
+        },
+      legacy: { current_task: S-014-T3 }
+    }
+}
+---
 # S-014: Project-Scoped Rules & Smart Init
 
 **Status**: done

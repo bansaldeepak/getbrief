@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: 53ea4ce9-01d5-4205-8764-5e4ed6545799,
+      item:
+        {
+          id: S-004,
+          type: story,
+          title: brief v0.3 — CLI Command Enhancements,
+          status: done,
+          feature: brief-v0-3-cli-command-enhancements,
+          branch: feature/brief-v03-cli-enhancements,
+          category: feat,
+          created: 2026-08-21,
+          tasks: 6,
+          story: documentation/stories/brief-v0-3-cli-command-enhancements/S-004/story.md,
+          link: null,
+          pr: https://github.com/bansaldeepak/agents-setup/pull/21
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-004: brief v0.3 — CLI Command Enhancements
 
 **Status**: done

@@ -13,6 +13,8 @@ Interactive planning skill for breaking features into tracked stories and tasks.
 
 ## Instructions
 
+Before drafting, follow [planning context](../references/planning-context.md). Explicitly apply relevant user decisions, rules, skills, and agent guidance; record an Applied Constraints table with their effect. Resolve known questions before execution and capture new choices immediately via [memory](../memory/SKILL.md).
+
 You are entering planning mode. Do NOT write any implementation code. Your job is to produce a story with tasks that will guide implementation.
 
 ### Phase 0a: Branch Check
@@ -67,8 +69,8 @@ brief status
 ```
 
 **Fallback** — if CLI is not installed, read files directly:
-- `PROJECT-TRACKER.md` — active items only (lean, start here)
-- `tracker.yaml` — full history (only if you need completed/dropped context)
+- Canonical story/item Markdown in record mode; CLI views are current. Generated tracker views may be stale.
+- Legacy `documentation/tracker.yaml` only when no record-authority marker exists.
 - `memory/` files — prior learnings, constraints, gotchas for this area
 - Recent retro files (`documentation/stories/*/retro.md`) — what went wrong in similar past work
 
@@ -92,11 +94,11 @@ If a PRD exists, use it as the foundation — don't re-ask questions already ans
 
 **Step A -- Why**: What problem does this solve? Who is affected? Cost of inaction?
 **Step B -- What**: What changes from the user's perspective? Success criteria? Explicitly out of scope?
-**Step C -- Clarifying Questions**: Present your understanding, then ask 2-3+ concrete questions. Include interpretation, scope, architecture options, edge cases, risks.
+**Step C -- Clarifying Questions**: Check approved requirements and applicable guidance first. Ask only unresolved questions about scope, behavior, architecture, edge cases, or risk. Do not invent a question quota or repeat settled choices.
 
 For **tech upgrades**: also ask about migration path, rollback plan, incremental approach.
 
-**Wait for the user to answer before proceeding.**
+**Wait for answers to genuinely unresolved questions before dependent planning.**
 
 ### Phase 3: Propose Breakdown
 
@@ -129,11 +131,14 @@ brief story create "<title>" --description="<context>" --feature=<folder> --bran
 # Then for each task:
 brief story task create S-NNN "<task title>" --priority=P0 [--blocked-by=S-NNN-TN]
 ```
-This creates story.md, summary.md, tasks/ directory, and tracker entry automatically.
+Use the returned ID (for example, `feature-name/S-001`) in all task commands. This creates the canonical story, summary and tasks directory; legacy mode also updates its tracker.
 
 **Fallback** — create files manually following templates below.
 
-Determine the next story ID by scanning all `documentation/stories/*/S-NNN/` folders. IDs are sequential per project. Determine the feature folder name -- use an existing one if the story belongs to an in-progress feature, or create a new one (name matches branch slug).
+Read [record authority and IDs](../references/records-and-installation.md). In record mode, use CLI
+allocation within the selected feature; do not guess IDs or hand-create metadata. Without CLI access,
+restore the CLI before record-mode mutations. For legacy projects only, preserve existing global IDs
+and file formats. Choose an existing feature folder for related work or a new safe feature slug.
 
 #### `documentation/stories/<feature-name>/S-NNN/story.md`
 
@@ -161,6 +166,12 @@ As a <role>, I want <capability>, so that <benefit>.
 **In scope:** ...
 **Out of scope:** ...
 
+## Risk and Verification
+<Per-task critical changes, completed browser flows, automated coverage and evidence gaps; input to mode recommendation.>
+
+## Execution Policy
+<Selection is made by the user at implementation start; never pre-approve a mode during planning.>
+
 ## References
 <Links to relevant docs, schema, requirements>
 ```
@@ -168,7 +179,7 @@ As a <role>, I want <capability>, so that <benefit>.
 #### `documentation/stories/<feature-name>/S-NNN/tasks/T-001.md` (one per task)
 
 Each task file is self-contained and tracks its own status. No separate index file needed —
-task status lives in the task file's frontmatter (`Status: pending` → `completed`).
+task status lives in the task file's frontmatter (`Status: pending` → `done`).
 For projects using external PM (GitHub Projects, Linear), status syncs there instead.
 
 Each task gets its own file with full detail. **Each task spec must be self-contained.** Assume the executing agent (Sonnet, Codex, Gemini, or a fresh Claude session) has ZERO context from the planning conversation. The task spec is the only brief they receive.
@@ -189,6 +200,7 @@ Why this task exists -- what breaks or is missing without it. Include the user-f
 Background a fresh agent needs to understand this task. Include:
 - Current state of the code (what exists today, what's broken)
 - Relevant schema/type definitions (inline the key fields, don't just reference)
+- Applicable user decisions and rules: inline concrete design/naming constraints, rationale, scope, and source
 - Key decisions from review (e.g., "CEO review decided X because Y")
 - How this task connects to adjacent tasks (what came before, what comes after)
 
@@ -247,7 +259,7 @@ What makes a good "How" section:
 
 **File naming:** `T-001.md`, `T-002.md`, etc. (zero-padded for sort order)
 
-**Token efficiency:** During implementation, only read the task file you're working on. During review, only read the task(s) being reviewed. Never load all task files at once unless doing a full retro.
+**Context efficiency:** Read the current task plus its required constraints/read-first files. Mode selection uses the story risk summary; inspect other task specs when missing risk evidence or dependencies require it.
 
 #### `documentation/stories/<feature-name>/S-NNN/summary.md`
 
@@ -262,23 +274,17 @@ What makes a good "How" section:
 
 ## Testing
 <Automated coverage the story adds or relies on. Leave the manual-verification line as
-`<TBD at implementation>` — planning cannot know whether a browser check is needed, and pre-filling
-"no manual verification needed" on a story that touches a live path is how that check gets skipped.>
+`<planned verification; evidence pending>` — identify expected browser/critical checkpoints during planning and reassess during execution. Do not claim a future check passed.>
 
 ## Follow-up
 <Deferred items, future improvements>
 ```
 
-### Phase 5: Update Project Tracker
+### Phase 5: Verify Project Tracker
 
-**Primary** — if `brief` CLI is installed:
-```bash
-brief story create "<title>" --description="<context>" --feature=<folder>
-# Then for each task:
-brief story task create S-NNN "<task title>" --priority=P1 [--blocked-by=S-NNN-TN]
-```
-
-**Fallback** — add the story to `documentation/PROJECT-TRACKER.md` in the Planned section manually.
+Phase 4 already created the story/tasks. Verify their IDs, statuses, dependencies, and links using
+`brief story show <story>` and `brief story tasks <story>`. Update existing records if needed; do not
+create the same story/tasks again. With no CLI, inspect the existing tracker and files directly.
 
 ### Phase 6: Confirm
 
@@ -286,7 +292,7 @@ Report back:
 - Story ID and title
 - Number of tasks
 - Branch: `git branch --show-current` — confirm it matches `story.md`'s **Branch** field, not `main`
-- Ask: "Ready to start S-NNN-T1?"
+- Recommend an execution mode using the story risk/verification summary; obtain selection unless explicitly supplied. Preserve the user's authorization to start, rather than asking again.
 
 Also create Claude Code tasks (TaskCreate) mirroring the story tasks for session visibility.
 
@@ -310,7 +316,7 @@ Existing stories may use older formats. When working with an existing story:
 ## Rules
 
 - Never write implementation code during planning
-- Never skip the question-asking phase
+- Always check for unresolved questions; proceed without repeating answers already established
 - Always wait for user approval of the task breakdown
 - Tasks should be ordered so each builds on the previous
 - Each task should be completable in a single commit

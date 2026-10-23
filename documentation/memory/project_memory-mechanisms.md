@@ -1,12 +1,31 @@
 ---
 name: memory-mechanisms
-description: Three separate memory systems exist on this machine and have never been reconciled — audit before adding a fourth
+description: Project repository memory is authoritative; historical host-hook
+  investigation remains unverified
 type: project
 created: 2026-07-29
-updated: 2026-07-30
+updated: 2026-10-10
 valid_until: 2026-10-29
 importance: 4
+_brief:
+  version: 1
+  record_id: 3977ce2c-a7ee-4956-b246-c83619a6612a
+  item:
+    id: project_memory-mechanisms
+    type: memory
+    title: Project repository memory is authoritative; historical host-hook
+      investigation remains unverified
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Project repository memory is authoritative; historical host-hook
+      investigation remains unverified
 ---
+
+## Current authority (2026-10-10)
+
+Approved authority is the project repository: MEMORY.md plus canonical documentation/memory records using the [Brief memory contract](../../skills/brief/memory/SKILL.md). The historical host-hook failure below remains unverified; this work does not repair or confirm that wiring. Immediate explicit-choice capture does not depend solely on lifecycle gates.
 
 Noticed while running the post-ship checkpoint that created this file. **Unresolved — do not assume
 one of these is authoritative until it is.**

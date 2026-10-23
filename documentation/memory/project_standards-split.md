@@ -1,11 +1,23 @@
 ---
 name: standards-split
-description: Why standards are three skills, why stack content moved into repos, and what the 3,000-line-file problem actually was
+description: Why standards are three skills, why stack content moved into repos,
+  and what the 3,000-line-file problem actually was
 type: project
 created: 2026-07-29
 updated: 2026-07-29
 valid_until: permanent
 importance: 4
+_brief:
+  version: 1
+  record_id: 53ac5aab-8eb2-4104-9d71-2487dde6fa8b
+  item:
+    id: project_standards-split
+    type: memory
+    title: Why standards are three skills, why stack content moved into repos, and
+      what the 3,000-line-file problem actually was
+    status: active
+    link: null
+    pr: null
 ---
 
 Shipped 2026-07-29 (agents-setup#2, taiboli-app#149).

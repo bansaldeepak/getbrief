@@ -6,6 +6,18 @@ status: deferred
 created: 2026-09-01
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: 3ce1261e-2b48-4ad7-9d85-d5973c4da3e5
+  item:
+    id: TODO-014
+    type: todo
+    title: Delete rules-gen.mjs dead code
+    status: deferred
+    priority: P3
+    created: 2026-09-01
+    link: null
+    pr: null
 ---
 
 ## What

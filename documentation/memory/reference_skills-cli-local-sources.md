@@ -1,14 +1,39 @@
 ---
 name: skills-cli-local-sources
-description: "brief lives at ~/Work/Arcitae/brief (standalone repo). init creates symlinks into BRIEF_SKILLS_PATH. Old ~/.agents path deprecated."
+description: Brief pinned local/global packages and portable registrations, with
+  historical live-link behavior retained
 type: reference
 created: 2026-07-29
-updated: 2026-08-27
+updated: 2026-10-10
 valid_until: 2027-02-27
 importance: 4
+_brief:
+  version: 1
+  record_id: 46e88c9f-581d-4d76-abb1-08ac21ebaad3
+  item:
+    id: reference_skills-cli-local-sources
+    type: memory
+    title: Brief pinned local/global packages and portable registrations, with
+      historical live-link behavior retained
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Brief pinned local/global packages and portable registrations, with
+      historical live-link behavior retained
 ---
 
-## Current Architecture (2026-08-27)
+## Current installation contract (2026-10-10)
+
+Source checkout access is optional. An installed npm package or npm-linked checkout supplies assets for brief install. Project init/update uses the available home package before CLI assets; global install/update uses CLI assets. --source=<local-path> overrides those defaults and accepts directory symlinks. No source URL is fetched, and npm installation itself has no home-writing postinstall hook. Brief is CLI-only, following the [approved user clarification](portable-installs-and-feature-scoped-concurrent-records.md).
+
+Brief supports Git-tracked project-local .brief/workflow packages and a separate machine package in the home directory. Recommend local for teams. Relative local registrations work without the original developer checkout; local guidance takes precedence. The CLI runtime remains separate.
+
+Repeated init preserves selected scope and pinned provenance. Updates compare available local source, show revisions/content changes, preserve customizations and require explicit apply. Global updates do not replace project copies or silently fetch upstream.
+
+The symlink-only account below is historical. Never use it to replace a real directory, assume an old global checkout exists, or bypass ownership/recovery controls. See [approved choices](portable-installs-and-feature-scoped-concurrent-records.md) and [current contract](../../skills/brief/references/records-and-installation.md).
+
+## Historical architecture snapshot (2026-08-27)
 
 **Brief repo location**: `/Users/db/Work/Arcitae/brief/` (standalone project, npm-linked to PATH)
 **Old location**: `~/.agents/brief/` (deprecated — agents repo can be deleted)

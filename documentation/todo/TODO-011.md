@@ -1,11 +1,25 @@
 ---
 id: TODO-011
-title: brief story create should detect existing feature folders or accept --folder/--id flags
+title: brief story create should detect existing feature folders or accept
+  --folder/--id flags
 priority: P1
 status: done
 created: 2026-08-22
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: 8667bda9-879c-4d4d-9671-035ea478a6d0
+  item:
+    id: TODO-011
+    type: todo
+    title: brief story create should detect existing feature folders or accept
+      --folder/--id flags
+    status: done
+    priority: P1
+    created: 2026-08-22
+    link: null
+    pr: null
 ---
 
 ## What

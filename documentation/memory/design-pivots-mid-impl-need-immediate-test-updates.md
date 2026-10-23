@@ -1,12 +1,24 @@
 ---
 name: design-pivots-mid-impl-need-immediate-test-updates
-description: When design pivots mid-implementation, update tests immediately in the same change, not deferred
+description: When design pivots mid-implementation, update tests immediately in
+  the same change, not deferred
 metadata:
   type: feedback
 created: 2026-09-01
 updated: 2026-09-01
 valid_until: permanent
 importance: 4
+_brief:
+  version: 1
+  record_id: 4923a072-09ff-4739-879d-aaf769f20188
+  item:
+    id: design-pivots-mid-impl-need-immediate-test-updates
+    type: memory
+    title: When design pivots mid-implementation, update tests immediately in the
+      same change, not deferred
+    status: active
+    link: null
+    pr: null
 ---
 
 ## Rule

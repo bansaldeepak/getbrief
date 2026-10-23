@@ -8,7 +8,7 @@ import { execSync } from "node:child_process";
 import { initProject } from "../lib/init.mjs";
 
 const __testDirname = dirname(fileURLToPath(import.meta.url));
-const BRIEF_SKILLS_PATH = join(__testDirname, "../skills/brief");
+const BRIEF_SKILLS_PATH = "../../.brief/workflow/skills/brief";
 const OLD_CUSTOM_SKILLS = join(homedir(), ".agents", "custom-skills", "brief");
 
 describe("migration — old custom-skills/ symlinks", () => {

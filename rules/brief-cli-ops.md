@@ -5,7 +5,7 @@ paths:
 
 ## Brief CLI — Mandatory for Documentation Mutations
 
-Never use direct `Write`/`writeFileSync` to create or modify files under `documentation/stories/`, `documentation/todo/`, `documentation/decisions/`, or `documentation/memory/`. Always use the brief CLI — it keeps `tracker.yaml` in sync and formats files consistently.
+Never use direct `Write`/`writeFileSync` to create or modify files under `documentation/stories/`, `documentation/todo/`, `documentation/decisions/`, or `documentation/memory/`. Always use the brief CLI — it preserves canonical record metadata (and synchronizes the tracker in legacy mode).
 
 ### Commands You Need
 
@@ -36,7 +36,7 @@ brief search "<query>"
 ### Status vocabulary — stories and tasks differ
 
 A finished **story** is `completed`; a finished **task** is `done`. They are not interchangeable, and
-nothing validates them — a typo lands silently and the story disappears from `brief completed`.
+use the project vocabulary consistently — an unsupported status can hide work from filtered views. Previously a typo landed silently and the story disappears from `brief completed`.
 
 | Level | In flight | Finished | Other |
 |---|---|---|---|
@@ -55,11 +55,19 @@ commands (`show`, `update`, `retire`) accept any of: `MEM-001`, `deploy-process`
 `"Deploy process"`. Never delete memory — use `brief memory retire` to set `status: retired`
 and stamp `valid_until`, preserving the file for audit trail.
 
-### Regenerating the tracker
+### Records, IDs, logs and verification
 
-`brief tracker generate --markdown` rebuilds `tracker.yaml` **from the filesystem**, then regenerates
-`PROJECT-TRACKER.md`. It picks up story and TODO files that were never registered, so always
-`--dry-run` first and diff the id set — a rebuild should be additive, and anything it *removes* is a
-finding, not a cleanup.
+In record mode (`.brief/records.json`), canonical Markdown is authoritative. New story IDs are
+`feature/S-NNN` and task IDs `feature/S-NNN-T1`; use IDs returned by the CLI. Bare IDs must be
+unambiguous. Preserve all existing IDs. Task progress derives from task files, not shared pointers.
+`brief tracker generate --markdown` creates ignored local views; never routinely commit them.
+Existing projects require a reviewed `brief tracker migrate-authority --dry-run` before explicit
+migration. Do not hand-create or alter reserved `_brief` identity/metadata.
 
-Direct `Write` to `story.md`, `summary.md`, or task files is allowed only for content edits (not creation or status changes).
+Never append to, rewrite or delete monolithic log.md/logs.md or existing standalone log entries.
+Use `brief log add "outcome" --session=<id> --agent=<name> --story=<qualified-id>` for every new entry;
+keep the unique files tracked. Corrections are new entries. Run `brief verify-records --base=<base>`
+during review/verification and resolve violations before committing or publishing.
+
+Direct edits to existing story/summary/task bodies are allowed for content only; preserve metadata.
+Use the CLI for creation and status changes. Without CLI access, restore it before record mutations.

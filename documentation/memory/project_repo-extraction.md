@@ -1,12 +1,31 @@
 ---
 name: repo-extraction
-description: "brief extracted to standalone repo at ~/Work/Arcitae/brief. Old ~/.agents deprecated. AGENTS.md → HARNESS.md. BRIEF_SKILLS_PATH needs update."
+description: Historical Brief repository extraction with current portable
+  installation and source-path status
 type: project
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-10-10
 valid_until: 2026-11-27
 importance: 5
+_brief:
+  version: 1
+  record_id: 403f4a18-0c0a-430a-8d1d-676d38ae9cf5
+  item:
+    id: project_repo-extraction
+    type: memory
+    title: Historical Brief repository extraction with current portable installation
+      and source-path status
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Historical Brief repository extraction with current portable
+      installation and source-path status
 ---
+
+## Current status (2026-10-10)
+
+The source-path and managed-workflow changes are implemented. Installation now follows the [portable contract](../../skills/brief/references/records-and-installation.md). On 2026-10-10, the user selected getbrief for the npm package and GitHub repository, preserving brief as the executable and skill name. The repository rename to bansaldeepak/getbrief was verified with PRIVATE visibility retained; no push/merge or npm publication occurred. This supersedes the historical suggested rename to brief below. See [the captured choice](portable-installs-and-feature-scoped-concurrent-records.md) for scope and rollout boundaries.
 
 ## Repo Extraction (2026-08-27)
 
@@ -35,7 +54,7 @@ Brief is now a standalone project at `/Users/db/Work/Arcitae/brief/` (was nested
 - `skills/gstack/`, `skills/shadcn-ui/` — third-party, user-installed (stay on user's machine, not in repo)
 - `.skill-lock.json` — skills CLI state (not brief's concern)
 
-### Outstanding debt
+### Outstanding debt recorded on 2026-08-27
 
 - `BRIEF_SKILLS_PATH` in `lib/init.mjs` hardcodes `~/.agents/brief/skills/brief/` — must be updated to resolve from the actual brief install location
 - `build.sh`/`check.sh` still sync to `~/.claude/CLAUDE.md` etc. — works but needs proper "harness injection" pattern

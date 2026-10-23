@@ -1,169 +1,85 @@
 ---
 name: retro
-description: "Retrospective before merge. Captures learnings, updates skills/memory, runs self-improving agent, and feeds improvements back into the workflow. Retro complete = all done before merge."
+description: "Capture story learning and complete authorized rule, skill, agent, and memory improvements before publication; handle explicit deferral and incremental follow-ups."
 user_invocable: true
 model: opus
 ---
 
-# /brief retro -- Story Retrospective
+# /brief retro — Learning Before Publication
 
-Captures learnings after story completion and feeds improvements back into the system.
-Retro is the **last step before merge** — not a separate story. It runs after the PR is opened,
-pr-review is done, and the user has tested the build. The retro output (retro.md, tracker
-updates, TODOs) is committed to the same PR branch before the human merges.
+The [router](../SKILL.md) owns timing: normally after local review fixes and before final
+verification/publication. Do not wait for a PR or preview test to capture known implementation
+learnings. Preview/production outcomes remain pending until observed.
 
-**Usage**: `/brief retro` (reviews the most recently completed story) or `/brief retro S-NNN`
+For a standalone BUG without a story, use its bug record, reproduction, fix, and review evidence;
+append the retrospective to that record through the bug CLI. Do not invent story artifacts.
+The ordinary commit/publication controls still apply.
 
-## When Claude Should Auto-Invoke
+Follow [record/log rules](../references/records-and-installation.md): use individual records and new
+immutable log entries; preserve canonical metadata and keep generated views out of routine commits.
 
-- After user has tested the build and confirmed it works
-- PR is already open — retro commit goes into the same PR before merge
-- Say: "User confirmed build works. Running retro to capture learnings before merge."
+## Gather and Reconcile
 
-## Instructions
+Read requirements, story/tasks in their existing format, summary/review evidence, decisions, and
+choices captured from the conversation. Compare planned/delivered scope, surprises, rework, and
+planning/check gaps. Inspect actual branch history; reachability from the base after merging does
+not prove someone committed directly to it.
 
-### Phase 1: Gather Data
+Use [memory](../memory/SKILL.md) to reconcile choices. The active agent supplies relevant conversation
+decisions to curation; a curator cannot recover unseen turns. Capture omissions with source, stated
+scope, and supplied rationale. Never invent alternatives, motives, or successful outcomes.
 
-Collect information about the completed story:
+## Improve the System
 
-```bash
-# What was planned vs. delivered
-# Read story.md, individual tasks/T-NNN.md files, summary.md
-# Read PRD.md and TRD.md (always present in feature folder)
-# Check git log for the branch
-# Check any decision docs created during implementation
+Identify each learning's destination: decision, memory, project rule, skill, or agent instruction.
+Preserve the existing improvement loop: apply authorized edits and verify their destinations.
+Recording a suggestion alone is not completion.
+
+Reuse explicit approval within its scope. Where authorization is missing, propose concrete edits
+and ask, especially before broadening feature choices to project/shared policy. Execution mode is
+not promotion approval. Keep unapproved/explicitly deferred optional improvements visible; do not
+defer confirmed defects introduced by the story.
+
+Run [memory-review](../memory-review/SKILL.md), invoking self-improving when available or following
+its procedure directly. Its results must feed future PRD/TRD/tasks as well as implementation.
+
+## Record Completion
+
+Write retro.md beside story.md, under 100 lines:
+
+```text
+Story and covered revision:
+Timing/status: complete | deferred | incremental
+Planned vs delivered:
+What worked / what did not:
+User choices captured: <source/scope/destination>
+Learnings: <evidence/action/destination/completed or pending>
+Rules/skills/agents updated: <authorization and verification>
+Memory curation: <captured/promoted/superseded/retired/unresolved>
+Pending observations/follow-up: <owner and trigger>
 ```
 
-**Branch audit.** Confirm every commit attributed to this story actually landed on the story's
-branch, not `main`:
+Update tracking truthfully: retro complete does not mean published, user-tested, or merged.
+Commit retro/curation under the selected mode, separately from implementation. Return to the
+router for review of changed artifacts and final checks; retro cannot bypass publication gates.
 
-```bash
-git log main --oneline --grep "S-NNN" -i          # any story commits reachable from main directly?
-git log <story-branch> --oneline | grep -c "S-NNN"  # commits found on the actual branch
-```
+## Urgent Deferral
 
-If any story commit is reachable from `main` outside the merge commit itself, that's a process
-violation — someone skipped the branch check in `prd`/`trd`/`project-plan`/`implement`. Record it as
-a "what didn't go well" with a concrete learning in Phase 3 (usually: the branch check got skipped
-because the task "looked small").
+Only defer when the user explicitly selects publication first. Review/fixes, checks, and publication
+approval still apply. Before publishing, create a durable follow-up linked from story and PR summary:
+status deferred, user consent/reason, owner, covered revision, and completion trigger. Preserve
+already-captured choices immediately. Surface pending learning on next relevant resume; do not
+promise unattended execution without an actual worker/scheduler.
 
-**Format detection:** Check whether the story uses `tasks.md` (legacy single-file), `tasks/index.md` (legacy split format), or individual `tasks/T-NNN.md` files (current format). For legacy formats, read whichever exists. For current format, read individual task files — status lives in each file's frontmatter.
+- PR open: analysis may run while the user tests; isolate concurrent edits. Review/check additions
+  before obtaining applicable commit/push approval and explain any required retest.
+- PR merged: fresh branch from current base and linked follow-up through normal gates. Preserve
+  unpublished work without replaying already-merged implementation commits.
+- Merge race: recheck PR state before publication and choose the appropriate path.
 
-Compare:
-- **Planned scope** (from PRD/story) vs. **Actual scope** (from commits/summary)
-- **Estimated tasks** vs. **Actual tasks** (were tasks added/removed/split?)
-- **Assumptions made** vs. **Reality encountered**
+## Incremental Retro
 
-### Phase 2: Retrospective Analysis
-
-#### What Went Well
-- Patterns that worked smoothly
-- Estimates that were accurate
-- Tools/approaches that saved time
-- Quality of PRD/TRD/story (did it prevent scope creep?)
-
-#### What Didn't Go Well
-- Surprises during implementation
-- Gaps in requirements (discovered too late)
-- Architecture decisions that needed revision
-- Time spent on rework
-
-#### What We Learned
-- New patterns discovered
-- Gotchas for future reference
-- Better ways to approach similar problems
-
-### Phase 3: Classify Learnings
-
-For each learning, classify:
-
-| Learning | Type | Action | Target |
-|----------|------|--------|--------|
-| <learning> | Skill gap / Process gap / Knowledge gap | Update skill / Update memory / Create rule / No action | <specific file to update> |
-
-### Phase 4: Auto-Improve the System
-
-Based on learnings, automatically:
-
-1. **Update skills** — If a skill's guidance was wrong or incomplete, propose the edit
-2. **Save to memory** — If a learning is project-specific and useful across sessions
-3. **Create rules** — If a pattern should be enforced for specific file paths
-4. **Update docs** — If documentation was missing or misleading
-
-For each proposed change, explain what and why.
-
-**Wait for user approval before modifying skills or rules.**
-
-Memory updates (non-destructive) can proceed automatically.
-
-### Phase 5: Update Project Tracker
-
-If `brief` CLI is installed:
-
-```bash
-brief story update S-NNN status=completed pr="<PR URL>"
-
-# Create TODOs from learnings that need future action:
-brief todo create "<action item>" --priority=P2 --story=S-NNN
-
-# Create decisions from architectural choices made during implementation:
-brief decision create "<what was decided>" --story=S-NNN
-
-# Log the retro completion:
-brief log "Retro completed for S-NNN" --tag=retro --story=S-NNN
-```
-
-**Fallback** — edit tracker.yaml directly: set `status: completed` and `pr: <URL>` on the story entry.
-
-### Phase 6: Retro Summary
-
-Save to the story folder as `retro.md`:
-
-```markdown
-# S-NNN Retrospective
-
-**Date**: <today>
-**Story**: <title>
-**Duration**: <start date> → <end date>
-
-## Scope Accuracy
-- **Planned tasks**: N
-- **Actual tasks**: M
-- **Scope change**: <added X, removed Y, split Z>
-
-## What Went Well
-- <item>
-
-## What Didn't Go Well
-- <item>
-
-## Learnings
-| # | Learning | Action Taken |
-|---|---------|-------------|
-| 1 | <learning> | <what we updated> |
-
-## System Improvements Made
-- <skill/memory/rule updated and why>
-
-## Recommendations for Next Story
-- <specific advice for the next piece of work>
-```
-
-### Phase 7: Self-Improving — Memory Curation (Final Step)
-
-Run `/brief memory-review`. This flushes the feature's context to `context.md` and invokes the
-`self-improving` agent to review, promote, and prune memory entries.
-
-Commit the curation separately: `docs(context): flush <feature> implementation context`
-
-**Retro is complete when this phase finishes.** No further steps remain before merge.
-
-## Rules
-
-- Auto-invoke after user confirms build works — don't skip
-- Be honest about what didn't work — sanitized retros are useless
-- Every "what didn't go well" must have a concrete learning
-- Learnings must be actionable — "we should do better" is not a learning
-- Wait for user approval before modifying skills/rules
-- Memory updates (feedback type) can proceed automatically
-- Keep retro under 100 lines
+After publication record only new findings, decisions, outcomes, and prevention measures. Review
+changed content and rerun affected checks/human flows; broader behavior changes may need full review.
+Successful user testing with no changes/new learning permits direct user merge; do not force another
+retro or a bookkeeping-only commit.

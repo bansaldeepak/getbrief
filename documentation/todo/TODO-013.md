@@ -6,6 +6,18 @@ status: open
 created: 2026-08-25
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: 2cb2e552-e283-44d6-90be-00eddd02a25c
+  item:
+    id: TODO-013
+    type: todo
+    title: brief update + brief uninstall commands (Phase 2)
+    status: open
+    priority: P3
+    created: 2026-08-25
+    link: null
+    pr: null
 ---
 
 ## What

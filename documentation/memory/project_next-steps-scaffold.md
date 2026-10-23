@@ -1,14 +1,42 @@
 ---
 name: project-next-steps-scaffold
-description: "brief CLI — project management tool. Resource-based CLI for stories, TODOs, decisions, research, logs. File-based, multi-agent safe, dual-write to tracker.yaml + .md files."
+description: Brief CLI with canonical Markdown and local views in record mode,
+  legacy compatibility and portable workflow packages
 type: project
 created: 2026-08-13
-updated: 2026-08-27
+updated: 2026-10-10
 valid_until: 2026-11-01
 importance: 5
+_brief:
+  version: 1
+  record_id: 0acdae9e-52eb-4129-9950-b962f2b412fd
+  item:
+    id: project_next-steps-scaffold
+    type: memory
+    title: Brief CLI with canonical Markdown and local views in record mode, legacy
+      compatibility and portable workflow packages
+    status: active
+    link: null
+    pr: null
+    updated: 2026-10-10
+    description: Brief CLI with canonical Markdown and local views in record mode,
+      legacy compatibility and portable workflow packages
 ---
 
-## brief CLI — Implemented (2026-08-20)
+## Current contract (2026-10-10)
+
+The sections below preserve implementation history; unconditional tracker, installation-path and lifecycle claims are historical.
+
+- Brief is CLI-only. brief install installs the pinned home workflow package; project setup uses brief init. Removed MCP setup/server and knowledge.db lookup are not current architecture or planned restoration work. Runtime installation and workflow updates remain separate.
+- Fresh projects use canonical Markdown selected by .brief/records.json; existing projects retain legacy dual-write until explicit migration. Memory records participate in the inventory; logs are separate immutable events.
+- Record-mode tracker.yaml and PROJECT-TRACKER.md are ignored local views. Routine mutations do not rewrite them or shared task-progress pointers.
+- New story/task IDs are feature-scoped; preserve existing IDs and resolve same-record conflicts explicitly.
+- Local installs are complete pinned .brief/workflow bundles. Global scope uses an independent home package. Updates preserve customizations and require explicit apply.
+- Review, authorized retro improvements and final checks precede publication approval. User testing and separate merge approval follow.
+
+Apply [portable choices](portable-installs-and-feature-scoped-concurrent-records.md), [lifecycle controls](autonomous-lifecycle-controls-and-scoped-learning.md), [record/install contract](../../skills/brief/references/records-and-installation.md) and current CLI help. Historical deferred items below are not a newly validated backlog.
+
+## Historical implementation snapshot (2026-08-20 through 2026-08-27)
 
 ### What it is
 

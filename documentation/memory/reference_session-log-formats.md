@@ -1,11 +1,23 @@
 ---
 name: session-log-formats
-description: Where Claude and Codex record sessions and token usage, and the three details that make a naive reader wrong
+description: Where Claude and Codex record sessions and token usage, and the
+  three details that make a naive reader wrong
 type: reference
 created: 2026-07-29
 updated: 2026-07-29
 valid_until: 2027-01-29
 importance: 4
+_brief:
+  version: 1
+  record_id: ab397c52-f700-42b9-b30d-3d72d4da1085
+  item:
+    id: reference_session-log-formats
+    type: memory
+    title: Where Claude and Codex record sessions and token usage, and the three
+      details that make a naive reader wrong
+    status: active
+    link: null
+    pr: null
 ---
 
 Both hosts record the **git branch**, which is what makes per-story token attribution exact and

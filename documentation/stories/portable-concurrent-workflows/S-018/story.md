@@ -1,0 +1,70 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: acaa5a61-7cd8-4b89-b1cd-ce5e342c0161,
+      item:
+        {
+          id: S-018,
+          type: story,
+          title: Portable installs and concurrent project records,
+          status: in_progress,
+          branch: feature/portable-concurrent-workflows,
+          story: documentation/stories/portable-concurrent-workflows/S-018/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null, last_task: S-018-T6 }
+    }
+}
+---
+# S-018: Portable installs and concurrent project records
+
+**Status**: in_progress
+**Branch**: feature/portable-concurrent-workflows
+**Created**: 2026-10-10
+
+## Context
+Implement the approved portable/concurrent-workflows PRD and TRD on top of the published feature/autonomous-lifecycle at 02a3457. User directed combined local testing before merge on 2026-10-10.
+
+## Goal
+Portable scoped Brief installations and independent project records that merge cleanly across different features.
+
+## Scope
+Global/local workflow installation and updates; authoritative record metadata and explicit lossless migration; feature-scoped new story IDs; immutable session logs and validation; combined local tests.
+No remote publication of this follow-up, merge, or migration of unrelated projects.
+
+## Applied Constraints
+Preserve all existing IDs, record metadata, project customizations, and legacy log bytes. New stories are feature-scoped; same-feature collisions are reported. Project copies stay pinned until explicit update. No new database or hosted coordinator.
+
+## Execution Policy
+Mode: selective, explicitly selected by user in this conversation.
+Policy/model changes described in PRD/TRD and implementation are authorized. Routine verified commits proceed.
+Critical checkpoint: before any actual project migration or global installation beyond isolated test fixtures, prepare exact diff/backup plan and reuse only applicable explicit approval.
+Retro before follow-up publication; no merge until combined local verification and user approval.
+
+## Acceptance Criteria
+- [x] Lossless record migration and reconstruction of local tracker views.
+- [x] Feature-scoped IDs and independent task/log writes validated across clones.
+- [x] Complete pinned local bundles and scoped global updates preserve customizations.
+- [x] Both lifecycle and portability changes pass combined local checks.
+
+## Local completion
+All nine tasks are done; combined local verification passed. Story remains open for publication/user
+testing/merge decisions. No follow-up push, PR, or merge has occurred. See summary and retro.
+
+User clarified CLI-only npm onboarding on 2026-10-10. T5 removes obsolete MCP remnants, makes
+brief install own the home workflow package, and verifies optional local source overrides.
+
+T6 adds the reader-facing pilot guide and selected getbrief package/repository naming; executable
+brief is retained. Repository rename verified with private visibility unchanged. Real-project pilot pending.
+
+T7/T8 address the Astro pilot feedback: both metadata label formats, preservation during regeneration,
+and one managed lifecycle block with stable version/update metadata and pinned registration repair.
+306 tests pass; actual Astro migration still requires data reconciliation and user verification.
+
+T9 preserves full status text and stable research identities, reads research Markdown status,
+and distinguishes unregistered epic overviews from explicitly registered records. 322 tests pass;
+130 copied Astro records migrate and roll back without changing body/log bytes. Actual progress
+reconciliation and migration remain user-owned.

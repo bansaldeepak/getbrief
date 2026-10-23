@@ -1,11 +1,23 @@
 ---
 name: agent-config-loading
-description: What actually loads into context each session vs. what loads on demand — the constraint that decides where a rule belongs
+description: What actually loads into context each session vs. what loads on
+  demand — the constraint that decides where a rule belongs
 type: reference
 created: 2026-07-29
 updated: 2026-07-29
 valid_until: 2027-01-29
 importance: 5
+_brief:
+  version: 1
+  record_id: d3acb0cf-379e-4253-8092-81cd0ae8f1cf
+  item:
+    id: reference_agent-config-loading
+    type: memory
+    title: What actually loads into context each session vs. what loads on demand —
+      the constraint that decides where a rule belongs
+    status: active
+    link: null
+    pr: null
 ---
 
 **Skills contribute only their `description` to every session. Their bodies load when invoked.

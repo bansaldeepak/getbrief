@@ -1,33 +1,28 @@
 ---
-description: Git branch naming, push safety, and commit conventions. Applies to all git operations.
+description: Git branch safety and commits under explicitly selected brief execution modes.
 ---
 
 # Git Workflow
 
-## Branch & Push Safety
+Check branch and worktree before edits. Use feature|fix|chore|hotfix/<slug>, not the actual default/base
+branch. Preserve unrelated changes. Resolve the base rather than assuming main.
 
-**Never commit, push, or open a PR on your own — a human approves each one, every time.** Silence is not approval; approval for the last commit is not approval for this one; approval to commit is not approval to push.
+Commit authority follows the user's explicit scope. Brief implement records strict (approve every
+commit), selective (verified routine commits; critical/manual gates), or auto (authorized local story
+commits). This covers bookkeeping, review fixes, and retro. Without a mode or other explicit commit
+authorization, ask before committing. Reuse valid approval; silence is not consent.
 
-Never commit or push to `main` — all changes via PR. Check `git branch --show-current` *before the first file write* in any lifecycle phase — not just before committing. If on `main`, STOP and branch first.
+Review and fix all introduced/worsened findings before publication. Retro precedes publication unless
+explicitly deferred; review its changes and verify the resulting candidate. Push/PR needs explicit
+approval for the presented changes in every mode; merge is separate. No force-push or hook bypass
+without explicit applicable permission. An unanswered gate remains open.
 
-**Branch names:** `feature|fix|chore|hotfix/<name>`, pushed with `git push -u origin <branch>`. No force-push without explicit consent in the moment.
-
-## Commit Convention
-
-```
+```text
 type(scope): subject
 
-Task: S-NNN-T<N>
+Task: S-NNN-TN
 ```
 
-Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`, `perf`, `ci`.
-
-Task ID goes in commit body, not subject line.
-
-## Rules
-
-- One task = one commit (atomic unit of work)
-- Story bookkeeping (status updates, summary) committed separately from implementation
-- Never `git commit --no-verify` unless human explicitly requests it
-- Never commit while a gate is open — unanswered gate = no
-- Never push to main/master; warn if requested
+Types: feat, fix, refactor, docs, test, chore, style, perf, ci.
+One task = one implementation commit; bookkeeping separately. Later changes need review and
+verification of affected scope.

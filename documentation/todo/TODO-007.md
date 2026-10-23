@@ -1,11 +1,25 @@
 ---
 id: TODO-007
-title: Add usage tracking — append-only log, brief stats shows queries per project per day
+title: Add usage tracking — append-only log, brief stats shows queries per
+  project per day
 priority: P2
 status: done
 created: 2026-08-20
 story: null
 link: null
+_brief:
+  version: 1
+  record_id: 0e664ade-937f-48e3-8cd1-2fa90c50ba80
+  item:
+    id: TODO-007
+    type: todo
+    title: Add usage tracking — append-only log, brief stats shows queries per
+      project per day
+    status: done
+    priority: P2
+    created: 2026-08-20
+    link: null
+    pr: null
 ---
 
 ## What

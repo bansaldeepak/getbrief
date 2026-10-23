@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: a93f61c9-abc9-4773-82d4-1dc7f74874ec,
+      item:
+        {
+          id: S-015,
+          type: story,
+          title: Atomic ID Allocation + Agent Discipline,
+          status: planned,
+          feature: multi-agent-coordination,
+          branch: feature/multi-agent-coordination,
+          category: feat,
+          created: 2026-09-09,
+          tasks: 11,
+          story: documentation/stories/multi-agent-coordination/S-015/story.md,
+          link: null,
+          pr: null
+        },
+      legacy: { current_task: null }
+    }
+}
+---
 # S-015: Atomic ID Allocation + Agent Discipline
 
 **Status**: planned

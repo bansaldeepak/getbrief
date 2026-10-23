@@ -1,288 +1,314 @@
-# ~/.agents — Unified AI Agent Configuration
+# Brief
 
-Central hub for all AI coding agents (Claude Code, OpenAI Codex, Google Gemini CLI). One source of truth for workflow, skills, and rules — shared across providers.
+Brief brings planning, implementation, review, and project memory into one CLI and agent workflow.
+It stores stories, tasks, decisions, and learning as files in your repository, so the context travels
+with the code. Workflow guidance supports Claude, Codex, and Gemini.
 
-## Structure
+- Turn requirements into stories and tasks with explicit acceptance checks.
+- Choose how much oversight each story needs: strict, selective, or auto.
+- Review new code and capture learning before publication, with user approval for push and merge.
+- Share pinned project skills through Git and keep independent agents off shared tracker/log files.
 
-```
-~/.agents/
-├── README.md            # This file
-├── MEMORY.md            # Memory index (points to documentation/memory/)
-├── WORKFLOW.md          # Shared workflow rules (all providers)
-├── build.sh            # Syncs WORKFLOW + provider overrides → provider configs
-├── providers/
-│   ├── claude.md       # Claude-specific additions → ~/.claude/CLAUDE.md
-│   ├── codex.md        # Codex-specific additions → ~/.codex/AGENTS.md
-│   └── gemini.md       # Gemini-specific additions → ~/.gemini/GEMINI.md
-├── brief/              # Project management + code search CLI (npm link)
-│   ├── cli.mjs         # Entry point — `brief <command>`
-│   ├── lib/
-│   │   ├── code-index.mjs      # Codegraph JS API wrapper (search/callers/edges)
-│   │   ├── context.mjs         # Graduated context (graduate/list/search)
-│   │   ├── commands/query.mjs  # Unified code+docs search
-│   │   ├── commands/context.mjs
-│   │   ├── init.mjs            # Project scaffold + codegraph index
-│   │   └── search.mjs          # Doc-only search
-│   └── test/            # node:test suite (34 tests)
-├── documentation/       # Project tracking (this repo's own work)
-│   ├── PROJECT-TRACKER.md
-│   ├── tracker.yaml
-│   ├── stories/         # Feature folders (PRD, TRD, story, tasks, retro)
-│   ├── memory/          # Agent memory files
-│   └── logs/            # One file per log entry (multi-agent safe)
-├── custom-skills/      # Skills we wrote — the publishable set
-│   ├── sdlc/                # router — owns the lifecycle graph
-│   │   ├── prd/  trd/  discover/  project-plan/
-│   │   └── pr-review/  retro/  decision-doc/  memory-review/
-│   ├── brief/               # project management CLI router
-│   └── project-memory/      # memory management skill
-├── agents/             # Subagent definitions — one source, two formats
-│   ├── qa.md  reviewer.md  researcher.md  self-improving.md
-├── scripts/
-│   ├── gen-codex-agent.py     # agents/*.md → Codex TOML
-│   ├── check-references.py    # every skill name and path must resolve
-│   ├── token-usage.py         # per-story cost, Claude + Codex, by branch
-│   ├── memory-checkpoint.sh   # UserPromptSubmit nudge (hook)
-│   ├── memory-reset-counter.sh# SessionStart counter reset (hook)
-│   └── record-session.sh      # optional SessionStart hook → .sessions.jsonl
-├── templates/          # Copied into repos on purpose — never linked
-│   └── rules/          # Rule templates installed by brief init (see manifest.json)
-├── skills/             # Third-party skills, owned by the `skills` CLI
-│   ├── gstack/         # via garrytan/gstack — routed, in use
-│   └── shadcn-ui/      # via google-labs-code/stitch-skills
-│                       # provenance tracked in .skill-lock.json
-└── rules/              # Auto-apply rules (glob-matched)
-    ├── brief.md             # brief CLI reference (auto-loads on docs)
-    ├── coding-standards.md  # modularity, naming, type safety, error handling
-    ├── documentation-standards.md  # doc modularity, ordering, diagrams
-    ├── git-workflow.md      # branch naming, push safety, commit convention
-    └── observability.md     # 4 signals, abstraction, failure isolation
-```
+The product is **Brief**. Install the **getbrief** npm package and use the **`brief`** command.
+The GitHub repository is also named **getbrief**; the skill remains **`brief`**.
 
-## How It Works
+## Requirements
 
-### Provider Config Generation
+- Node.js and npm; Node.js 24 is recommended.
+- Git and Python 3 available on `PATH`. Python generates provider registrations during installation.
+- A supported coding-agent environment to use the skills. The CLI also works directly in a terminal.
 
-`build.sh` concatenates `WORKFLOW.md` + provider-specific overrides. A **pre-commit hook** runs it automatically on every commit — provider configs are always in sync:
+Brief uses local files and CLI commands; it does not require an MCP server or a project database.
+Codegraph powers optional code indexing/query features; document tracking and memory use repository files.
+
+## Install
+
+Install the CLI from npm after the release is published:
 
 ```bash
-~/.agents/build.sh
-# Output:
-# ✓ ~/.claude/CLAUDE.md
-# ✓ ~/.codex/AGENTS.md
-# ✓ ~/.gemini/GEMINI.md
-# ✓ ~/.claude/rules — N rule(s) linked
-# ✓ ~/.claude/agents — N linked · ~/.codex/agents — N generated
+npm install --global getbrief
+brief --help
 ```
 
-Each provider gets identical workflow rules + its own tool mappings and memory conventions.
+For an unpublished checkout, use the [local development](#local-development) instructions instead.
+Installing the npm package supplies the CLI; it does not automatically modify your agent configuration.
 
-### brief CLI — Project Management + Code Search
-
-`brief` is the unified interface for project tracking and code exploration. Installed globally via `npm link` from `~/.agents/brief/`.
+Preview the machine workflow installation:
 
 ```bash
-# Code + doc search (primary lookup — use this by default)
-brief query "handleSubmit"          # shows callees + callers
-brief query --full "handleSubmit"   # full explore: source, edges, usages, impact
-
-# Project tracking
-brief story list                    # active stories
-brief todo list                     # open TODOs
-brief status                        # summary counts
-
-# Setup (in any project)
-brief init                          # scaffold docs + codegraph index
-brief init --reindex                # force-rebuild codegraph
+brief install --dry-run
 ```
 
-Bundles `@colbymchenry/codegraph` (code AST analysis) — no separate install needed. See `rules/brief.md` for full command reference.
-
-### Skills Distribution
-
-Our own skills live in `~/.agents/custom-skills/`; third-party skills stay in
-`~/.agents/skills/` under the `skills` CLI and its `.skill-lock.json`.
-
-`setup.sh` links **one symlink per skill**, never the whole directory — a
-directory symlink would bury each host's own entries (for example
-`~/.codex/skills/codex-primary-runtime`). Links point at the real directory, so
-editing a skill takes effect immediately with no re-install step.
-
-| Provider | Link |
-|----------|------|
-| Claude Code | `~/.claude/skills/<skill> → ~/.agents/custom-skills/<skill>` |
-| Codex | `~/.codex/skills/<skill> → ~/.agents/custom-skills/<skill>` |
-
-Third-party skills are linked in selectively, by hand.
-
-### Agents Distribution
-
-One definition in `agents/<name>.md`, two outputs:
-
-| Provider | Output | How |
-|----------|--------|-----|
-| Claude Code | `~/.claude/agents/<name>.md` | Symlink — edits are live |
-| Codex | `~/.codex/agents/<name>.toml` | **Generated** by `build.sh` — never hand-edit |
-| Gemini | — | No subagent concept |
-
-The formats aren't isomorphic. `model` maps through an alias table (`haiku` →
-`gpt-5.6-terra`/`low`, `sonnet` → `gpt-5.6`/`medium`, `opus` → `gpt-5.6`/`high`), and Codex has no
-per-tool allowlist — an agent without `Write`/`Edit` becomes `sandbox_mode = "read-only"`, which is
-coarser than Claude's `tools` list. `maxTurns` and `memory` have no equivalent and are dropped. The
-generator prints every approximation it makes; `check.sh` re-generates and diffs to catch a
-hand-edited or stale TOML.
-
-### Reference Checking
-
-`check.sh` verifies that provider configs *match* the source. `scripts/check-references.py` verifies
-they *point at things that exist* — a different failure, and the one that actually bites:
-
-```
-`name` skill  /  skill `name`   → the skill must exist (externals allowlisted in the script)
-~/.agents/<path>                → the path must resolve
-[text](relative/path)           → the link target must exist
-```
-
-Fenced blocks are skipped, and paths containing `<` are treated as placeholders, so templates and
-how-to snippets don't trip it.
-
-A rename or deletion orphans every mention of the old name, and nothing else here would notice. This
-check found a live one the first time it ran.
-
-### Hooks
-
-`memory-checkpoint.sh` (UserPromptSubmit) nudges a long session to capture memory every 15 messages;
-`memory-reset-counter.sh` (SessionStart) resets the count. They are wired in `~/.claude/settings.json`
-by absolute path — **not** distributed by `build.sh`, since Claude and Codex use different hook
-formats. Codex wiring is still manual.
-
-The nudge names the target on purpose. "Save to memory" without a destination is how a session ends
-up writing to the provider config directory, which the global `CLAUDE.md` forbids.
-
-### Token Accounting
-
-`scripts/token-usage.py` reports a story's real cost across **both** hosts. Claude and Codex each
-record the git branch in their session logs, so the branch is the scope — exact, retroactive, and
-needing no setup:
+Review the proposed files and any conflicts, then install:
 
 ```bash
-~/.agents/scripts/token-usage.py --branch feature/thing --project ~/Work/app
-~/.agents/scripts/token-usage.py --branch feature/thing --list   # which sessions matched
+brief install
 ```
 
-Date windows (`--after`) remain available but are approximate when stories overlap. For repos where
-one branch carries several stories, wire `scripts/record-session.sh` as a SessionStart hook and use
-`--sessions-file` — see the header of that script for the config snippets.
+This creates `~/.brief/workflow/` and registers its skills, rules, and agents. Existing custom files
+are preserved; ownership conflicts require reconciliation. Repeated installation keeps the installed
+package pinned. To test a newer version on a machine already set up, follow [updates](#updates).
 
-Accounting differs per host and the script accounts for it: Claude reports cache-create and
-cache-read separately, both billable input; Codex reports `cached_input_tokens` as a subset of
-`input_tokens`, so its total is input + output only.
+## Set up a project
 
-### Rules Distribution
-
-Rules in `~/.agents/rules/` auto-apply based on `globs` frontmatter:
-
-| Provider | Symlink |
-|----------|---------|
-| Claude Code | `~/.claude/rules/ → ~/.agents/rules/` |
-| Codex | `~/.codex/rules/ → ~/.agents/rules/` |
-
-## Setup
-
-### First-Time Install
+From the root of a Git project:
 
 ```bash
-# Clone or init
-git init ~/.agents
-
-# Link skills + rules and build provider configs, then verify
-~/.agents/setup.sh
-
-# gstack (optional) — set env vars in ~/.zshrc:
-export GSTACK_INSTALL_DIR="$HOME/.agents/skills/gstack"
-export GSTACK_SKILLS_DIR="$HOME/.agents/skills"
+brief init --scope=local
+brief doctor
+brief status
 ```
 
-### After Editing Workflow
+Local scope is recommended for teams. Commit the workflow files and registrations with the project
+so teammates, servers, and fresh clones receive the same instructions. Each machine still needs the CLI.
+
+| Scope | Workflow location | What travels with Git |
+| --- | --- | --- |
+| `local` | `.brief/workflow/` in the project | Pinned skills, rules, agents, and relative registrations |
+| `global` | `~/.brief/workflow/` on each machine | Project scope selection and instruction integration |
+
+Use `brief init --scope=global` to select the machine package instead. Existing scope/version choices
+are retained on repeat init; changing scope requires an explicit migration, not another init flag.
+
+Each instruction file has one managed Brief lifecycle block, marked `brief:workflow` with its version
+and last-update date. Init repairs registrations from the pinned package and consolidates recognized
+stock legacy harnesses. Unchanged content keeps its date. Custom legacy instructions require
+reconciliation before replacement; surrounding project instructions and other rule sections are preserved.
+Doctor tolerates blank lines at the block boundaries and still reports changes to instruction text.
+
+New projects start with canonical record files and ignored tracker views. Existing projects retain
+their legacy tracker until you explicitly migrate it using the steps below.
+
+## Pilot an existing project
+
+Start with one project. Save unrelated work and pause other writers in that project during migration.
+
+### 1. Create a branch and install the project workflow
 
 ```bash
-# Edit shared rules
-vim ~/.agents/WORKFLOW.md
-
-# Rebuild all provider configs
-~/.agents/build.sh
+cd /path/to/project
+git status --short
+git switch -c chore/brief-adoption
+brief init --scope=local
+brief doctor
 ```
 
-### Adding a New Skill
+If a local package is already installed, init keeps it pinned. Review `brief update --dry-run` and
+apply the update with `brief update --apply` when you want to test the newer available workflow.
+
+### 2. Preview the record migration
 
 ```bash
-# Create skill directory with SKILL.md, then re-run setup.sh to link it
-mkdir ~/.agents/custom-skills/my-skill
-cat > ~/.agents/custom-skills/my-skill/SKILL.md << 'EOF'
----
-name: my-skill
-description: What it does and when to trigger
----
-Skill content here.
-EOF
+brief tracker migrate-authority --dry-run
 ```
 
-### Adding a Third-Party Skill
+The report lists every record and affected file. Resolve reported conflicts against the project's
+recorded decisions before continuing. Do not rebuild the legacy tracker merely to silence a conflict.
+For example, a documented `deferred` item should not become `active` because of an old scanner result.
+Legacy regeneration reads both `**Status**:` and `**Status:**` (and related metadata labels), preserves
+tracker-only fields, and stops if an existing tracker entry has no corresponding scanned record.
+It preserves full status text, including qualifiers and emoji; migration rejects differing status
+strings instead of treating aliases as equal. Regeneration copies recorded values, so it cannot
+determine whether a story's stated progress is accurate. Review that separately in the source record.
 
-Use the `skills` CLI — it handles linking, so don't hand-roll symlinks. Run it from `$HOME`, not
-from inside a project, or it installs as a "project" skill of whatever directory you were in:
+### 3. Apply and verify
+
+After reviewing the preview:
 
 ```bash
-cd ~ && npx skills add <owner>/<repo> -g -a claude-code -a codex -s <skill-name> -y
+brief tracker migrate-authority --apply
+git rm --cached --ignore-unmatch documentation/tracker.yaml documentation/PROJECT-TRACKER.md
+brief tracker generate --markdown
+brief verify-records --base=HEAD
+brief status
+brief doctor
 ```
 
-- `-g` = user-level. The canonical copy lands in `~/.agents/skills/`, so it stays git-tracked here.
-- **`-a` must be repeated, not comma-separated** — `-a claude-code,codex` is rejected as an invalid
-  agent even though both names are valid on their own.
-- `-s` picks one skill out of a multi-skill repo; `-l` lists them without installing.
-- `npx skills update -g` keeps them current. Re-running `add` also updates in place.
+`git rm --cached` removes the two generated views from Git tracking while keeping local files.
+Existing record IDs, unknown metadata, and historical log bytes are preserved. Each record now owns
+its state; generated tracker files are local views rather than shared write targets.
 
-The two hosts are handled differently and both are correct: Claude Code gets a **symlink** at
-`~/.claude/skills/<name>`, while Codex is marked **universal** and gets nothing — it reads
-`$HOME/.agents/skills` natively, so a `~/.codex/skills/` link would be redundant.
-
-Two things the CLI does **not** do on `remove`: it leaves the entry in `.skill-lock.json`, and it
-only unlinks agents it registered itself — a symlink you created by hand is left dangling. Check
-both after removing.
-
-**Before installing, ask what the skill needs.** Most third-party skills are wrappers around an MCP
-server or a CLI; without that dependency they cannot function, but their description still occupies
-a slot in every session's skill listing. 14 skills were removed in one pass for exactly this reason.
-
-### Adding a New Rule
+### 4. Review and commit the migration
 
 ```bash
-cat > ~/.agents/rules/my-rule.md << 'EOF'
----
-description: When this rule applies
-globs: ["src/**/*.ts"]
----
-Rule content here.
-EOF
+git status --short
+git diff --stat
+git diff
+git diff --cached
 ```
 
-## gstack Plugin
+Stage only the installation/migration changes, including newly created files, then commit them.
+Inspect these artifacts:
 
-[gstack](https://github.com/garrytan/gstack) installs into `~/.agents/skills/gstack/` and distributes sub-skills via `gstack-relink`.
+- `.brief/workflow/`, `.brief/records.json`, and the relevant ignore rules.
+- Provider registrations in `.agents/`, `.claude/`, and `.codex/`, plus managed instruction changes.
+- Canonical Markdown records in `documentation/` and the removal of tracked aggregate views.
 
-Required env vars (in `~/.zshrc`):
+Custom project instructions should remain intact. Historical logs should have no changes.
+
+### 5. Observe the skills on one small, real change
+
+Start a fresh agent session in the project so it discovers the installed skills. Use `/brief` or the
+equivalent skill invocation in your agent. For example:
+
+```text
+Use the project's Brief workflow for this change: <describe a small real task>.
+Read the local workflow, project rules, and relevant decisions first.
+Plan the work, recommend an execution mode, and let me choose it.
+Ask about unresolved requirements. Complete review and retro before publication.
+Keep this pilot local; do not push or open a PR.
+```
+
+Check the behaviour, not just whether the CLI exits successfully:
+
+- Planning applies relevant rules and saved choices, and asks about genuine ambiguity.
+- Implementation follows the mode you selected and runs the project's required checks.
+- New stories use feature-scoped IDs; task/status changes update individual records.
+- Logs are new standalone files. Existing logs and generated tracker views are not routinely edited.
+- Review resolves all introduced/worsened findings; retro captures scoped learning before publication.
+- Push/PR and merge remain separate user-controlled steps.
+
+Use `brief verify-records --base=<pilot-migration-commit>` when reviewing the pilot change. A fresh
+session should be able to retrieve its new learning through `brief memory list` and `brief memory show`.
+Observe this in one project before rolling out to others.
+
+## Workflow and execution modes
+
+```text
+discover → PRD → TRD → plan → implement → review/fix → retro
+  → final checks → approved push/PR → user testing → approved merge
+```
+
+The [router](skills/brief/SKILL.md) owns phase order. Planning explicitly reads relevant project
+rules, decisions, and agent guidance. Requirements and technical choices are settled before execution.
+
+| Mode | Local commits | Human checkpoints |
+| --- | --- | --- |
+| strict | Ask before each commit | Every commit, plus publication |
+| selective | Commit verified routine work | Critical changes, planned manual/browser checks, publication |
+| auto | Complete authorized local story work | End-of-story publication gate |
+
+The agent recommends selective for critical/manual work and auto for clear work covered by automated
+checks; the user chooses. Every mode asks about unresolved ambiguity and preserves protected-operation
+approvals. A mode does not authorize deployment, data migration, push, or merge.
+
+[Review](skills/brief/pr-review/SKILL.md) fixes confirmed introduced/worsened issues at every severity.
+Existing debt remains the user's fix/defer choice. [Retro](skills/brief/retro/SKILL.md) and authorized
+guidance improvements finish before publication by default. Explicit urgency can defer retro with a
+recorded owner and completion trigger. Later changes receive incremental review and affected checks.
+
+## Records, logs, and memory
+
+Canonical Markdown authority is selected by `.brief/records.json`. The reserved `_brief` metadata
+preserves record identity and fields. Use the CLI for mutations and retain that metadata when editing prose.
+
+New story IDs are feature-scoped, such as `checkout/S-001`; tasks use `checkout/S-001-T1`. Existing IDs
+remain valid. Different features can reuse their story numbers. Concurrent edits to the same record,
+or separate allocations within the same feature, still need coordination.
 
 ```bash
-export GSTACK_INSTALL_DIR="$HOME/.agents/skills/gstack"
-export GSTACK_SKILLS_DIR="$HOME/.agents/skills"
+brief story create "Checkout improvements" --feature=checkout
+brief story task create checkout/S-001 "Validate inputs" --body="Acceptance checks..."
+brief story task update checkout/S-001-T1 status=done
+brief log add "Validation complete" --session=checkout-session --agent=codex --story=checkout/S-001
+brief verify-records --base=HEAD
 ```
 
-After gstack upgrade: `gstack-relink` re-creates skill symlinks automatically.
+Use the IDs returned by the CLI; the example assumes the first story/task in a new feature.
+Every log entry is a separate immutable file. Keep historical `log.md`, `logs.md`, and previous entries intact.
 
-## Design Principles
+Project memory lives in `documentation/memory/`, indexed by `MEMORY.md`. Explicit user choices are
+captured with their source and scope; broader promotion needs user agreement. Planning consumes that
+knowledge so implementation can reuse settled decisions.
 
-- **Single source of truth** — edit once, all providers get it
-- **Provider-agnostic workflow** — same lifecycle regardless of agent
-- **Provider-specific tools** — each agent gets appropriate tool mappings
-- **Git-tracked** — version control for your agent configuration
-- **Project instructions via `AGENTS.md`** — per-repo overrides live in the repo, not here
+```bash
+brief memory list
+brief memory show your-memory-slug
+brief search "database design"
+brief query "handleSubmit"
+brief help
+```
+
+See the [CLI guide](rules/brief.md), [memory contract](skills/brief/memory/SKILL.md), and
+[record/install contract](skills/brief/references/records-and-installation.md) for details.
+
+## Updates
+
+Update the CLI through npm, then review the available machine workflow update:
+
+```bash
+npm install --global getbrief@latest
+brief update --dry-run --global
+```
+
+After reviewing the changes:
+
+```bash
+brief update --apply --global
+```
+
+Inside each project with a local package:
+
+```bash
+brief update --check
+brief update --dry-run
+```
+
+Apply the reviewed project update with `brief update --apply`, run `brief doctor`, and commit its diff.
+Global updates do not silently replace pinned project copies. A global-scope project instead uses
+the updated machine package. Reload agent sessions after changing installed instructions.
+
+No `--source` is required for normal npm or npm-linked use. Project init/update checks the home package,
+then installed CLI assets. Global install/update uses CLI assets. To test a local checkout, unpacked
+package, or directory symlink, explicitly pass `--source=/path/to/getbrief`. Remote URLs are not fetched.
+
+Update notices support `brief update --notice=on`, `off`, or `snooze` (one day). These checks compare
+available local packages; they do not poll npm or automatically download releases.
+
+## Recovery
+
+- An interrupted workflow installation/update blocks further writes. Use `brief update --recover`
+  for a project, or add `--global` for the machine package. Recovery refuses to overwrite later edits.
+- Record migration rollback is `brief tracker rollback-authority --apply`. It restores original inputs
+  only when no later edits or new records would be lost. Inspect Git staging afterward; re-stage restored
+  tracker files if you previously untracked them.
+- Customized or unowned files are preserved. Inspect reported conflicts and reconcile their intended
+  content; do not delete directories or historical logs to make installation pass.
+
+## Local development
+
+Before the npm release, or when working on Brief itself:
+
+```bash
+git clone https://github.com/bansaldeepak/getbrief.git
+cd getbrief
+npm ci
+npm link
+brief --help
+```
+
+The linked `brief` command reads this checkout. Workflow copies remain pinned until explicitly updated.
+Use `brief install --dry-run` for first setup, or `brief update --dry-run --global` for an existing home
+package, before applying the corresponding operation.
+
+```bash
+npm test
+npm run check:skills
+npm pack --dry-run
+```
+
+Tests cover CLI behaviour, record integrity, ownership/recovery, concurrent work, and portable packages.
+They do not replace the real-agent pilot above. [Implementation evidence](documentation/stories/portable-concurrent-workflows/S-018/summary.md)
+records the tested revisions and remaining publication boundaries.
+
+For maintainers who intentionally need live workflow links to a checkout, `build.sh` remains available.
+Keep this separate from the pinned npm installation flow. Its `--adopt-existing` option is only for
+reviewed legacy ownership conflicts, with backups; it is not a general overwrite flag.
+Test that installer without touching the real home configuration:
+
+```bash
+brief_test_home=$(mktemp -d)
+./build.sh --home-dir "$brief_test_home" --dry-run
+./build.sh --home-dir "$brief_test_home"
+./check.sh --home-dir "$brief_test_home"
+```

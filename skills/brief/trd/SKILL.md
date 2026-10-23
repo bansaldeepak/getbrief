@@ -21,13 +21,15 @@ Translates approved PRD requirements into technical architecture and design deci
   - Performance-sensitive features
   - Security-sensitive features
 - For simple features (UI-only, config changes), skip TRD and go to `/brief plan`
-- Ask user: "This involves architecture changes. Should I write a TRD?"
+- Prepare the required TRD within authorized scope; reuse approval to begin this phase. Architecture approval remains required before implementation unless already explicitly authorized.
 
 ## Human Approval Gate
 
 **The TRD MUST be approved by the user before proceeding to `/brief plan` when architecture changes are involved.** Present the TRD and explicitly ask: "Does this technical approach look right? Any concerns before I plan the implementation?"
 
 ## Instructions
+
+Before drafting, follow [planning context](../references/planning-context.md). Explicitly apply relevant user decisions, rules, skills, and agent guidance; record an Applied Constraints table with their effect. Resolve known questions before execution and capture new choices immediately via [memory](../memory/SKILL.md).
 
 ### Phase 0: Branch Check
 
@@ -98,6 +100,11 @@ Write the TRD in this format. Save to `documentation/stories/<feature-name>/TRD.
 
 <Mermaid diagram showing relevant parts of the current system>
 
+## Applied Constraints
+
+| Source decision/rule | Scope/status | Effect on design/schema/naming | Verification or unresolved choice |
+|----------------------|--------------|--------------------------------|-----------------------------------|
+
 ## Proposed Architecture
 
 <Mermaid diagram showing the target state>
@@ -152,7 +159,7 @@ CREATE TABLE ...
 
 **Record every non-obvious technical decision here.** These become the project's technical memory.
 
-**⚠️ CRITICAL: This table is the source of truth.** If you write an expanded section below that contradicts a table row, update the table row first. Before finalizing the TRD, verify each "Chosen:" line in the expanded sections matches its corresponding table row exactly. The table row wins any conflicts.
+Keep the decision table and expanded design consistent with the actual approved choice. If they conflict, check decision provenance and seek clarity when unresolved; neither a table row nor existing code can silently override user intent.
 
 ### Design Patterns
 
@@ -226,13 +233,13 @@ CREATE TABLE ...
 
 ## Long-Term Trajectory (conditional — when architecture is hard to undo)
 
-- **Tech debt introduced**: <acknowledged trade-offs>
+- **Trade-offs**: <explicit approved choices and rationale; confirmed new review defects still require correction>
 - **Reversibility**: <1-5 scale, where 5 = easily reversible>
 - **Path dependency**: <what future options this closes/opens>
 
 ## Open Technical Questions
 
-- [ ] <Question that needs answering during implementation>
+- [ ] <Unresolved question, affected tasks, and dependent-work block; resolve before execution. Label future observations separately.>
 
 ## Implementation Order (High-Level)
 
@@ -249,7 +256,7 @@ CREATE TABLE ...
 
 Before presenting to the user, **verify consistency**:
 - Run: `grep -n "Chosen:" TRD.md` and verify each "Chosen:" line in the expanded sections matches its corresponding table row exactly
-- If any contradiction exists, fix the table row (the table wins) and re-write the expanded section to match
+- Resolve contradictions against approved decisions/user instructions; ask if unresolved before changing the design
 
 Present the TRD to the user. Highlight:
 - Architecture decisions that have long-term implications

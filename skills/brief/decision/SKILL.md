@@ -18,7 +18,7 @@ Records non-obvious decisions with full context so future-you (or teammates) und
 - During implementation when an unexpected fork-in-the-road appears
 - When the user asks "should we do A or B?"
 - When choosing between competing libraries, patterns, or approaches
-- Ask user: "This is a significant decision. Want me to record it as a decision doc?"
+- Record an explicit decision immediately; seek the user's choice only if it is unresolved. Reuse stated approval and scope.
 
 ## Instructions
 
@@ -39,6 +39,7 @@ Save to `documentation/decisions/DEC-NNN-<slug>.md` (sequential numbering):
 **Date**: <today>
 **Status**: Proposed | 🔒 Decided | Revisited | Superseded by DEC-XXX
 **Deciders**: <who made this decision>
+**Source and Scope**: <user statement/date and feature/module/project applicability>
 **Context**: <PRD/TRD/Story reference if applicable>
 
 ## Decision
@@ -118,7 +119,7 @@ If recording an already-made decision:
 
 - "What We're Giving Up" section is mandatory and non-empty
 - Reversibility assessment is mandatory
-- At least 2 options must be considered (even if one is "do nothing")
+- Compare alternatives when making a decision; when recording one already made, include only known alternatives/rationale and label missing context rather than inventing it
 - Decision docs are never deleted — superseded ones link to their replacement
 - Keep under 100 lines — brevity forces clarity
 - Decision docs live in `documentation/decisions/` directory

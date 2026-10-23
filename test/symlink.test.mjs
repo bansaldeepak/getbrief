@@ -37,16 +37,14 @@ describe("createLink", () => {
     assert.equal(result.mode, "symlink");
   });
 
-  it("replaces symlink with wrong target", () => {
+  it("preserves an unowned symlink with a different target", () => {
     const linkPath = join(tmp, "link");
     const wrongTarget = join(tmp, "wrong");
     mkdirSync(wrongTarget);
     symlinkSync(wrongTarget, linkPath);
 
-    const result = createLink(targetDir, linkPath);
-    assert.equal(result.status, "created");
-    assert.equal(result.mode, "symlink");
-    assert.equal(readlinkSync(linkPath), targetDir);
+    assert.throws(() => createLink(targetDir, linkPath), /unowned/);
+    assert.equal(readlinkSync(linkPath), wrongTarget);
   });
 
   it("creates parent directories if they do not exist", () => {
@@ -56,15 +54,14 @@ describe("createLink", () => {
     assert.ok(existsSync(linkPath));
   });
 
-  it("replaces regular file/directory with symlink", () => {
+  it("preserves a regular directory at a requested link destination", () => {
     const linkPath = join(tmp, "link");
     mkdirSync(linkPath);
     writeFileSync(join(linkPath, "old.txt"), "stale");
 
-    const result = createLink(targetDir, linkPath);
-    assert.equal(result.status, "created");
-    assert.equal(result.mode, "symlink");
-    assert.ok(lstatSync(linkPath).isSymbolicLink());
+    assert.throws(() => createLink(targetDir, linkPath), /unowned/);
+    assert.ok(lstatSync(linkPath).isDirectory());
+    assert.ok(existsSync(join(linkPath, "old.txt")));
   });
 
   it("is idempotent — second call returns exists", () => {

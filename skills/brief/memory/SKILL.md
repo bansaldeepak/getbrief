@@ -1,205 +1,102 @@
 ---
 name: memory
-description: "Version-controlled project memory format. Auto-applies when something needs to be remembered, recalled, or written down for a future session. Defines where memory lives, how to read it, how to write it, and the file formats."
+description: "Capture and recall scoped project decisions and user preferences; define canonical storage, provenance, promotion, and reconciliation checkpoints."
 ---
 
 # Project Memory
 
-Memory lives **in the repo as structured files** — version-controlled, diff-able, portable.
-The `brief` CLI indexes these files for fast querying, but the files are always authoritative.
+The repository is authoritative: MEMORY.md is a short index; durable facts live in
+documentation/memory/, decisions in documentation/decisions/, and feature context beside stories
+or architecture docs. Respect an explicitly configured legacy repo layout. Never store project
+knowledge in provider-global memory or expand a choice beyond its stated scope.
 
-## Read vs Write Paths
+## Capture When the User Decides
 
-```
-READING memory:
-  brief CLI available?
-    YES → Use brief search, brief status, brief context
-    NO  → Read MEMORY.md index + documentation/memory/ files directly
+The active agent records explicit design, naming, functional, or workflow choices immediately,
+including during unfinished planning. Do not wait for retro. Recording an already-made choice
+needs no repeat approval; adopting an inferred preference or promoting to broader scope does.
 
-WRITING memory:
-  ALWAYS write to structured files (documentation/memory/, decisions/, context.md, retro.md)
-  These are the source of truth. brief indexes them automatically.
-```
+For each distinct fact record:
+- Choice and source: user statement/date and repo artifact reference when available.
+- Stated scope: feature, module/path, project, or explicitly shared; if unclear, ask before wider use.
+- Status: explicitly decided, observed/proposed, superseded, or retired.
+- Rationale and rejected alternatives only when supplied or actually established; don't invent them.
+- How to apply and, when relevant, how to verify; link replacement/related decisions.
 
-## Reading Memory
+Record a narrowly applicable decision now even if its possible broader relevance is unresolved.
+An observation of existing code is not proof of a user preference.
 
-**Primary** — if `brief` CLI is installed:
+## Read and Write Contract
+
+With the CLI, use `brief memory list --all` for inventory, `brief memory show <slug>` for details,
+and `brief search "<area>"` across decisions/retros/context. Read relevant entries, not the entire
+store every task. The index is not the full inventory.
+
+Use CLI mutations where available:
 ```bash
-brief search "<query>" --memory  # search memory files specifically
-brief search "<query>"           # search across all documentation
-brief status                     # project state summary
-brief context "<query>"          # search graduated context
+brief memory create "<title>" --memtype=feedback --importance=4 --valid-until=permanent --body="<fact and provenance>"
+brief memory update <slug> updated=<YYYY-MM-DD> --body="<revised fact and provenance>"
+brief memory retire <slug>
 ```
 
-**Fallback** — read files directly:
-- `documentation/memory/*.md` — individual memory files (the source of truth)
-- `MEMORY.md` — minimal orientation at project root (not a full index)
+CLI supports feedback, project, reference, and user memory types; slug filenames are returned by
+create. For multiline bodies prefer stdin with `--body=-`. Verify the written content.
+If the active agent/curator lacks CLI access, hand mutations to the caller; if no CLI is available,
+read the same canonical files and restore CLI access before record-mode creation/status changes.
+For legacy-only projects, direct fallback edits must reconcile the legacy index/tracker without dropping entries.
 
-## Writing Memory — Always to Files
+Follow [record/log storage](../references/records-and-installation.md); preserve reserved `_brief` metadata and use immutable new log entries.
 
-Regardless of tooling, write to properly formatted files:
-
-### `documentation/memory/` — durable facts
-
-One fact per file, named `<type>_<topic>.md`:
-
-```
-documentation/memory/
-  feedback_<topic>.md    # user corrections and confirmed approaches
-  project_<topic>.md     # ongoing work, initiatives, constraints
-  reference_<topic>.md   # pointers to external resources
-  user_<topic>.md        # profile, preferences, working style
-```
-
-```markdown
+Current CLI files use `metadata.type`; accept historical top-level `type` when reading. Do not
+bulk-convert old records just to match a template. New direct-write fallback:
+```yaml
 ---
-name: <memory name>
-description: <one line — this is what recall matches on>
-type: feedback | project | reference | user
-created: <date>
-updated: <date>
-valid_until: <date or "permanent">
-importance: <1-5>
+name: descriptive-name
+description: Concise retrieval description
+metadata:
+  type: feedback
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+valid_until: permanent
+importance: 4
 ---
-
-<content — for feedback and project, follow with **Why:** and **How to apply:** lines>
 ```
+Source/scope/decision-status/application belong in the body so existing CLI readers remain compatible.
+Set validity deliberately: user/feedback permanent, active project context 30–90 days, references
+about six months. Importance 4–5 requires revalidation before retirement; expiration alone does
+not revoke an explicit user preference.
 
-Convert relative dates to absolute when writing. Link related memories inline with `[[name]]`.
+## Recall and Apply
 
-### Other write targets
+Use [planning context](../references/planning-context.md) before PRD/TRD/tasks and during execution
+and review. Make relevant decisions' effects explicit. Current user instructions apply within their
+scope; reconcile older conflicting records. Unresolved contradictions require clarification.
+Code violating a preference does not invalidate that preference. Do not re-ask settled choices.
 
-| Content | Write to | Indexed as |
-|---------|----------|-----------|
-| Architectural decisions | `documentation/decisions/<name>.md` | decisions |
-| Implementation gotchas | `documentation/stories/<feature>/context.md` | memory |
-| Retro findings | `documentation/stories/<feature>/S-NNN/retro.md` | retro_findings |
-| Open work items | `documentation/todo/TODO-NNN.md` | todos |
-| Constraints on code | TRD / architecture docs (with file anchors) | constraints |
+## Destinations and Promotion
 
-### Temporal validity
+| Knowledge | Destination |
+|-----------|-------------|
+| Durable user choice or correction | documentation/memory/ |
+| Architectural trade-offs | documentation/decisions/; link from TRD and tasks |
+| Feature implementation gotcha | feature context.md |
+| Reusable path convention | Project rule, after applicable authorization |
+| Repeatable procedure or agent behavior | Skill or agent source, after applicable authorization |
+| Deferred work | Tracked TODO with owner/trigger |
 
-| Type | Default validity | Rationale |
-|------|-----------------|-----------|
-| **feedback** | permanent | Corrections don't expire |
-| **project** | 30–90 days | Sprint goals and active initiatives go stale |
-| **reference** | 6 months | External URLs move |
-| **user** | permanent | Role and preferences are durable |
+Retro/curation must apply and verify authorized rule/skill/agent improvements, not merely suggest
+them. Reuse explicit approval within scope; ask before wider promotion. Preserve source rationale
+and supersession links. Before retiring a duplicate/promoted fact, verify the destination exists
+and is retrievable. Retire rather than delete history. Never promote to provider-global configuration
+merely because an observation recurred.
 
-### Importance
+## Reconciliation Checkpoints
 
-| Score | Meaning | Example |
-|-------|---------|---------|
-| **5** | Wrong action causes damage | "Never drop tables in prod" |
-| **4** | Significantly changes approach | "Prefers bundled PRs for refactors" |
-| **3** | Saves time if remembered | "Board ID for the GitHub project" |
-| **2** | Minor preference | "Likes terse responses" |
-| **1** | Ephemeral | "Currently debugging auth flow" |
+Immediate capture is primary. Reconcile omissions after planning, implementation, and at retro;
+capture new post-publication outcomes when observed. If nothing is notable, state that.
+Pass captured conversation choices and their sources to a curator; it cannot recover unseen turns.
 
-Expired + importance 1–2 are automatic prune candidates. Importance 4–5 are always re-validated
-before removal, never dropped silently.
-
-## `MEMORY.md` — Lightweight Index
-
-`MEMORY.md` is **not a data store**. It's a short index that points elsewhere.
-
-### MEMORY.md Template
-
-```markdown
-# Memory
-
-One-line project orientation.
-
-## Active Context
-- [Current feature/work pointer]
-
-## Durable Facts
-- [topic](documentation/memory/type_topic.md) — one-line description
-```
-
-## `context.md` — Feature Implementation Context
-
-Where finished feature knowledge lands when it leaves active memory.
-
-| Feature has… | Location |
-|--------------|----------|
-| An architecture folder | `documentation/architecture/<feature>/context.md` |
-| Only story folders | `documentation/stories/<feature>/context.md` |
-
-**Belongs here:** implementation decisions not captured in a TRD or decision doc, gotchas (auth
-quirks, DB edge cases, API surprises), patterns that emerged during the work, and scope cuts with
-their rationale.
-
-**Does not belong:** architecture design, API contracts, schema definitions, task tracking, or
-decision trade-offs — all of those have their own homes.
-
-```markdown
-# <Feature> — Implementation Context
-
-## Key Decisions
-- **[Decision]**: [Why — one sentence, and what the alternative was]
-
-## Non-obvious Patterns
-- **[Pattern]**: [When it applies, code reference if helpful]
-
-## Gotchas
-- **[Gotcha]**: [What trips people up, how to avoid it]
-
-## What We'd Do Differently
-- [item]
-```
-
-**Flush at three moments:** during `/retro` (the feature just shipped), during `/memory-review`
-(feature is inactive), and at the start of `/project-plan` (check the previous feature left nothing
-behind). Commit separately: `docs(context): flush <feature> implementation context`.
-
-## Memory Checkpoints (Mandatory)
-
-Capture at three gates. If nothing's notable, say "No new memory at this checkpoint":
-
-- **Post-planning** (PRD + TRD approved) — decisions, scope boundaries, rejected alternatives
-- **Post-implementation** (tasks done, qa green) — gotchas, patterns that emerged, surprises
-- **Post-ship** (merged / deployed) — what worked, what didn't, perf, user-feedback context
-
-## Provider Config: Pointer Only
-
-Provider memory directories (`~/.claude/projects/<project>/memory/`, and equivalents) get a pointer
-and nothing else:
-
-```markdown
-# Memory Pointer
-
-All memory for this project lives in the repo — version-controlled and committed.
-
-- **Index:** `MEMORY.md` at project root
-- **Individual memories:** `documentation/memory/` in the project repo
-
-Read those for full context. Do not duplicate memory content here.
-```
-
-If a host agent writes its own memory files there anyway, treat them as a **cache, not a source** —
-the repo is authoritative. Fold anything valuable back into `documentation/memory/` and leave the pointer in place.
-
-## Migration for Existing Projects
-
-When a project has memory in a provider config but not in the repo:
-
-1. Read everything from the provider location first
-2. Create `MEMORY.md` at the project root
-3. Split durable facts into `documentation/memory/<type>_<topic>.md` with proper format
-4. Replace the provider content with the pointer above
-5. Commit: `chore: migrate project memory to version control`
-
-**Read everything before writing anything** — never lose context to a migration.
-
-## Rules
-
-- **Read via `brief search` first** — fall back to reading `documentation/memory/` files directly if brief is unavailable
-- **Always write to files** — `documentation/memory/`, `decisions/`, `context.md`, `retro.md` with proper format
-- Never write memory to a provider's config directory
-- `MEMORY.md` is a lightweight index/redirect — not a data dump, keep under ~40 lines
-- One fact per `documentation/memory/` file; `MEMORY.md` links, it does not contain
-- Update `updated:` whenever a memory file changes
-- Don't record what the repo already says — code structure, git history, AGENTS.md, existing docs
-- Stale memory is worse than no memory: prune actively, explain every deletion
-- Commit memory changes alongside the work, or as a separate `chore:` commit
+Keep MEMORY.md concise, with pointers to active work and durable knowledge. Flush inactive feature
+details to its context.md while retaining retrievable provenance. Inventory entries before/after
+curation and account for every moved/retired pointer; index length is not a reason to lose knowledge.
+Use the story's commit mode for memory/bookkeeping changes; never infer push authority.

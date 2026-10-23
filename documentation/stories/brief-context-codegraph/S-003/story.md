@@ -1,3 +1,28 @@
+---
+{
+  _brief:
+    {
+      version: 1,
+      record_id: bff90cc7-86de-471e-b707-5cc36c1403d5,
+      item:
+        {
+          id: S-003,
+          type: story,
+          title: Bundle Codegraph + Unified Context Command,
+          status: done,
+          feature: brief-context-codegraph,
+          branch: feature/brief-context-codegraph,
+          category: feat,
+          created: 2026-08-20,
+          tasks: 7,
+          story: documentation/stories/brief-context-codegraph/S-003/story.md,
+          link: null,
+          pr: https://github.com/bansaldeepak/agents-setup/pull/20
+        },
+      legacy: { current_task: S-003-T7 }
+    }
+}
+---
 # S-003: Bundle Codegraph + Unified Context Command
 
 **Status**: done
