@@ -20,6 +20,8 @@ immutable log entries; preserve canonical metadata and keep generated views out 
 
 ## Gather and Reconcile
 
+Shared context: if this repo has `.brief/project.json`, follow [shared context](../references/shared-context.md) at retro (run `brief project sync`).
+
 Read requirements, story/tasks in their existing format, summary/review evidence, decisions, and
 choices captured from the conversation. Compare planned/delivered scope, surprises, rework, and
 planning/check gaps. Inspect actual branch history; reachability from the base after merging does

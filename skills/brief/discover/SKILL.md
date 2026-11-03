@@ -26,6 +26,8 @@ You are entering discovery mode. Do NOT write code, stories, PRDs, or tasks. You
 
 ### Phase 1: Context Gathering
 
+Shared context: if this repo has `.brief/project.json`, follow [shared context](../references/shared-context.md) at phase entry.
+
 **Check project history first.** Before exploring the codebase, surface what the project already knows
 about this problem area.
 

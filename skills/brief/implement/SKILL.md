@@ -13,6 +13,8 @@ A mode changes approval frequency, not scope, requirements, checks, or protected
 
 ## Start or Resume
 
+Shared context: if this repo has `.brief/project.json`, follow [shared context](../references/shared-context.md) at phase entry and exit.
+
 1. Inspect Git status and branch. Resolve the actual default/base from project instructions or Git
    metadata. Branch out before edits if on the base; preserve unrelated work and use the story branch.
 2. Confirm story.md, summary.md, and tasks exist. Preserve legacy tasks.md/tasks/index.md formats.

@@ -13,6 +13,8 @@ Interactive planning skill for breaking features into tracked stories and tasks.
 
 ## Instructions
 
+Shared context: if this repo has `.brief/project.json`, follow [shared context](../references/shared-context.md) at phase entry and exit.
+
 Before drafting, follow [planning context](../references/planning-context.md). Explicitly apply relevant user decisions, rules, skills, and agent guidance; record an Applied Constraints table with their effect. Resolve known questions before execution and capture new choices immediately via [memory](../memory/SKILL.md).
 
 You are entering planning mode. Do NOT write any implementation code. Your job is to produce a story with tasks that will guide implementation.
