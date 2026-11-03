@@ -54,6 +54,7 @@ Resource Commands:
   memory <action>      Manage memory entries
   log <action>         Project log entries (multi-agent safe)
   tracker <action>     Rebuild/inspect tracker.yaml
+  project <action>     Shared workspace across repos (~/.brief/projects)
 
   Run "brief <resource> help" for resource-specific actions.
 
@@ -122,6 +123,10 @@ if (command === "story") {
 } else if (command === "log") {
   const { logCommand } = await import("./lib/commands/log.mjs");
   await logCommand(root, args[1], args.slice(2), rawArgs);
+
+} else if (command === "project") {
+  const { projectCommand } = await import("./lib/commands/project.mjs");
+  await projectCommand(root, args[1], args.slice(2), rawArgs);
 
 } else if (command === "tracker") {
   const { trackerCommand } = await import("./lib/commands/tracker.mjs");
