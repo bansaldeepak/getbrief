@@ -10,7 +10,7 @@
 #   BRIEF_BIN_DIR where the `brief` link goes              (default: ~/.local/bin)
 set -euo pipefail
 
-MIN_NODE_MAJOR=22
+MIN_NODE_MAJOR=24
 BRIEF_REPO="${BRIEF_REPO:-https://github.com/bansaldeepak/getbrief.git}"
 BRIEF_REF="${BRIEF_REF:-main}"
 BRIEF_HOME="${BRIEF_HOME:-$HOME/.brief/cli}"

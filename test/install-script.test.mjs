@@ -37,16 +37,16 @@ describe("scripts/install.sh", () => {
   it("stops with a clear message when Node.js is missing", () => {
     const result = run();
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /Node\.js 22 or newer is required but 'node' was not found/);
+    assert.match(result.stderr, /Node\.js 24 or newer is required but 'node' was not found/);
   });
 
   it("stops with a clear message when Node.js is too old", () => {
-    stub("node", 'case "$1" in -p) echo 20;; --version) echo v20.1.0;; esac');
+    stub("node", 'case "$1" in -p) echo 22;; --version) echo v22.1.0;; esac');
     stub("npm", "exit 0");
     stub("python3", "exit 0");
     const result = run();
     assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /Node\.js 22 or newer is required \(found v20\.1\.0\)/);
+    assert.match(result.stderr, /Node\.js 24 or newer is required \(found v22\.1\.0\)/);
   });
 
   it("stops with a clear message when python3 is missing", () => {
